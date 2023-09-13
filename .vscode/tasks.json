@@ -8,8 +8,13 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
+                "-IC:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/include",
+                "${fileDirname}\\mapBuild.cpp",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "-lSDL2",
+                "-lSDL2_image",
+                "-lSDL2main"
             ],
             "options": {
                 "cwd": "C:\\msys64\\ucrt64\\bin"
