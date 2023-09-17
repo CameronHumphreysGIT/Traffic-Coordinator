@@ -1,13 +1,15 @@
 #include <iostream>
-#include <mapBuild.h>
+#include <MapBuild.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <Globals.h>
+#include <Intersection.h>
 
 using namespace std;
 
-int SCREEN_WIDTH = 700;
-int SCREEN_HEIGHT = 394;
-const char* BACKGROUND_PATH = "./images/Background.jpg";
+int SCREEN_WIDTH = 1000;
+int SCREEN_HEIGHT = 565;
+const char* BACKGROUND_PATH = "./images/Background.png";
 
 mapBuild::mapBuild()    {
     //The window we'll be rendering to
@@ -23,7 +25,7 @@ bool mapBuild::init()   {
     bool success = true;
 
     //Initialize SDL
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 && IMG_Init(IMG_INIT_JPG) )    {
+    if( SDL_Init( SDL_INIT_VIDEO ) < 0 && IMG_Init(IMG_INIT_PNG) )    {
         cout<<"SDL could not initialize! SDL_Error:";
         success = false;
     }
@@ -75,4 +77,9 @@ void mapBuild::close()  {
     IMG_Quit();
     //Quit SDL subsystems
     SDL_Quit();
+}
+
+
+void mapBuild::buildIntersections(Infrastructure* inf) {
+    inf->buildIntersections(gScreenSurface);
 }

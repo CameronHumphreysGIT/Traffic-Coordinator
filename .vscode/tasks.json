@@ -10,6 +10,8 @@
                 "${file}",
                 "-IC:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/include",
                 "${fileDirname}\\mapBuild.cpp",
+                "${fileDirname}\\Infrastructure.cpp",
+                "${fileDirname}\\Intersection.cpp",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "-lSDL2",
