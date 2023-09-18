@@ -2,6 +2,7 @@
 #define INTERSECTION_H
 #include <Intersection.h>
 #include <utility>
+#include <vector>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ class Intersection {
         pair<int,int> bottomLeft;
     public:
         Intersection();
+        vector<pair<int,int>> getCorners();
         void setCorner(enum Corner corner, int x, int y);
         void setTopLeft(int x, int y);
         void setTopRight(int x, int y);

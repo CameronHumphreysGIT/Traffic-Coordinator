@@ -82,4 +82,5 @@ void mapBuild::close()  {
 
 void mapBuild::buildIntersections(Infrastructure* inf) {
     inf->buildIntersections(gScreenSurface);
+    SDL_UpdateWindowSurface(gWindow);
 }

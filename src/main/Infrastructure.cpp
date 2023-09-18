@@ -36,10 +36,9 @@ void Infrastructure::buildIntersections(SDL_Surface* gScreenSurface) {
     int right = 0;
     vector<int> xValues;
     //TODO this algorithm is a first draft, maybe a more efficient solution
-    for(int y = 0; y < 70; y++)  {
-        for(int x = 0; x < 150; x++){
+    for(int y = 0; y < height; y++)  {
+        for(int x = 0; x < width; x++){
             if (isCorner(x, y, pixelArray, pitch, bytes) != NOT) {
-                cout<<" is corner \n";
                 //it is a corner
                 if (isCorner(x, y, pixelArray, pitch, bytes) == TOPLEFT) {
                     //make an intersection and set it's top left corner
@@ -72,9 +71,13 @@ void Infrastructure::buildIntersections(SDL_Surface* gScreenSurface) {
                     intersections->at(right).setCorner(BOTTOMRIGHT, x, y);
                 }
             }
+            
+
             //cout<<x<<","<<y<<"\n";
         }
     }
+    //finally, colour the corners:
+    colourCorners(pixelArray, pitch, bytes);
 
     SDL_UnlockSurface(gScreenSurface);
 }
@@ -82,7 +85,6 @@ void Infrastructure::buildIntersections(SDL_Surface* gScreenSurface) {
 int Infrastructure::isCorner(int x, int y, uint8_t *pixels, int pitch, int bytes) {
     //check if green
     if (isGreen(x, y, pixels, pitch, bytes)) {
-        cout<<" it is green \n";
         //check if above is not green
         if (!isGreen(x, (y - 1), pixels, pitch, bytes)) {
             if (!isGreen((x - 1), y, pixels, pitch, bytes)) {
@@ -123,6 +125,19 @@ bool Infrastructure::isGreen(int x, int y, uint8_t *pixels, int pitch, int bytes
 }
 
 
+//helper function to change the colour of all the corners of the intersections to confirm they are correctly speified
+void Infrastructure::colourCorners(uint8_t* &pixelArray, int pitch, int bytes) {
+    for (int i = 0; i < intersections->size(); i++) {
+        //get the corners
+        vector<pair<int,int>> corners = intersections->at(i).getCorners();
+        for (int i2 = 0; i2 < corners.size(); i2++) {
+            //paint the corner
+            pixelArray[corners.at(i2).second * pitch + corners.at(i2).first * bytes+0] = 0;
+            pixelArray[corners.at(i2).second * pitch + corners.at(i2).first * bytes+1] = 255;
+            pixelArray[corners.at(i2).second * pitch + corners.at(i2).first * bytes+2] = 0;
+        }
+    }
+}
 
 void Infrastructure::print() {
     //iterator

@@ -15,6 +15,7 @@ class Infrastructure {
         void addI(Intersection* i);
         bool removeI(Intersection* i);
         void buildIntersections(SDL_Surface*);
+        void colourCorners(uint8_t*&, int, int);
         int isCorner(int, int, uint8_t *, int, int);
         bool isGreen(int, int, uint8_t *, int, int);
         void print();      
