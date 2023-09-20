@@ -1,6 +1,5 @@
 #ifndef MAPBUILD_H
 #define MAPBUILD_H
-#include <SDL2/SDL.h>
 #include <Infrastructure.h>
 
 class mapBuild {

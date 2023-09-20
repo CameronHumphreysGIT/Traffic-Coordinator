@@ -1,30 +1,16 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
-#include <Intersection.h>
 #include <utility>
 #include <vector>
+#include <Variables.h>
+#include <Rectangle.h>
 
-using namespace std;
-
-//FIXME: 
-enum Corner { TOPLEFT = 1, TOPRIGHT = 2, BOTTOMLEFT = 3, BOTTOMRIGHT = 4, NOT = 0};
-
-class Intersection {
+class Intersection : public Rectangle {
     private:
         int id;
         bool isSet;
-        pair<int,int> topLeft;
-        pair<int,int> topRight;
-        pair<int,int> bottomRight;
-        pair<int,int> bottomLeft;
     public:
         Intersection();
-        vector<pair<int,int>> getCorners();
-        void setCorner(enum Corner corner, int x, int y);
-        void setTopLeft(int x, int y);
-        void setTopRight(int x, int y);
-        void setBottomRight(int x, int y);
-        void setBottomLeft(int x, int y);
         void print();
 };
 

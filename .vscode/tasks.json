@@ -5,15 +5,14 @@
             "label": "C/C++: g++.exe build active file",
             "command": "C:\\msys64\\ucrt64\\bin\\g++.exe",
             "args": [
+                "-std=c++17",
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
                 "-IC:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/include",
-                "${fileDirname}\\mapBuild.cpp",
-                "${fileDirname}\\Infrastructure.cpp",
-                "${fileDirname}\\Intersection.cpp",
+                "${fileDirname}\\classes\\*.cpp",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "${fileDirname}\\out\\${fileBasenameNoExtension}.exe",
                 "-lSDL2",
                 "-lSDL2_image",
                 "-lSDL2main"
