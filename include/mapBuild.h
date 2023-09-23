@@ -4,9 +4,12 @@
 
 class mapBuild {
     private:
-        SDL_Window* gWindow;
-        SDL_Surface* gScreenSurface;
-        SDL_Surface* gBackground;
+        SDL_Window* window;
+        SDL_Surface* screenSurface;
+        SDL_Surface* background;
+        SDL_Renderer* renderer;
+        SDL_Texture* screenTexture;
+        SDL_Rect* boundary;
         //helper functions
         int isCorner(int x, int y, uint8_t * pixels);
         bool isGreen(int x, int y, uint8_t * pixels);
@@ -16,6 +19,8 @@ class mapBuild {
         bool loadMedia();
         void close();
         void buildIntersections(Infrastructure * inf);
+        void testRectangle(SDL_Rect *rectangle);
+        void renderBackground();
 };
 
 
