@@ -50,22 +50,12 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     int bytes = screenSurface->format->BytesPerPixel;
     //index of intersection that the Right corner belongs to
     int rightI = 0;
-    //index of right Road corner
-    int rightR = 0;
     //stored left boundary of Intersections
     vector<int> IxValues;
-    //stored left boundary of Roads
-    vector<int> RxValues;
-    //TODO this algorithm is a first draft, maybe a more efficient solution
-    //TODO consider ommitting all roads, and constructing them as the corners of intersections?
-    pixelArray[60 * pitch + 200 * bytes+0] = 255;
-    pixelArray[60 * pitch + 200 * bytes+1] = 255;
-    pixelArray[60 * pitch + 200 * bytes+2] = 255;
     for(int y = 0; y < height; y++)  {
-        //cout<<"loop";
         for(int x = 0; x < width; x++)  {
             int cornerReturn = isCorner(x, y, pixelArray, pitch, bytes);
-            if (cornerReturn > 0) {
+            if (cornerReturn != Variables::NOT) {
                 //this means we found a Intersection
                 if (cornerReturn == Variables::TOPLEFT) {
                     //make an intersection and set it's top left corner
@@ -80,23 +70,6 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
                 }
                 intersections->at(rightI)->setCorner((Variables::Corner)cornerReturn, x, y);
             }
-            if (cornerReturn < 0) {
-                //make it positive
-                cornerReturn = cornerReturn * -1;
-                //we found a Road
-                if (cornerReturn == Variables::TOPLEFT) {
-                    //make an intersection and set it's top left corner
-                    Road* road = new Road();
-                    //Add to the infrastructure collection
-                    addR(road);
-                    rightR = (roads->size() - 1);
-                    //We store the left border of each intersection
-                    RxValues.push_back(x);
-                } else if (cornerReturn == Variables::BOTTOMLEFT) {
-                    findClosestXValue(RxValues, &rightR, x);
-                }
-                roads->at(rightR)->setCorner((Variables::Corner)cornerReturn, x, y);
-            } 
         }
     }
     //finally, colour the corners:
@@ -104,11 +77,9 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
 
     SDL_UnlockSurface(screenSurface);
 }
-//first, figure out how road 0 got it's corners.
-//we don't need to store x values, we just need to count how many roads we have encountered in the row...?
-//rework this...
+
 void Infrastructure::findClosestXValue(vector<int> &xValues, int *right, int x) {
-    //we need to set the rightR to the appropriate index.
+    //we need to set the rightI to the appropriate index.
     //find the value closest to the current x value...
     int index;
     int min = INT_MAX;
@@ -123,77 +94,40 @@ void Infrastructure::findClosestXValue(vector<int> &xValues, int *right, int x) 
 }
 
 int Infrastructure::isCorner(int x, int y, uint8_t *pixels, int pitch, int bytes) {
-    bool road;
-    //check if Intersection
-    if (isColour(x, y, pixels, pitch, bytes, false)) {
-        road = false;
-    }else if (isColour(x, y, pixels, pitch, bytes, true)) {
-        road = true;
-    }else {
-        return Variables::NOT;
-    }
     int returnVal = Variables::NOT;
-    //check if above is not green
-    if (!isColour(x, (y - 1), pixels, pitch, bytes, road)) {
-        //roads need a more rigid definition since they are diagonal.
-        if (road) {
-            if (!isColour((x - 1), y, pixels, pitch, bytes, road) && (isColour(x, (y - 2), pixels, pitch, bytes, !road) || isColour((x - 2), y, pixels, pitch, bytes, !road))) {
-                //top left corner
-                returnVal = Variables::TOPLEFT;
-            }
-            if (!isColour((x + 1), y, pixels, pitch, bytes, road) && ((isColour(x, (y - 2), pixels, pitch, bytes, !road) || isColour((x + 2), y, pixels, pitch, bytes, !road)))) {
-                //top right corner
-                returnVal = Variables::TOPRIGHT;
-            }
-        }else {
-            if (!isColour((x - 1), y, pixels, pitch, bytes, road)) {
-                //top left corner
-                returnVal = Variables::TOPLEFT;
-            }
-            if (!isColour((x + 1), y, pixels, pitch, bytes, road)) {
-                //top left corner
-                returnVal = Variables::TOPRIGHT;
-            }
-        }
-    }
-    if (!isColour(x, (y + 1), pixels, pitch, bytes, road)) {
-        //roads need a more rigid definition since they are diagonal.
-        if (road) {
-            if (!isColour((x - 1), y, pixels, pitch, bytes, road) && (isColour(x, (y + 2), pixels, pitch, bytes, !road) || isColour((x - 2), y, pixels, pitch, bytes, !road))) {
-                //bottom left corner
-                returnVal = Variables::BOTTOMLEFT;
-            }
-            if (!isColour((x + 1), y, pixels, pitch, bytes, road) && (isColour(x, (y + 2), pixels, pitch, bytes, !road) || isColour((x + 2), y, pixels, pitch, bytes, !road))) {
-                //bottom right corner
-                returnVal = Variables::BOTTOMRIGHT;
-            } 
-        }else {
-            if (!isColour((x - 1), y, pixels, pitch, bytes, road)) {
-                //bottom left corner
-                returnVal = Variables::BOTTOMLEFT;
-            }
-            if (!isColour((x + 1), y, pixels, pitch, bytes, road)) {
-                //bottom right corner
-                returnVal = Variables::BOTTOMRIGHT;
-            }
-        }
-    }
-    if (road) {
-        return -returnVal;
-    }else {
+    //check if Intersection
+    if (!isGreen(x, y, pixels, pitch, bytes)) {
+        //not a corner of any sort.
         return returnVal;
     }
+    
+    //check if above is not green
+    if (!isGreen(x, (y - 1), pixels, pitch, bytes)) {
+        if (!isGreen((x - 1), y, pixels, pitch, bytes)) {
+            //top left corner
+            returnVal = Variables::TOPLEFT;
+        }
+        if (!isGreen((x + 1), y, pixels, pitch, bytes)) {
+            //top left corner
+            returnVal = Variables::TOPRIGHT;
+        }
+    }
+    if (!isGreen(x, (y + 1), pixels, pitch, bytes)) { 
+        if (!isGreen((x - 1), y, pixels, pitch, bytes)) {
+            //bottom left corner
+            returnVal = Variables::BOTTOMLEFT;
+        }
+        if (!isGreen((x + 1), y, pixels, pitch, bytes)) {
+            //bottom right corner
+            returnVal = Variables::BOTTOMRIGHT;
+        }
+    }
+    return returnVal;
 }
 
-bool Infrastructure::isColour(int x, int y, uint8_t *pixels, int pitch, int bytes, bool road) {
-    vector<int> colour;
-    if (road) {
-        //look for road colours
-        colour = Variables::ROADCOLOUR;
-    }else {
-        colour = Variables::INTERSECTIONCOLOUR;
-    }
-    //though it is a little strange, I've imbedded the if statements to make it more readible instead of one extremely long line.
+bool Infrastructure::isGreen(int x, int y, uint8_t *pixels, int pitch, int bytes) {
+    vector<int> colour = Variables::INTERSECTIONCOLOUR;
+    //check that the colour matches
     if (pixels[y * pitch + x * bytes+0] == colour.at(0)) {
         if (pixels[y * pitch + x * bytes+1] == colour.at(1)) {
             if (pixels[y * pitch + x * bytes+2] == colour.at(2)) {

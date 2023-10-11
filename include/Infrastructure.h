@@ -11,7 +11,7 @@ class Infrastructure {
         std::vector<Road*> *roads;
         void colourCorners(uint8_t*&, int, int);
         int isCorner(int, int, uint8_t *, int, int);
-        bool isColour(int, int, uint8_t *, int, int, bool);
+        bool isGreen(int, int, uint8_t *, int, int);
         void findClosestXValue(std::vector<int> &, int *, int );
     public:
         Infrastructure();
