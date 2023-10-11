@@ -26,6 +26,10 @@ mapBuild::mapBuild()    {
     boundary->h = Variables::BACKGROUND_HEIGHT;
 }
 
+mapBuild::~mapBuild() {
+    delete boundary;
+}
+
 bool mapBuild::init()   {
     //Initialization flag
     bool success = true;

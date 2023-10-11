@@ -7,14 +7,15 @@
 
 class Infrastructure {
     private:
-        std::vector<Intersection> *intersections;
-        std::vector<Road> *roads;
+        std::vector<Intersection*> *intersections;
+        std::vector<Road*> *roads;
         void colourCorners(uint8_t*&, int, int);
         int isCorner(int, int, uint8_t *, int, int);
         bool isColour(int, int, uint8_t *, int, int, bool);
         void findClosestXValue(std::vector<int> &, int *, int );
     public:
         Infrastructure();
+        ~Infrastructure();
         void addI(Intersection*);
         bool removeI(Intersection*);
         void addR(Road*);

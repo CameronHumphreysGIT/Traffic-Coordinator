@@ -15,6 +15,7 @@ class mapBuild {
         bool isGreen(int x, int y, uint8_t * pixels);
     public:
         mapBuild();
+        ~mapBuild();
         bool init();
         bool loadMedia();
         void close();

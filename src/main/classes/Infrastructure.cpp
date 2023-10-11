@@ -7,20 +7,34 @@
 using namespace std;
 
 Infrastructure::Infrastructure() {
-    intersections = new vector<Intersection>();
-    roads = new vector<Road>();
+    intersections = new vector<Intersection*>();
+    roads = new vector<Road*>();
+}
+
+Infrastructure::~Infrastructure() {
+    //delete all roads:
+    for (int i = 0; i < roads->size(); i++) {
+        delete roads->at(i);
+    }
+    //delete all intersections:
+    for (int i = 0; i < intersections->size(); i++) {
+        delete intersections->at(i);
+    }
+    //then, delete the collections:
+    delete roads;
+    delete intersections;
 }
 
 void Infrastructure::addI(Intersection* i) {
-    intersections->push_back(*i);
+    intersections->push_back(i);
 }
 
 void Infrastructure::addR(Road* r) {
-    roads->push_back(*r);
+    roads->push_back(r);
 }
 
 Intersection* Infrastructure::getI(int index) {
-    return &intersections->at(index);
+    return intersections->at(index);
 }
 
 void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
@@ -64,7 +78,7 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
                 } else if (cornerReturn == Variables::BOTTOMLEFT) {
                     findClosestXValue(IxValues, &rightI, x);
                 }
-                intersections->at(rightI).setCorner((Variables::Corner)cornerReturn, x, y);
+                intersections->at(rightI)->setCorner((Variables::Corner)cornerReturn, x, y);
             }
             if (cornerReturn < 0) {
                 //make it positive
@@ -81,7 +95,7 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
                 } else if (cornerReturn == Variables::BOTTOMLEFT) {
                     findClosestXValue(RxValues, &rightR, x);
                 }
-                roads->at(rightR).setCorner((Variables::Corner)cornerReturn, x, y);
+                roads->at(rightR)->setCorner((Variables::Corner)cornerReturn, x, y);
             } 
         }
     }
@@ -196,7 +210,7 @@ bool Infrastructure::isColour(int x, int y, uint8_t *pixels, int pitch, int byte
 void Infrastructure::colourCorners(uint8_t* &pixelArray, int pitch, int bytes) {
     for (int i = 0; i < intersections->size(); i++) {
         //get the corners
-        vector<pair<int,int>> corners = intersections->at(i).getCorners();
+        vector<pair<int,int>> corners = intersections->at(i)->getCorners();
         for (int i2 = 0; i2 < corners.size(); i2++) {
             //paint the corner
             pixelArray[corners.at(i2).second * pitch + corners.at(i2).first * bytes+0] = 255;
@@ -206,7 +220,7 @@ void Infrastructure::colourCorners(uint8_t* &pixelArray, int pitch, int bytes) {
     }
     for (int i = 0; i < roads->size(); i++) {
         //get the corners
-        vector<pair<int,int>> corners = roads->at(i).getCorners();
+        vector<pair<int,int>> corners = roads->at(i)->getCorners();
         for (int i2 = 0; i2 < corners.size(); i2++) {
             //paint the corner
             pixelArray[corners.at(i2).second * pitch + corners.at(i2).first * bytes+0] = 255;
@@ -221,13 +235,13 @@ void Infrastructure::print() {
     auto iterator = intersections->begin();
     for(int i = 0; i < (intersections->size()); i++) {
         cout<<"Intersection "<<i<<": ";
-        iterator->print();
+        (*iterator)->print();
         advance(iterator, 1);
     }
     auto iterator2 = roads->begin();
     for(int i = 0; i < (roads->size()); i++) {
         cout<<"Road "<<i<<": ";
-        iterator2->print();
+        (*iterator2)->print();
         advance(iterator2, 1);
     }
 }
