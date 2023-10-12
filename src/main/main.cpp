@@ -9,7 +9,7 @@
 using namespace std;
 
 int main() {
-    mapBuild* builder = new mapBuild();
+    MapBuild* builder = new MapBuild();
     builder->init();
     builder->loadMedia();
     Infrastructure *infrastructure = new Infrastructure();
@@ -27,7 +27,7 @@ int main() {
     c->setDirection(p); */
     while( quit == false )  {
         //Render the screen;
-        //builder.testRectangle(rect);
+        builder->testRectangle();
         while( SDL_PollEvent( &e ) )    {
             if( e.type == SDL_QUIT ) quit = true;
         }

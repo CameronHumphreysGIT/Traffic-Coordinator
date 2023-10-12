@@ -3,11 +3,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <Variables.h>
+#include <BezierPath.h>
 
 using namespace std;
 
 
-mapBuild::mapBuild()    {
+MapBuild::MapBuild()    {
     //The window we'll be rendering to
     window = NULL;
     //TODO remove this shit//The surface contained by the window
@@ -22,15 +23,15 @@ mapBuild::mapBuild()    {
     boundary = new SDL_Rect();
     boundary->x = 0;
     boundary->y = 0;
-    boundary->w = Variables::BACKGROUND_WIDTH;
-    boundary->h = Variables::BACKGROUND_HEIGHT;
+    boundary->w = Variables::SCREEN_WIDTH;
+    boundary->h = Variables::SCREEN_HEIGHT;
 }
 
-mapBuild::~mapBuild() {
+MapBuild::~MapBuild() {
     delete boundary;
 }
 
-bool mapBuild::init()   {
+bool MapBuild::init()   {
     //Initialization flag
     bool success = true;
 
@@ -58,7 +59,7 @@ bool mapBuild::init()   {
     return success;
 }
 
-bool mapBuild::loadMedia()  {
+bool MapBuild::loadMedia()  {
     //Loading success flag
     bool success = true;
 
@@ -79,7 +80,7 @@ bool mapBuild::loadMedia()  {
 }
 
 
-void mapBuild::close()  {
+void MapBuild::close()  {
     //Deallocate surface
     SDL_FreeSurface( background );
     background = NULL;
@@ -99,24 +100,33 @@ void mapBuild::close()  {
 }
 
 
-void mapBuild::buildIntersections(Infrastructure* inf) {
+void MapBuild::buildIntersections(Infrastructure* inf) {
     inf->buildInfrastructure(screenSurface);
     //this line is for debugging the infrastructure
     SDL_UpdateWindowSurface(window);
 }
 
-void mapBuild::testRectangle(SDL_Rect* rect) {
+void MapBuild::testRectangle() {
+    SDL_Rect* rect = new SDL_Rect{50,60,10,20};
     //this always needs to be done at the start, otherwise we will end up drawing over everything.
     renderBackground();
     
     //drawstuff
     SDL_SetRenderDrawColor(renderer, 200,120,200, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRect(renderer, rect);
+    //SDL_RenderFillRect(renderer, rect);
+    BezierPath* path = new BezierPath();
+    path->addCurve({{100.0f, 100.0f}, {248.0f, 207.0f}, {360.0f, 50.0f}, {500.0f, 100.0f}}, 20);
+    vector<pair<float, float>> sampled;
+    path->sample(&sampled);
+    for (int i =0; i < sampled.size() - 1; i++) {
+        //draw each line
+        SDL_RenderDrawLine(renderer, sampled[i].first, sampled[i].second, sampled[i+1].first, sampled[i+1].second);
+    }
     
     //present to the window
     SDL_RenderPresent(renderer);
 }
 
-void mapBuild::renderBackground() {
+void MapBuild::renderBackground() {
     SDL_RenderCopy(renderer, screenTexture, NULL, boundary);
 }

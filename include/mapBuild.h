@@ -2,7 +2,7 @@
 #define MAPBUILD_H
 #include <Infrastructure.h>
 
-class mapBuild {
+class MapBuild {
     private:
         SDL_Window* window;
         SDL_Surface* screenSurface;
@@ -14,13 +14,13 @@ class mapBuild {
         int isCorner(int x, int y, uint8_t * pixels);
         bool isGreen(int x, int y, uint8_t * pixels);
     public:
-        mapBuild();
-        ~mapBuild();
+        MapBuild();
+        ~MapBuild();
         bool init();
         bool loadMedia();
         void close();
         void buildIntersections(Infrastructure * inf);
-        void testRectangle(SDL_Rect *rectangle);
+        void testRectangle();
         void renderBackground();
 };
 

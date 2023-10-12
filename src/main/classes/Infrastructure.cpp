@@ -106,6 +106,9 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     }
     //finally, colour the corners:
     colourCorners(pixelArray, pitch, bytes);
+    //there will be an empty row when done:
+    auto erase = intersections->end();
+    intersections->erase(erase);
 
     SDL_UnlockSurface(screenSurface);
 }
