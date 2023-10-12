@@ -7,8 +7,11 @@
 
 class Infrastructure {
     private:
-        std::vector<Intersection*> *intersections;
+        //2d vector of intersections from top to bottom
+        std::vector<std::vector<Intersection*>*> *intersections;
         std::vector<Road*> *roads;
+        void insertionSort(std::vector<Intersection*> * &);
+        void mySwap(Intersection* &, Intersection* &);
         void colourCorners(uint8_t*&, int, int);
         int isCorner(int, int, uint8_t *, int, int);
         bool isGreen(int, int, uint8_t *, int, int);
@@ -16,11 +19,11 @@ class Infrastructure {
     public:
         Infrastructure();
         ~Infrastructure();
-        void addI(Intersection*);
+        void addI(Intersection*, int);
         bool removeI(Intersection*);
         void addR(Road*);
         bool removeR(Road*);
-        Intersection* getI(int );
+        Intersection* getI(int, int);
         void buildInfrastructure(SDL_Surface*);
         void print();      
 };
