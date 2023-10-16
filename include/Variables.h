@@ -18,6 +18,8 @@ class Variables {
         static inline float DEFAULT_SPEED = 0.001;
         //defining the square width and height of intersections.
         static inline int INTERSECTION_DIMS = 12;
+        //maximum distance in x value between an intersection and the intersection below it.
+        static inline int MAX_XDIST = 20;
 };
 
 #endif

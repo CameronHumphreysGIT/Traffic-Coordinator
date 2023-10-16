@@ -9,12 +9,15 @@ class Infrastructure {
     private:
         //2d vector of intersections from top to bottom
         std::vector<std::vector<Intersection*>*>* intersections;
+        std::vector<std::pair<float, float>> sampledRoads;
         void insertionSort(std::vector<Intersection*> * &);
         void mySwap(Intersection* &, Intersection* &);
         void colourCorners(uint8_t*&, int, int);
         int isCorner(int, int, uint8_t *, int, int);
         bool isGreen(int, int, uint8_t *, int, int);
         void findClosestXValue(std::vector<int> &, int *, int );
+        Intersection* findBelow(int , int );
+        Intersection* getClosest(Intersection* , Intersection* , int );
     public:
         Infrastructure();
         ~Infrastructure();
@@ -23,6 +26,7 @@ class Infrastructure {
         Intersection* getI(int, int);
         void buildInfrastructure(SDL_Surface*);
         void buildRoads();
+        std::vector<std::pair<float, float>> getSampled();
         void print();      
 };
 

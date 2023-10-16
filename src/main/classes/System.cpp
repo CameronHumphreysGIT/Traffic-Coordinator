@@ -83,8 +83,8 @@ void System::buildInfrastructure() {
 void System::testdraw() {
     vector<SDL_Rect*> rects;
     
-    vector<vector<pair<float, float>>> sampled = infrastructure->getI(0,0)->getSampled();
-    scene->draw(rects, sampled.at(1));
+    vector<pair<float, float>> sampled = infrastructure->getSampled();
+    scene->draw(rects, sampled);
 }
 
 void System::close()  {

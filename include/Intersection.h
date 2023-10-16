@@ -1,7 +1,5 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
-#include <utility>
-#include <vector>
 #include <Variables.h>
 #include <Rectangle.h>
 #include <Road.h>
@@ -20,7 +18,7 @@ class Intersection : public Rectangle {
         void setRight(Road*);
         void setBottom(Road*);
         void setLeft(Road*);
-        vector<vector<pair<float, float>>> getSampled();
+        vector<pair<float, float>> getSampled();
         void print();
 };
 

@@ -132,36 +132,12 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
             }
         }
     }
-
-    //test
-    Intersection* me = intersections->at(0)->at(0);
-    //intersection to the right
-    Intersection* right = intersections->at(0)->at(0 + 1);
-    //intersection below
-    Intersection* bottom = intersections->at(0 + 1)->at(0);
-    //all intersections are 12x12 squares, we want the roads to go in three pixels away from the corners.
-    //incoming road.
-    Road* right2Me = new Road();
-    right2Me->setPath({(right->getCorners().at(0).first - 1),(right->getCorners().at(0).second + 3)}, {(me->getCorners().at(1).first + 1),(me->getCorners().at(1).second + 3)});
-    //the path from the node on my right to me is the path on my right side.
-    me->setRight(right2Me);
-    //outgoing
-    Road* me2Right = new Road();
-    me2Right->setPath({(me->getCorners().at(3).first + 1),(me->getCorners().at(3).second - 3)}, {(right->getCorners().at(2).first - 1),(right->getCorners().at(2).second - 3)});
-    right->setLeft(me2Right);
-    //incoming road from bottom.
-    Road* bottom2Me = new Road();
-    bottom2Me->setPath({(bottom->getCorners().at(1).first - 3),(bottom->getCorners().at(1).second - 1)}, {(me->getCorners().at(3).first - 3),(me->getCorners().at(3).second + 1)});
-    //the path from the node on my bottom to me is the path on my bottom side.
-    me->setBottom(bottom2Me);
-    //outgoing
-    Road* me2Bottom = new Road();
-    me2Bottom->setPath({(me->getCorners().at(2).first + 3),(me->getCorners().at(2).second + 1)}, {(bottom->getCorners().at(0).first + 3),(bottom->getCorners().at(0).second - 1)});
-    bottom->setLeft(me2Bottom);
-
-
-
+    buildRoads();
     SDL_UnlockSurface(screenSurface);
+}
+
+vector<pair<float, float>> Infrastructure::getSampled() {
+    return sampledRoads;
 }
 
 void Infrastructure::buildRoads() {
@@ -169,13 +145,28 @@ void Infrastructure::buildRoads() {
     for (int i = 0; i < intersections->size(); i++) {
         for (int i2 = 0; i2 < (intersections->at(i)->size()); i2++) {
             //since the intersections are sorted, we want to build roads to the intersection on the right, and the intersection bellow.
-            //Ensure we aren't in the bottom right corner
-            if (i != (intersections->size()-1) && i2 != (intersections->at(i)->size()) - 1) {
-                Intersection* me = intersections->at(i)->at(i2);
+            Intersection* me = intersections->at(i)->at(i2);
+            if (i < (intersections->size() - 1)) {
+                Intersection* bottom = findBelow(i, i2);
+                //search for the intersection in the rows below that has the closest x value to us:
+                if (bottom != NULL) {
+                    //has space for a road below
+                    //all intersections are 12x12 squares, we want the roads to go in three pixels away from the corners.
+                    //incoming road from bottom.
+                    Road* bottom2Me = new Road();
+                    bottom2Me->setPath({(bottom->getCorners().at(1).first - 3),(bottom->getCorners().at(1).second - 1)}, {(me->getCorners().at(3).first - 3),(me->getCorners().at(3).second + 1)});
+                    //the path from the node on my bottom to me is the path on my bottom side.
+                    me->setBottom(bottom2Me);
+                    //outgoing
+                    Road* me2Bottom = new Road();
+                    me2Bottom->setPath({(me->getCorners().at(2).first + 3),(me->getCorners().at(2).second + 1)}, {(bottom->getCorners().at(0).first + 3),(bottom->getCorners().at(0).second - 1)});
+                    bottom->setTop(me2Bottom);
+                }
+            }
+            if (i2 < (intersections->at(i)->size()) - 1) {
+                //has space for a road to the right
                 //intersection to the right
                 Intersection* right = intersections->at(i)->at(i2 + 1);
-                //intersection below
-                Intersection* bottom = intersections->at(i + 1)->at(i2);
                 //all intersections are 12x12 squares, we want the roads to go in three pixels away from the corners.
                 //incoming road.
                 Road* right2Me = new Road();
@@ -186,18 +177,83 @@ void Infrastructure::buildRoads() {
                 Road* me2Right = new Road();
                 me2Right->setPath({(me->getCorners().at(3).first + 1),(me->getCorners().at(3).second - 3)}, {(right->getCorners().at(2).first - 1),(right->getCorners().at(2).second - 3)});
                 right->setLeft(me2Right);
-                //incoming road from bottom.
-                Road* bottom2Me = new Road();
-                bottom2Me->setPath({(bottom->getCorners().at(1).first - 3),(bottom->getCorners().at(1).second - 1)}, {(me->getCorners().at(3).first - 3),(me->getCorners().at(3).second + 1)});
-                //the path from the node on my bottom to me is the path on my bottom side.
-                me->setBottom(bottom2Me);
-                //outgoing
-                Road* me2Bottom = new Road();
-                me2Bottom->setPath({(me->getCorners().at(2).first + 3),(me->getCorners().at(2).second + 1)}, {(bottom->getCorners().at(0).first + 3),(bottom->getCorners().at(0).second - 1)});
-                bottom->setLeft(me2Bottom);
             }
+            vector<pair<float, float>> mySampled = me->getSampled();
+            sampledRoads.insert(sampledRoads.end(), mySampled.begin(), mySampled.end());
         }
     }
+}
+
+//function for finding the closest intersection in terms of x value below the current intersection
+Intersection* Infrastructure::findBelow(int row, int col) {
+    cout<<"finding below";
+    Intersection* me = intersections->at(row)->at(col);
+    for (int i = row+1; i < intersections->size(); i++) {
+        int n = intersections->at(i)->size();
+        //target is the x value of the current intersections topleft corner
+        int target = me->getCorners().at(0).first;
+        // Doing binary search
+        int i2 = 0, j = n, mid = 0;
+        //left side case:
+        if (target < intersections->at(i)->at(0)->getCorners().at(0).first) {
+            if (intersections->at(i)->at(0)->getCorners().at(0).first - target < Variables::MAX_XDIST) {
+                return intersections->at(i)->at(0);
+            }else {
+                continue;
+            }   
+        }
+        //right side
+        if (target > intersections->at(i)->at(n - 1)->getCorners().at(0).first) {
+            if (target - intersections->at(i)->at(n - 1)->getCorners().at(0).first < Variables::MAX_XDIST) {
+                return intersections->at(i)->at(n-1);
+            }else {
+                continue;
+            }  
+        }
+
+        while (i2 < j) {
+            mid = (i2 + j) / 2;
+            if (intersections->at(i)->at(mid)->getCorners().at(0).first == target) {
+                return intersections->at(i)->at(mid);
+            }
+            /* If target is less than array element,
+                then search in left */
+            if (target < intersections->at(i)->at(mid)->getCorners().at(0).first) {
+                // If target is greater than previous
+                // to mid, return closest of two
+                if (mid > 0 && target > intersections->at(i)->at(mid - 1)->getCorners().at(0).first)
+                    //return the closest of the two
+                    return getClosest(intersections->at(i)->at(mid - 1), intersections->at(i)->at(mid), target);
+                j = mid;
+            }else {
+                //target is greater than mid
+                if (mid < n - 1 && target < intersections->at(i)->at(mid + 1)->getCorners().at(0).first)
+                    return getClosest(intersections->at(i)->at(mid), intersections->at(i)->at(mid + 1), target);
+                // update i
+                i2 = mid + 1; 
+            }
+        }
+    
+        // Only single element left after search
+        if (abs(target - intersections->at(i)->at(mid)->getCorners().at(0).first) < Variables::MAX_XDIST) {
+            return intersections->at(i)->at(mid);
+        }else {
+            return NULL;
+        }
+    }
+    return NULL;
+}
+
+//helper for binary search
+Intersection* Infrastructure::getClosest(Intersection* val1, Intersection* val2, int target)    {
+    int diffVal1 = target - val1->getCorners().at(0).first;
+    int diffVal2 = val2->getCorners().at(0).first - target;
+    if (diffVal1 >= diffVal2 && (diffVal2 < Variables::MAX_XDIST)) {
+        return val2;
+    }else if(diffVal1 < Variables::MAX_XDIST) {
+        return val1;
+    }
+    return NULL;
 }
 
 
