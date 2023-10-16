@@ -81,12 +81,10 @@ void System::buildInfrastructure() {
 }
 
 void System::testdraw() {
-    BezierPath* path = new BezierPath();
-    path->addCurve({{100.0f, 100.0f}, {248.0f, 207.0f}, {360.0f, 50.0f}, {500.0f, 100.0f}}, 20);
-    vector<pair<float, float>> sampled;
-    path->sample(&sampled);
     vector<SDL_Rect*> rects;
-    scene->draw(rects, sampled);
+    
+    vector<vector<pair<float, float>>> sampled = infrastructure->getI(0,0)->getSampled();
+    scene->draw(rects, sampled.at(1));
 }
 
 void System::close()  {

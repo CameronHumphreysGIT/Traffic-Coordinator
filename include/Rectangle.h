@@ -16,7 +16,7 @@ class Rectangle {
         virtual ~Rectangle() {};
         virtual void print() = 0;
         std::vector<std::pair<int,int>> getCorners() {
-                std::vector<std::pair<int,int>> corners = {topLeft, topRight, bottomRight, bottomLeft};
+                std::vector<std::pair<int,int>> corners = {topLeft, topRight, bottomLeft, bottomRight};
                 return corners;
         };
         void setCorner(enum Variables::Corner corner, int x, int y) {

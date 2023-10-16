@@ -15,6 +15,7 @@ class BezierPath {
         BezierPath();
         ~BezierPath();
         void addCurve(BezierCurve , int );
-        void sample(std::vector<pair<float, float>>* );
+        std::vector<pair<float, float>> sample();
+        void clearPath();
 };
 #endif

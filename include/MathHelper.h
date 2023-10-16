@@ -44,7 +44,7 @@ struct BezierCurve {
         float uu = u * u;
         float uuu = uu * u;
 
-        pair<float, float> point = (p1 * uuu) + (c1 * (3 * uu * t)) + (p2 * (3 * u * tt)) + (c2 * ttt);
+        pair<float, float> point = (p1 * uuu) + (c1 * (3 * uu * t)) + (c2 * (3 * u * tt)) + (p2 * ttt);
         //round to closest int
         point.first = round(point.first);
         point.second = round(point.second);
