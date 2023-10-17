@@ -36,6 +36,13 @@ class Rectangle {
                         break;
                 }
         };
+        void setCorners(int x, int y) {
+                std::pair<int, int> coords = {x, y};
+                topLeft = coords;
+                topRight = {coords.first + Variables::INTERSECTION_DIMS, coords.second};
+                bottomLeft = {coords.first, coords.second + Variables::INTERSECTION_DIMS};
+                bottomRight = {coords.first + Variables::INTERSECTION_DIMS, coords.second + Variables::INTERSECTION_DIMS};
+        };
 };
 
 #endif

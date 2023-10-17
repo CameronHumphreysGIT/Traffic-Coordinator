@@ -13,7 +13,7 @@ class Infrastructure {
         void insertionSort(std::vector<Intersection*> * &);
         void mySwap(Intersection* &, Intersection* &);
         void colourCorners(uint8_t*&, int, int);
-        int isCorner(int, int, uint8_t *, int, int);
+        bool isCorner(int, int, uint8_t *, int, int);
         bool isGreen(int, int, uint8_t *, int, int);
         void findClosestXValue(std::vector<int> &, int *, int );
         Intersection* findBelow(int , int );

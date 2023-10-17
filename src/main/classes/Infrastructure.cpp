@@ -44,136 +44,35 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     uint8_t* pixelArray = (uint8_t*)screenSurface->pixels;
     int pitch = screenSurface->pitch;
     int bytes = screenSurface->format->BytesPerPixel;
-    //index of intersection that the Right corner belongs to
-    int rightI = 0;
-    //stored left boundary of Intersections
-    vector<int> IxValues;
     //Index of the row we are adding members to
     int rowNum = 0;
     //the amount of fully realized intersections in our current row.
     //as we create intersections, we add to this number, as we complete intersections, we remove from this number
-    //once the whole row has been completed, we change the rowNum
-    int incompleteNum = 0;
     intersections->push_back(new vector<Intersection*>);
-    /*
-        Basically, there are some scenarios that as we scan for the bottom corners of a row of intersections
-        we will end up finding a new topleft corner of an intersection that isn't in the current row.
-        instead of adding this new intersection to the row, we will bookmark it to return when making the next row.
-    */
-    bool temp = false;
-    pair<int, int> bookmark = {0,0};
-    for(int y = 0; y < 400; y++)  {
+    int tolerances[19] = {70,12,12,20,12,12,12,12,16,12,12,12,20,12,12,12,8,30,20};
+    for(int y = 0; y < height; y++)  {
         for(int x = 0; x < width; x++)  {
-            int cornerReturn = isCorner(x, y, pixelArray, pitch, bytes);
-            if (cornerReturn != Variables::NOT) {
-                if (temp) {
-                    //cout<<"x: "<<x<<"y: "<<y<<" corner "<<cornerReturn<<rightI<<"\n";
-                    //for (int i2 = 0; i2 < (intersections->at(10)->size()); i2++) {
-                        //cout<<"     Intersection "<<i2<<": ";
-                        //intersections->at(10)->at(i2)->print();
-                    //}
+            if (isCorner(x, y, pixelArray, pitch, bytes)) {
+                if (intersections->at(rowNum)->size() > 0 && (y - intersections->at(rowNum)->at(0)->getCorners().at(0).second) > tolerances[rowNum]) {
+                    //we've completed all that is in this row
+                    rowNum++;
+                    //make a new row
+                    intersections->push_back(new vector<Intersection*>);
                 }
-                if (cornerReturn == Variables::TOPLEFT && bookmark.first == 0 && bookmark.second == 0) {
-                    //if the new intersection is to the left of the leftmost intersection in this row
-                    if (intersections->at(rowNum)->size() > 0 && intersections->at(rowNum)->at(0)->getCorners().at(3).first != 0) {
-                        if (x < intersections->at(rowNum)->at(intersections->at(rowNum)->size() - 1)->getCorners().at(0).first) {
-                            //x < intersections->at(rowNum)->at(0)->getCorners().at(0).first &&
-                            bookmark = {x,y};
-                            cout<<"BOOKMARKED"<<x<<" "<<intersections->at(rowNum)->at(intersections->at(rowNum)->size() - 1)->getCorners().at(0).first;
-                            continue;
-                        }
-                    }
-                    //add to the incompleteNum
-                    incompleteNum++;
-                    //make an intersection and set it's top left corner
-                    Intersection* intersection = new Intersection();
-                    //Add to the infrastructure collection
-                    addI(intersection, rowNum);
-                    rightI = (intersections->at(rowNum)->size() - 1);
-                    //We store the left border of each intersection in the row
-                    IxValues.push_back(x);
-                } else if (cornerReturn == Variables::BOTTOMLEFT) {
-                    findClosestXValue(IxValues, &rightI, x);
-                }
-                if (rightI >= 0) {
-                    if (bookmark.first != 0 && bookmark.second != 0 && cornerReturn == Variables::TOPRIGHT) {
-                        continue;
-                    }
-                    intersections->at(rowNum)->at(rightI)->setCorner((Variables::Corner)cornerReturn, x, y);
-                }
-                //set the rownum after we have set the last corner
-                if (cornerReturn == Variables::BOTTOMRIGHT && rightI >= 0) {
-                    incompleteNum--;
-                    if (incompleteNum == 0) {
-                        //we've completed all that is in this row
-                        rowNum++;
-                        //make a new row
-                        intersections->push_back(new vector<Intersection*>);
-                        //reset rightI and IxValues
-                        rightI = 0;
-                        IxValues = {};
-                        //check if we set a bookmark
-                        if (bookmark.first != 0 && bookmark.second != 0) {
-                            cout<<"going to bookmark "<<bookmark.first<<" "<<bookmark.second<<"\n";
-                            print();
-                            //go back to that spot
-                            x = bookmark.first - 1;
-                            y = bookmark.second;
-                            //reset
-                            bookmark = {0,0};
-                            temp = true;
-                        }
-                    }
-                }
+                //make an intersection and set it's top left corner
+                Intersection* intersection = new Intersection();
+                //Add to the infrastructure collection
+                addI(intersection, rowNum);
+                intersections->at(rowNum)->at(intersections->at(rowNum)->size() - 1)->setCorners(x, y);
             }
         }
     }
-    //before we sort we need to manually move two of the intersections:
-    //Intersection* outlier = intersections->at(0)->at(0);
-    //remove first row
-    //intersections->erase(intersections->begin());
-    //intersections->at(0)->push_back(outlier);
-
-    //before we sort we need to manually move two of the intersections:
-
-
-    /*outlier = intersections->at(4)->at(0);
-    //remove 5th row
-    auto iter = intersections->begin();
-    advance(iter, 4);
-    intersections->erase(iter);
-    intersections->at(3)->push_back(outlier);*/
-
-
-    /*print();idk what the fuck is going on here
-    //Row 7 needs modification:
-    auto insertion = intersections->begin() + 7;
-    vector<Intersection*>* vec = new vector<Intersection*>;
-    intersections->insert(insertion, vec);
-    cout<<"CHANGED:\n";
-    print();
-    //append elements to vec
-    vector<Intersection*>* append = intersections->at(6);
-    for (int i =0; i < append->size(); i++) {
-        //cout<<append->size();
-    }
-    cout<<append->size();
-    auto first = append->begin() + 9;
-    auto last = append->end();
-    cout<<"hidwa";
-    vec->insert(vec->begin(), first, last);
-    //then remove the elements from row 7
-    cout<<"hidwa";
-    *///intersections->at(7)->erase((append->begin()+9), append->end());
     //sort the arrays by x value of the top left corner:
     for (int i = 0 ; i < intersections->size(); i++) {
         insertionSort(intersections->at(i));
     }
     //finally, colour the corners:
     colourCorners(pixelArray, pitch, bytes);
-    //there will be an empty row when done:
-    auto erase = intersections->end();
-    intersections->erase(erase);
     //TODO change this to a test.
     //verify all are square and have same dims:
     for (int i = 0; i < intersections->size(); i++) {
@@ -364,36 +263,21 @@ void Infrastructure::findClosestXValue(vector<int> &xValues, int *right, int x) 
     }
 }
 
-int Infrastructure::isCorner(int x, int y, uint8_t *pixels, int pitch, int bytes) {
-    int returnVal = Variables::NOT;
+bool Infrastructure::isCorner(int x, int y, uint8_t *pixels, int pitch, int bytes) {
     //check if Intersection
     if (!isGreen(x, y, pixels, pitch, bytes)) {
         //not a corner of any sort.
-        return returnVal;
+        return false;
     }
     
     //check if above is not green
     if (!isGreen(x, (y - 1), pixels, pitch, bytes)) {
         if (!isGreen((x - 1), y, pixels, pitch, bytes)) {
             //top left corner
-            returnVal = Variables::TOPLEFT;
-        }
-        if (!isGreen((x + 1), y, pixels, pitch, bytes)) {
-            //top left corner
-            returnVal = Variables::TOPRIGHT;
+            return true;
         }
     }
-    if (!isGreen(x, (y + 1), pixels, pitch, bytes)) { 
-        if (!isGreen((x - 1), y, pixels, pitch, bytes)) {
-            //bottom left corner
-            returnVal = Variables::BOTTOMLEFT;
-        }
-        if (!isGreen((x + 1), y, pixels, pitch, bytes)) {
-            //bottom right corner
-            returnVal = Variables::BOTTOMRIGHT;
-        }
-    }
-    return returnVal;
+    return false;
 }
 
 bool Infrastructure::isGreen(int x, int y, uint8_t *pixels, int pitch, int bytes) {
