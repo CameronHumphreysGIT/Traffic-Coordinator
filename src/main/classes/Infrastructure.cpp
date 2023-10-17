@@ -55,12 +55,34 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     //once the whole row has been completed, we change the rowNum
     int incompleteNum = 0;
     intersections->push_back(new vector<Intersection*>);
-    for(int y = 0; y < height; y++)  {
+    /*
+        Basically, there are some scenarios that as we scan for the bottom corners of a row of intersections
+        we will end up finding a new topleft corner of an intersection that isn't in the current row.
+        instead of adding this new intersection to the row, we will bookmark it to return when making the next row.
+    */
+    bool temp = false;
+    pair<int, int> bookmark = {0,0};
+    for(int y = 0; y < 400; y++)  {
         for(int x = 0; x < width; x++)  {
             int cornerReturn = isCorner(x, y, pixelArray, pitch, bytes);
             if (cornerReturn != Variables::NOT) {
-                //this means we found a Intersection
-                if (cornerReturn == Variables::TOPLEFT) {
+                if (temp) {
+                    //cout<<"x: "<<x<<"y: "<<y<<" corner "<<cornerReturn<<rightI<<"\n";
+                    //for (int i2 = 0; i2 < (intersections->at(10)->size()); i2++) {
+                        //cout<<"     Intersection "<<i2<<": ";
+                        //intersections->at(10)->at(i2)->print();
+                    //}
+                }
+                if (cornerReturn == Variables::TOPLEFT && bookmark.first == 0 && bookmark.second == 0) {
+                    //if the new intersection is to the left of the leftmost intersection in this row
+                    if (intersections->at(rowNum)->size() > 0 && intersections->at(rowNum)->at(0)->getCorners().at(3).first != 0) {
+                        if (x < intersections->at(rowNum)->at(intersections->at(rowNum)->size() - 1)->getCorners().at(0).first) {
+                            //x < intersections->at(rowNum)->at(0)->getCorners().at(0).first &&
+                            bookmark = {x,y};
+                            cout<<"BOOKMARKED"<<x<<" "<<intersections->at(rowNum)->at(intersections->at(rowNum)->size() - 1)->getCorners().at(0).first;
+                            continue;
+                        }
+                    }
                     //add to the incompleteNum
                     incompleteNum++;
                     //make an intersection and set it's top left corner
@@ -73,9 +95,14 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
                 } else if (cornerReturn == Variables::BOTTOMLEFT) {
                     findClosestXValue(IxValues, &rightI, x);
                 }
-                intersections->at(rowNum)->at(rightI)->setCorner((Variables::Corner)cornerReturn, x, y);
+                if (rightI >= 0) {
+                    if (bookmark.first != 0 && bookmark.second != 0 && cornerReturn == Variables::TOPRIGHT) {
+                        continue;
+                    }
+                    intersections->at(rowNum)->at(rightI)->setCorner((Variables::Corner)cornerReturn, x, y);
+                }
                 //set the rownum after we have set the last corner
-                if (cornerReturn == Variables::BOTTOMRIGHT) {
+                if (cornerReturn == Variables::BOTTOMRIGHT && rightI >= 0) {
                     incompleteNum--;
                     if (incompleteNum == 0) {
                         //we've completed all that is in this row
@@ -85,25 +112,59 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
                         //reset rightI and IxValues
                         rightI = 0;
                         IxValues = {};
+                        //check if we set a bookmark
+                        if (bookmark.first != 0 && bookmark.second != 0) {
+                            cout<<"going to bookmark "<<bookmark.first<<" "<<bookmark.second<<"\n";
+                            print();
+                            //go back to that spot
+                            x = bookmark.first - 1;
+                            y = bookmark.second;
+                            //reset
+                            bookmark = {0,0};
+                            temp = true;
+                        }
                     }
                 }
             }
         }
     }
     //before we sort we need to manually move two of the intersections:
-    Intersection* outlier = intersections->at(0)->at(0);
+    //Intersection* outlier = intersections->at(0)->at(0);
     //remove first row
-    intersections->erase(intersections->begin());
-    intersections->at(0)->push_back(outlier);
+    //intersections->erase(intersections->begin());
+    //intersections->at(0)->push_back(outlier);
 
     //before we sort we need to manually move two of the intersections:
-    outlier = intersections->at(4)->at(0);
+
+
+    /*outlier = intersections->at(4)->at(0);
     //remove 5th row
     auto iter = intersections->begin();
     advance(iter, 4);
     intersections->erase(iter);
-    intersections->at(3)->push_back(outlier);
+    intersections->at(3)->push_back(outlier);*/
 
+
+    /*print();idk what the fuck is going on here
+    //Row 7 needs modification:
+    auto insertion = intersections->begin() + 7;
+    vector<Intersection*>* vec = new vector<Intersection*>;
+    intersections->insert(insertion, vec);
+    cout<<"CHANGED:\n";
+    print();
+    //append elements to vec
+    vector<Intersection*>* append = intersections->at(6);
+    for (int i =0; i < append->size(); i++) {
+        //cout<<append->size();
+    }
+    cout<<append->size();
+    auto first = append->begin() + 9;
+    auto last = append->end();
+    cout<<"hidwa";
+    vec->insert(vec->begin(), first, last);
+    //then remove the elements from row 7
+    cout<<"hidwa";
+    *///intersections->at(7)->erase((append->begin()+9), append->end());
     //sort the arrays by x value of the top left corner:
     for (int i = 0 ; i < intersections->size(); i++) {
         insertionSort(intersections->at(i));
@@ -186,7 +247,6 @@ void Infrastructure::buildRoads() {
 
 //function for finding the closest intersection in terms of x value below the current intersection
 Intersection* Infrastructure::findBelow(int row, int col) {
-    cout<<"finding below";
     Intersection* me = intersections->at(row)->at(col);
     for (int i = row+1; i < intersections->size(); i++) {
         int n = intersections->at(i)->size();
@@ -294,8 +354,14 @@ void Infrastructure::findClosestXValue(vector<int> &xValues, int *right, int x) 
             min = abs(x - xValues.at(i));
         }
     }
-    xValues.at(index) = 0;
-    *right = index;
+    //make sure xvalue is really close to the desired x
+    if (abs(xValues.at(index) - x) > 1) {
+        //error value
+        *right = -1;
+    }else {
+        xValues.at(index) = 0;
+        *right = index;
+    }
 }
 
 int Infrastructure::isCorner(int x, int y, uint8_t *pixels, int pitch, int bytes) {
