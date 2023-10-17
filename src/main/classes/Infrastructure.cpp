@@ -34,7 +34,6 @@ Intersection* Infrastructure::getI(int row, int column) {
 }
 
 void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
-
     //surface must be locked for modification
     SDL_LockSurface(screenSurface);
     //The for loops require a const paramater for their bounds.
@@ -73,30 +72,11 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     }
     //finally, colour the corners:
     colourCorners(pixelArray, pitch, bytes);
-    //TODO change this to a test.
-    //verify all are square and have same dims:
-    for (int i = 0; i < intersections->size(); i++) {
-        for (int i2 = 0; i2 < (intersections->at(i)->size()); i2++) {
-            //check square
-            vector<pair<int, int>> corners = intersections->at(i)->at(i2)->getCorners();
-            if (corners.at(0).first != corners.at(2).first || corners.at(0).second != corners.at(1).second || corners.at(1).first != corners.at(3).first || corners.at(2).second != corners.at(3).second) {
-                cout<<"not a square row: "<<i<<" col: "<<i2;
-            }
-            if (corners.at(1).first - corners.at(0).first == (Variables::INTERSECTION_DIMS + 1)) {
-                //too wide by 1.
-                cout<<"too wide by 1 row: "<<i<<" col: "<<i2;
-            }
-            if (corners.at(2).second - corners.at(0).second == (Variables::INTERSECTION_DIMS + 1)) {
-                //too tall by 1.
-                cout<<"too tall by 1 row: "<<i<<" col: "<<i2;
-            }
-        }
-    }
     buildRoads();
     SDL_UnlockSurface(screenSurface);
 }
 
-vector<pair<float, float>> Infrastructure::getSampled() {
+vector<vector<vector<pair<float, float>>>> Infrastructure::getSampled() {
     return sampledRoads;
 }
 
@@ -124,28 +104,52 @@ void Infrastructure::buildRoads() {
                 }
             }
             if (i2 < (intersections->at(i)->size()) - 1) {
+
                 //has space for a road to the right
                 //intersection to the right
                 Intersection* right = intersections->at(i)->at(i2 + 1);
                 //all intersections are 12x12 squares, we want the roads to go in three pixels away from the corners.
                 //incoming road.
                 Road* right2Me = new Road();
-                right2Me->setPath({(right->getCorners().at(0).first - 1),(right->getCorners().at(0).second + 3)}, {(me->getCorners().at(1).first + 1),(me->getCorners().at(1).second + 3)});
-                //the path from the node on my right to me is the path on my right side.
-                me->setRight(right2Me);
                 //outgoing
                 Road* me2Right = new Road();
-                me2Right->setPath({(me->getCorners().at(3).first + 1),(me->getCorners().at(3).second - 3)}, {(right->getCorners().at(2).first - 1),(right->getCorners().at(2).second - 3)});
+                vector<pair<int, int>> myCorners = me->getCorners();
+                vector<pair<int, int>> rightCorners = right->getCorners();
+                //special cases
+                if (i == 0 && i2 == 0) {
+                    //this road is curved
+                    //incoming road.
+                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(rightCorners.at(0).first - 30), (rightCorners.at(0).second + 3)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)}, {(myCorners.at(1).first + 30),(myCorners.at(1).second + 3)});
+                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(myCorners.at(3).first + 30),(myCorners.at(3).second - 3)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)}, {(rightCorners.at(2).first - 30),(rightCorners.at(2).second - 3)});
+                }else {
+                    //straightline
+                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)});
+                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)});
+                }
+                //the path from the node on my right to me is the path on my right side.
+                me->setRight(right2Me);
+                //path on the right nodes left is the path from me to them
                 right->setLeft(me2Right);
             }
-            vector<pair<float, float>> mySampled = me->getSampled();
-            sampledRoads.insert(sampledRoads.end(), mySampled.begin(), mySampled.end());
+            vector<vector<pair<float, float>>> mySampled = me->getSampled();
+            sampledRoads.push_back(mySampled);
         }
     }
 }
 
 //function for finding the closest intersection in terms of x value below the current intersection
 Intersection* Infrastructure::findBelow(int row, int col) {
+    //some exceptional cases for this func:
+    if (row == 0 && col == 0) {
+        return intersections->at(row + 5)->at(col);
+    }
+    if (row == 2 && col == 0) {
+        return intersections->at(row + 1)->at(col);
+    }
+    //all the intersections that don't have an intersection below
+    if ((row == 0 && col == 1) || (row == 5 && col == 2) || (row == 11 && col == 2)) {
+        return NULL;
+    }
     Intersection* me = intersections->at(row)->at(col);
     for (int i = row+1; i < intersections->size(); i++) {
         int n = intersections->at(i)->size();

@@ -18,7 +18,7 @@ class Intersection : public Rectangle {
         void setRight(Road*);
         void setBottom(Road*);
         void setLeft(Road*);
-        vector<pair<float, float>> getSampled();
+        vector<vector<pair<float, float>>> getSampled();
         void print();
 };
 

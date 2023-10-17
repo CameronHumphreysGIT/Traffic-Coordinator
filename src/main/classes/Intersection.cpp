@@ -36,16 +36,9 @@ void Intersection::setLeft(Road* r) {
     left = r;
 }
 
-vector<pair<float, float>> Intersection::getSampled() {
-    vector<pair<float, float>> topLine = top->getSampled();
-    vector<pair<float, float>> rightLine = right->getSampled();
-    vector<pair<float, float>> bottomLine = bottom->getSampled();
-    vector<pair<float, float>> leftLine = left->getSampled();
-    //one big vector for drawing lines
-    topLine.insert(topLine.end(), rightLine.begin(), rightLine.end());
-    topLine.insert(topLine.end(), bottomLine.begin(), bottomLine.end());
-    topLine.insert(topLine.end(), leftLine.begin(), leftLine.end());
-    return topLine;
+vector<vector<pair<float, float>>> Intersection::getSampled() {
+    vector<vector<pair<float, float>>> vec = {top->getSampled(), right->getSampled(), bottom->getSampled(), left->getSampled()};
+    return vec;
 }
 
 void Intersection::print() {
