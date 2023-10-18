@@ -52,4 +52,48 @@ struct BezierCurve {
     }
 };
 
+//Vector 2 for car physics
+struct Vector2 {
+
+    float x;
+    float y;
+
+    Vector2(float _x = 0.0f, float _y = 0.0f)
+        : x(_x), y(_y) {}
+
+    //--------------------------------------------------------------------------------------------
+    //Calculates the square of the magnitude (preferably used instead of Magnitude if possible)   
+    //--------------------------------------------------------------------------------------------
+    float MagnitudeSqr() {
+
+        return x*x + y*y;
+    }
+    //-------------------------------------------
+    //Calculates the magnitude of the vector     
+    //-------------------------------------------
+    float Magnitude() {
+
+        return (float)sqrt(x*x + y*y);
+    }
+
+    //----------------------------------------------------------------------------------------
+    //Returns a directional Vector2 with the same direction as the Vector2 but of length 1    
+    // (Does not change the x and y values of the original vector)                                       
+    //----------------------------------------------------------------------------------------
+    Vector2 Normalized() {
+
+        float mag = Magnitude();
+
+        return Vector2(x / mag, y / mag);
+    }
+};
+
+//Vector overrides:
+inline Vector2 operator -(const Vector2& lhs, const Vector2& rhs) {
+    return {lhs.x-rhs.x, lhs.y-rhs.y};
+}
+inline Vector2 operator *(const Vector2& lhs, const float& rhs) {
+    return {lhs.x*rhs, lhs.y*rhs};
+}
+
 #endif

@@ -13,15 +13,9 @@ int main() {
     system->init();
     system->loadMedia(true);
     system->buildInfrastructure();
-    SDL_Event e;
-    bool quit = false;
-    while( quit == false )  {
-        //Render the screen;
-        system->testdraw();
-        while( SDL_PollEvent( &e ) )    {
-            if( e.type == SDL_QUIT ) quit = true;
-        }
-    }
+
+    system->run();
+
     system->close();
     //Delete all objects;
     delete system;

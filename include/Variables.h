@@ -15,13 +15,22 @@ class Variables {
         static inline const char* BACKGROUND_PATH = "./images/Map.svg";
         static inline std::vector<int> INTERSECTIONCOLOUR = {0,255,0};
         static inline std::vector<int> ROADCOLOUR = {0,0,255};
-        static inline float DEFAULT_SPEED = 0.001;
+        //default speed of carse in pixels/second
+        static inline float DEFAULT_SPEED = 100.0f;
         //defining the square width and height of intersections.
         static inline int INTERSECTION_DIMS = 12;
         //maximum distance in x value between an intersection and the intersection below it.
         static inline int MAX_XDIST = 20;
         //how many samples in a curved path
         static inline int CURVED_SAMPLES = 10;
+        //default car width
+        static inline int CAR_WIDTH = 4;
+        //default car height
+        static inline int CAR_HEIGHT = 6;
+        //path for image for car texture
+        static inline const char* CAR_PATH = "./images/Car.png";
+        //tolerance for how far from a waypoint before we go to the next one.
+        static inline int WAYPOINT_TOL = 4;
 };
 
 #endif

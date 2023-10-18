@@ -16,7 +16,7 @@ Scene::~Scene() {
     delete boundary;
 }
 
-void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std::vector<std::pair<float, float>>>> intersections) {
+void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std::vector<std::pair<float, float>>>> intersections, SDL_Texture* carTexture) {
     //this always needs to be done at the start, otherwise we will end up drawing over everything.
     SDL_RenderCopy(renderer, backgroundTexture, NULL, boundary);
     
@@ -43,9 +43,10 @@ void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std:
             }
         }
     }
-    //Now draw rectangles:
+
+    //Now draw Cars:
     for (int i = 0; i < rectangles.size(); i++) {
-        SDL_RenderDrawRect(renderer, rectangles.at(i));
+        SDL_RenderCopy(renderer, carTexture, NULL, rectangles.at(i));
     }
 
     //present to the window

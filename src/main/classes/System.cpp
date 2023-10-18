@@ -15,7 +15,10 @@ System::System() {
     renderer = NULL;
     //screentexture
     backgroundTexture = NULL;
+    //texture for Cars
+    carTexture = NULL;
     infrastructure = new Infrastructure();
+    cars = new vector<Car*>;
 }
 System::~System() {
     delete infrastructure;
@@ -47,17 +50,20 @@ bool System::init()   {
             screenSurface = SDL_GetWindowSurface( window );
         }
     }
+    time = SDL_GetTicks();
     return success;
 }
 
 //loads media and sets the backgroundTexture
 bool System::loadMedia(bool svgFlag)  {
     SDL_Surface* background;
+    //used temporarily to read from a file
+    SDL_RWops* io;
     //Loading success flag
     bool success = true;
     if (svgFlag) {
         //Load splash image
-        SDL_RWops* io = SDL_RWFromFile(Variables::BACKGROUND_PATH, "r+");
+        io = SDL_RWFromFile(Variables::BACKGROUND_PATH, "r+");
         background = IMG_LoadSVG_RW(io);
         if( background == NULL )   {
             cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
@@ -68,6 +74,10 @@ bool System::loadMedia(bool svgFlag)  {
     SDL_BlitSurface( background, NULL, screenSurface, NULL );
     //we now turn that surface into a texture
     backgroundTexture = SDL_CreateTextureFromSurface(renderer, screenSurface);
+    //load in the Car texture:
+    io = SDL_RWFromFile(Variables::CAR_PATH, "r");
+    SDL_Surface* car = IMG_LoadPNG_RW(io);
+    carTexture = SDL_CreateTextureFromSurface(renderer, car);
     //we can now create the scene:
     scene = new Scene(renderer, backgroundTexture);
     return success;
@@ -78,13 +88,41 @@ void System::buildInfrastructure() {
     //this line is for debugging the infrastructure
     SDL_UpdateWindowSurface(window);
     infrastructure->print();
+    //update the time
+    time = SDL_GetTicks();
+    //TODO temp, move the cars?
+    //Car wants time in seconds
+    cars->push_back(new Car({0,0}, (time * 0.001f)));
+    cars->at(0)->addPath(infrastructure->getSampled().at(0).at(1));
 }
 
 void System::testdraw() {
     vector<SDL_Rect*> rects;
-    
+    for (int i = 0; i < cars->size(); i++) {
+        //update the cars
+        time = SDL_GetTicks();
+        cars->at(i)->update(time * 0.001f);
+        rects.push_back(cars->at(i)->getChassis());
+    }
     vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
-    scene->draw(rects, sampled);
+    scene->draw(rects, sampled, carTexture);
+}
+
+void System::run() {
+    SDL_Event e;
+    bool quit = false;
+    Uint32 startTime = time;
+    while(quit == false)  {
+        //check for quit
+        while(SDL_PollEvent(&e) != 0)    {
+           if(e.type == SDL_QUIT) quit = true;
+        }
+        time = SDL_GetTicks();
+        if ((time - startTime) >= (17)) {
+            testdraw();
+            startTime = time;
+        }
+    }
 }
 
 void System::close()  {

@@ -1,20 +1,31 @@
 #ifndef CAR_H
 #define CAR_H
 #include <utility>
+#include <vector>
 #include <SDL2/SDL.h>
 
 class Car {
     private:
-        std::pair<int, int> direction;
-        float speed;
+        std::vector<std::vector<std::pair<float, float>>>* paths;
+        //current path from the paths
+        int currentPath;
+        //each curved path is made up of waypoints, this is the current waypoint.
+        int currentWaypoint;
         SDL_Rect chassis;
-        //the time we last moved
-        Uint64 prevMove;
+        enum STATE { rest, moving};
+        STATE state;
+        //time of last Update in seconds
+        float lastUpdate;
+        //speed
+        float speed;
     public:
-        Car(SDL_Rect, Uint64);
-        void updatePos(Uint64 );
-        SDL_Rect getChassis();
-        void setDirection(std::pair<int, int>);
+        Car(std::pair<float, float> , float);
+        ~Car();
+        SDL_Rect* getChassis();
+        void addPath(std::vector<std::pair<float, float>>);
+        void update(float );
+        void updatePos(float );
+
 };
 
 #endif
