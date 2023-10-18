@@ -69,6 +69,13 @@ bool System::loadMedia(bool svgFlag)  {
             cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
             success = false;
         }
+    }else {
+        io = SDL_RWFromFile(Variables::MAP_PATH, "r");
+        background = IMG_LoadPNG_RW(io);
+        if( background == NULL )   {
+            cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
+            success = false;
+        }
     }
     //blitting the surface sets the surface.
     SDL_BlitSurface( background, NULL, screenSurface, NULL );
@@ -94,6 +101,9 @@ void System::buildInfrastructure() {
     //Car wants time in seconds
     cars->push_back(new Car({0,0}, (time * 0.001f)));
     cars->at(0)->addPath(infrastructure->getSampled().at(0).at(1));
+    //redraw background
+    loadMedia(false);
+    scene->setBackground(backgroundTexture);
 }
 
 void System::testdraw() {

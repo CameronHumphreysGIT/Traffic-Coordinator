@@ -16,12 +16,16 @@ Scene::~Scene() {
     delete boundary;
 }
 
+void Scene::setBackground(SDL_Texture* background) {
+    backgroundTexture = background;
+}
+
 void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std::vector<std::pair<float, float>>>> intersections, SDL_Texture* carTexture) {
     //this always needs to be done at the start, otherwise we will end up drawing over everything.
     SDL_RenderCopy(renderer, backgroundTexture, NULL, boundary);
     
     //drawstuff
-    SDL_SetRenderDrawColor(renderer, 200,120,200, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 0,0,0, SDL_ALPHA_OPAQUE);
     //intersections are the set of the lines going into each intersection
     for (int i = 0; i < intersections.size(); i++) {
         //each intersection has 4 lines
@@ -43,7 +47,7 @@ void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std:
             }
         }
     }
-    
+
 
     //Now draw Cars:
     for (int i = 0; i < rectangles.size(); i++) {

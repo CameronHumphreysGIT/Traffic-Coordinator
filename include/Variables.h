@@ -13,6 +13,7 @@ class Variables {
         static inline int BACKGROUND_HEIGHT = 1033;
         //background is the satellite image used for the map
         static inline const char* BACKGROUND_PATH = "./images/Map.svg";
+        static inline const char* MAP_PATH = "./images/Map.png";
         static inline std::vector<int> INTERSECTIONCOLOUR = {0,255,0};
         static inline std::vector<int> ROADCOLOUR = {0,0,255};
         //default speed of carse in pixels/second
