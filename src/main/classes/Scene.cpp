@@ -43,6 +43,7 @@ void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std:
             }
         }
     }
+    
 
     //Now draw Cars:
     for (int i = 0; i < rectangles.size(); i++) {

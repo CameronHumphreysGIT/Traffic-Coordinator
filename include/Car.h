@@ -18,6 +18,8 @@ class Car {
         float lastUpdate;
         //speed
         float speed;
+        //These variables will accumulate the sub pixel updates to position.
+        std::pair<float, float> sums;
     public:
         Car(std::pair<float, float> , float);
         ~Car();

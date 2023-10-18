@@ -16,6 +16,7 @@ Car::Car(pair<float, float> start, float time) {
     state = rest;
     lastUpdate = time;
     speed = Variables::DEFAULT_SPEED;
+    sums = {0,0};
 }
 
 Car::~Car() {
@@ -70,9 +71,14 @@ void Car::updatePos(float time) {
         direction = direction.Normalized();
         //deltatime * speed will produce the distance in pixels traveled in the deltatime
         direction = direction * (deltaTime * speed);
+        //chassis only holds int positions, so we accumulate the sub pixel position and change as we move.
+        //this also allows for a higher frame rate or lower car speed.
+        sums = {(sums.first + direction.x), (sums.second + direction.y)};
         //change the pos
-        chassis.x += direction.x;
-        chassis.y += direction.y;
+        chassis.x += sums.first;
+        chassis.y += sums.second;
+        sums.first -= (int)sums.first;
+        sums.second -= (int)sums.second;
     }else {
         //we've reached the last waypoint of this path
         currentPath++;
