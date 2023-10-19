@@ -30,8 +30,11 @@ class Variables {
         static inline int CAR_HEIGHT = 6;
         //path for image for car texture
         static inline const char* CAR_PATH = "./images/Car.png";
-        //tolerance for how far from a waypoint before we go to the next one.
+        //tolerance for how far (pixels) from a waypoint before we go to the next one.
         static inline int WAYPOINT_TOL = 4;
+        //the max frame rate of the program
+        static inline int FRAME_RATE = 60;
+        enum Side { TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3, END = 4};
 };
 
 #endif

@@ -128,7 +128,7 @@ void System::run() {
            if(e.type == SDL_QUIT) quit = true;
         }
         time = SDL_GetTicks();
-        if ((time - startTime) >= (17)) {
+        if ((time - startTime) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {
             testdraw();
             startTime = time;
         }

@@ -11,6 +11,8 @@ class Intersection : public Rectangle {
         Road* right;
         Road* bottom;
         Road* left;
+        //internals is a 2d array of sides
+        Road* internals[4][4];
     public:
         Intersection();
         ~Intersection();
@@ -18,7 +20,9 @@ class Intersection : public Rectangle {
         void setRight(Road*);
         void setBottom(Road*);
         void setLeft(Road*);
+        void setInternal(Variables::Side);
         vector<vector<pair<float, float>>> getSampled();
+        vector<vector<pair<float, float>>> getSampledInternals(Variables::Side);
         void print();
 };
 
