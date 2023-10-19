@@ -119,8 +119,15 @@ void Infrastructure::buildRoads() {
                 if (i == 0 && i2 == 0) {
                     //this road is curved
                     //incoming road.
-                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(rightCorners.at(0).first - 30), (rightCorners.at(0).second + 3)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)}, {(myCorners.at(1).first + 30),(myCorners.at(1).second + 3)});
-                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(myCorners.at(3).first + 30),(myCorners.at(3).second - 3)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)}, {(rightCorners.at(2).first - 30),(rightCorners.at(2).second - 3)});
+                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(rightCorners.at(0).first - 80), (rightCorners.at(0).second - 10)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)}, {(myCorners.at(1).first + 60),(myCorners.at(1).second + 3)});
+                    //outgoing
+                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(myCorners.at(3).first + 60),(myCorners.at(3).second + 3)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)}, {(rightCorners.at(2).first - 80),(rightCorners.at(2).second - 10)});
+                }else if (i == 0 && i2 == 1) {
+                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(rightCorners.at(0).first - 80),(rightCorners.at(0).second - 3)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)}, {(myCorners.at(1).first + 50),(myCorners.at(1).second + 50)});
+                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(myCorners.at(3).first + 50),(myCorners.at(3).second + 50)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)}, {(rightCorners.at(2).first - 80),(rightCorners.at(2).second - 3)});
+                }else if (i == 3 && i2 == 0) {
+                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(rightCorners.at(0).first - 80),(rightCorners.at(0).second + 2)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)}, {(myCorners.at(1).first + 20),(myCorners.at(1).second - 10)});
+                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(myCorners.at(3).first + 30),(myCorners.at(3).second - 20)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)}, {(rightCorners.at(2).first - 80),(rightCorners.at(2).second - 3)});
                 }else {
                     //straightline
                     right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)});
