@@ -17,7 +17,7 @@ class Variables {
         static inline std::vector<int> INTERSECTIONCOLOUR = {0,255,0};
         static inline std::vector<int> ROADCOLOUR = {0,0,255};
         //default speed of carse in pixels/second
-        static inline float DEFAULT_SPEED = 50.0f;
+        static inline float DEFAULT_SPEED = 25.0f;
         //defining the square width and height of intersections.
         static inline int INTERSECTION_DIMS = 12;
         //maximum distance in x value between an intersection and the intersection below it.

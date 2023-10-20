@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <BezierPath.h>
+#include <Router.h>
 
 using namespace std;
 
@@ -100,7 +101,19 @@ void System::buildInfrastructure() {
     //TODO temp, move the cars?
     //Car wants time in seconds
     cars->push_back(new Car({0,0}, (time * 0.001f)));
-    cars->at(0)->addPath(infrastructure->getSampled().at(0).at(1));
+    Intersection* i1 = infrastructure->getI(0,0);
+    Intersection* i2 = infrastructure->getI(0,1);
+    Intersection* i3 = infrastructure->getI(0,2);
+    Intersection* i4 = infrastructure->getI(1,0);
+    Intersection* i5 = infrastructure->getI(1,1);
+    Router r;
+    vector<Intersection*>* vec = new vector<Intersection*>();
+    vec->push_back(i1);
+    vec->push_back(i2);
+    vec->push_back(i3);
+    vec->push_back(i4);
+    vec->push_back(i5);
+    cout<<r.setRoute(cars->at(0), vec);
     //redraw background
     loadMedia(false);
     scene->setBackground(backgroundTexture);

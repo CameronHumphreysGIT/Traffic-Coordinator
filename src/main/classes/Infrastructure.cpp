@@ -69,6 +69,12 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     //sort the arrays by x value of the top left corner:
     for (int i = 0 ; i < intersections->size(); i++) {
         insertionSort(intersections->at(i));
+        //now that they are sorted, we should set the ids:
+        for (int i2 = 0; i2 < intersections->at(i)->size(); i2++) {
+            //id is a pair representing the row and column of this intersection
+            pair<int, int> id = {i,i2};
+            intersections->at(i)->at(i2)->setId(id);
+        }
     }
     //finally, colour the corners:
     colourCorners(pixelArray, pitch, bytes);
@@ -77,6 +83,7 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
 }
 
 vector<vector<vector<pair<float, float>>>> Infrastructure::getSampled() {
+    sampledRoads.push_back(intersections->at(0)->at(2)->getSampledInternals(Variables::LEFT));
     return sampledRoads;
 }
 
@@ -95,12 +102,12 @@ void Infrastructure::buildRoads() {
                     //incoming road from bottom.
                     Road* bottom2Me = new Road();
                     bottom2Me->setPath({(bottom->getCorners().at(1).first - 3),(bottom->getCorners().at(1).second - 1)}, {(me->getCorners().at(3).first - 3),(me->getCorners().at(3).second + 1)});
-                    //the path from the node on my bottom to me is the path on my bottom side.
-                    me->setBottom(bottom2Me);
+                    //the path from the node on my bottom to me is the path on its bottom side.
+                    bottom->setTop(bottom2Me, me->getId());
                     //outgoing
                     Road* me2Bottom = new Road();
                     me2Bottom->setPath({(me->getCorners().at(2).first + 3),(me->getCorners().at(2).second + 1)}, {(bottom->getCorners().at(0).first + 3),(bottom->getCorners().at(0).second - 1)});
-                    bottom->setTop(me2Bottom);
+                    me->setBottom(me2Bottom, bottom->getId());
                 }
             }
             if (i2 < (intersections->at(i)->size()) - 1) {
@@ -133,10 +140,10 @@ void Infrastructure::buildRoads() {
                     right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)});
                     me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)});
                 }
-                //the path from the node on my right to me is the path on my right side.
-                me->setRight(right2Me);
-                //path on the right nodes left is the path from me to them
-                right->setLeft(me2Right);
+                //the path from the node on my right to me is the path on its left side.
+                right->setLeft(right2Me, me->getId());
+                //path on my right is the path from me to the node on my right
+                me->setRight(me2Right, right->getId());
             }
             vector<vector<pair<float, float>>> mySampled = me->getSampled();
             sampledRoads.push_back(mySampled);

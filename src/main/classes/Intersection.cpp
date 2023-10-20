@@ -31,22 +31,30 @@ Intersection::~Intersection() {
     }
 }
 
-void Intersection::setTop(Road* r) {
+void Intersection::setTop(Road* r, pair<int,int> i) {
+    //save id of neigbor
+    neighbors[Variables::TOP] = i;
     top = r;
     setInternal(Variables::TOP);
 }
 
-void Intersection::setRight(Road* r) {
+void Intersection::setRight(Road* r, pair<int,int> i) {
+    //save id of neigbor
+    neighbors[Variables::RIGHT] = i;
     right = r;
     setInternal(Variables::RIGHT);
 }
 
-void Intersection::setBottom(Road* r) {
+void Intersection::setBottom(Road* r, pair<int,int> i) {
+    //save id of neigbor
+    neighbors[Variables::BOTTOM] = i;
     bottom = r;
     setInternal(Variables::BOTTOM);
 }
 
-void Intersection::setLeft(Road* r) {
+void Intersection::setLeft(Road* r, pair<int,int> i) {
+    //save id of neigbor
+    neighbors[Variables::LEFT] = i;
     left = r;
     setInternal(Variables::LEFT);
 }
@@ -69,23 +77,23 @@ void Intersection::setInternal(Variables::Side side) {
             topPoint = this->topLeft;
             topPoint.first += (Variables::INTERSECTION_DIMS / 4);
             internals[side][Variables::RIGHT]->setPath(topPoint,{topPoint.first, (topPoint.second + (Variables::INTERSECTION_DIMS / 2))}, rightPoint, {(rightPoint.first - (Variables::INTERSECTION_DIMS / 2)), rightPoint.second});
-            internals[side][Variables::BOTTOM]->setPath(topPoint,topPoint,bottomPoint, bottomPoint);
-            internals[side][Variables::LEFT]->setPath(topPoint,topPoint,leftPoint,leftPoint);
+            internals[side][Variables::BOTTOM]->setPath(topPoint,bottomPoint);
+            internals[side][Variables::LEFT]->setPath(topPoint,leftPoint);
             break;
         case Variables::RIGHT:
             //redefine rightpoint to the insert point
             rightPoint = this->topRight;
             rightPoint.second += (Variables::INTERSECTION_DIMS / 4);
-            internals[side][Variables::TOP]->setPath(rightPoint,rightPoint,topPoint,topPoint);
+            internals[side][Variables::TOP]->setPath(rightPoint,topPoint);
             internals[side][Variables::BOTTOM]->setPath(rightPoint,{(rightPoint.first - (Variables::INTERSECTION_DIMS / 2)), rightPoint.second}, bottomPoint, {bottomPoint.first, (bottomPoint.second - (Variables::INTERSECTION_DIMS / 2))});
-            internals[side][Variables::LEFT]->setPath(rightPoint,rightPoint,leftPoint,leftPoint);
+            internals[side][Variables::LEFT]->setPath(rightPoint,leftPoint);
             break;
         case Variables::BOTTOM:
             //redefine bottompoint to the insert point
             bottomPoint = this->bottomRight;
             bottomPoint.first -= (Variables::INTERSECTION_DIMS / 4);
-            internals[side][Variables::TOP]->setPath(bottomPoint,bottomPoint,topPoint,topPoint);
-            internals[side][Variables::RIGHT]->setPath(bottomPoint,bottomPoint,rightPoint,rightPoint);
+            internals[side][Variables::TOP]->setPath(bottomPoint,topPoint);
+            internals[side][Variables::RIGHT]->setPath(bottomPoint,rightPoint);
             internals[side][Variables::LEFT]->setPath(bottomPoint,{bottomPoint.first, (bottomPoint.second - (Variables::INTERSECTION_DIMS / 2))}, leftPoint, {(leftPoint.first + (Variables::INTERSECTION_DIMS / 2)), leftPoint.second});
             break;
         case Variables::LEFT:
@@ -93,11 +101,22 @@ void Intersection::setInternal(Variables::Side side) {
             leftPoint = this->bottomLeft;
             leftPoint.second -= (Variables::INTERSECTION_DIMS / 4);
             internals[side][Variables::TOP]->setPath(leftPoint,{(leftPoint.first + (Variables::INTERSECTION_DIMS / 2)), leftPoint.second}, topPoint, {topPoint.first, (topPoint.second + (Variables::INTERSECTION_DIMS / 2))});
-            internals[side][Variables::RIGHT]->setPath(leftPoint,leftPoint,rightPoint,rightPoint);
-            internals[side][Variables::BOTTOM]->setPath(leftPoint,leftPoint,bottomPoint,bottomPoint);
+            internals[side][Variables::RIGHT]->setPath(leftPoint,rightPoint);
+            internals[side][Variables::BOTTOM]->setPath(leftPoint,bottomPoint);
             break;
     }
+}
 
+void Intersection::setId(pair<int,int> i) {
+    id = i;
+}
+
+pair<int,int> Intersection::getId() {
+    return id;
+}
+
+pair<int,int> Intersection::getNeighbor(Variables::Side side) {
+    return neighbors[side];
 }
 
 vector<vector<pair<float, float>>> Intersection::getSampled() {

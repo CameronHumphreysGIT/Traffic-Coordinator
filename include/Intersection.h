@@ -6,7 +6,9 @@
 
 class Intersection : public Rectangle {
     private:
-        int id;
+        pair<int,int> id;
+        //error values to indicate the selected id hasn't been added
+        pair<int,int> neighbors[4] = {{-1,-1}, {-1,-1}, {-1,-1}, {-1,-1}};
         Road* top;
         Road* right;
         Road* bottom;
@@ -16,11 +18,14 @@ class Intersection : public Rectangle {
     public:
         Intersection();
         ~Intersection();
-        void setTop(Road*);
-        void setRight(Road*);
-        void setBottom(Road*);
-        void setLeft(Road*);
+        void setTop(Road*, pair<int,int>);
+        void setRight(Road*, pair<int,int>);
+        void setBottom(Road*, pair<int,int>);
+        void setLeft(Road*, pair<int,int>);
         void setInternal(Variables::Side);
+        void setId(pair<int,int> );
+        pair<int,int> getId();
+        pair<int,int> getNeighbor(Variables::Side);
         vector<vector<pair<float, float>>> getSampled();
         vector<vector<pair<float, float>>> getSampledInternals(Variables::Side);
         void print();
