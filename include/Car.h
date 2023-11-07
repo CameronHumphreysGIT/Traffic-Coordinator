@@ -4,6 +4,8 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
+#include <MathHelper.h>
+
 class Car {
     private:
         std::vector<std::vector<std::pair<float, float>>>* paths;
@@ -27,6 +29,7 @@ class Car {
         void addPath(std::vector<std::pair<float, float>>);
         void update(float );
         void updatePos(float );
+        void translate(std::pair<float, float> , Vector2, float);
 
 };
 
