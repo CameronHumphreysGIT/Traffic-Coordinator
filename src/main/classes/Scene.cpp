@@ -20,7 +20,7 @@ void Scene::setBackground(SDL_Texture* background) {
     backgroundTexture = background;
 }
 
-void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std::vector<std::pair<float, float>>>> intersections, SDL_Texture* carTexture) {
+void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std::vector<std::pair<float, float>>>> intersections, SDL_Texture* carTexture, std::vector<float*> rotations) {
     //this always needs to be done at the start, otherwise we will end up drawing over everything.
     SDL_RenderCopy(renderer, backgroundTexture, NULL, boundary);
     
@@ -51,7 +51,10 @@ void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std:
 
     //Now draw Cars:
     for (int i = 0; i < rectangles.size(); i++) {
-        SDL_RenderCopy(renderer, carTexture, NULL, rectangles.at(i));
+        //SDL_RenderCopy(renderer, carTexture, NULL, rectangles.at(i));
+        //need to use renderCopyEx to rotate the car.
+        SDL_RendererFlip flip = SDL_FLIP_NONE;
+        SDL_RenderCopyEx(renderer, carTexture, NULL, rectangles.at(i), (*rotations.at(i)), NULL, flip);
     }
 
     //present to the window

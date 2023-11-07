@@ -35,6 +35,8 @@ class Variables {
         //the max frame rate of the program
         static inline int FRAME_RATE = 60;
         enum Side { TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3, END = 4};
+        //Expression used for the Car to rotate
+        static inline float RAD_TO_DEG = (180.0f/3.14159265);
 };
 
 #endif

@@ -121,14 +121,16 @@ void System::buildInfrastructure() {
 
 void System::testdraw() {
     vector<SDL_Rect*> rects;
+    vector<float*> rotations;
     for (int i = 0; i < cars->size(); i++) {
         //update the cars
         time = SDL_GetTicks();
         cars->at(i)->update(time * 0.001f);
         rects.push_back(cars->at(i)->getChassis());
+        rotations.push_back(cars->at(i)->getRotation());
     }
     vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
-    scene->draw(rects, sampled, carTexture);
+    scene->draw(rects, sampled, carTexture, rotations);
 }
 
 void System::run() {

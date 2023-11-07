@@ -17,6 +17,7 @@ Car::Car(pair<float, float> start, float time) {
     lastUpdate = time;
     speed = Variables::DEFAULT_SPEED;
     sums = {0,0};
+    rotation = 0;
 }
 
 Car::~Car() {
@@ -31,6 +32,10 @@ Car::~Car() {
 
 SDL_Rect* Car::getChassis() {
     return &chassis;
+}
+
+float* Car::getRotation() {
+    return &rotation;
 }
 
 void Car::addPath(vector<pair<float, float>> path) {
@@ -68,7 +73,9 @@ void Car::updatePos(float time) {
         //change direction:
         dir = paths->at(currentPath).at(currentWaypoint) - oldPos;
         //use a function since we need to also change rotation, and this shouldn't be too bulky
+        direction = {dir.first, dir.second};
         translate(dir, direction, deltaTime);
+        rotate(direction);
     }else {
         //we've reached the last waypoint of this path
         currentPath++;
@@ -82,7 +89,6 @@ void Car::updatePos(float time) {
 
 void Car::translate(pair<float, float> dir, Vector2 direction, float deltaTime) {
     if (dir.first != 0 || dir.second != 0) {
-        direction = {dir.first, dir.second};
         //normalized vectors describe the direction in terms of a unit vector
         direction = direction.Normalized();
         //deltatime * speed will produce the distance in pixels traveled in the deltatime
@@ -105,5 +111,20 @@ void Car::translate(pair<float, float> dir, Vector2 direction, float deltaTime) 
         }
         sums.first -= (int)sums.first;
         sums.second -= (int)sums.second;
+    }
+}
+
+void Car::rotate(Vector2 direction) {
+    //we can do this since the direction is a vector
+    rotation = (atan2(direction.y, direction.x) * Variables::RAD_TO_DEG) + 90.0f;
+
+    //Wraps the angle between 0 and 360 degrees, addition and subtraction is sed to avoid snapping
+    //Updated to deal with degrees higher than 360 and -360
+    if (rotation > 360.0f) {
+        int mul = rotation / 360;
+        rotation -= 360.0f * mul;
+    }else if (rotation < 0.0f) {
+        int mul = (rotation / 360) - 1;
+        rotation -= 360.0f * mul;
     }
 }

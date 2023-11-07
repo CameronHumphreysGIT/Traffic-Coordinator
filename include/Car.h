@@ -22,14 +22,18 @@ class Car {
         float speed;
         //These variables will accumulate the sub pixel updates to position.
         std::pair<float, float> sums;
+        //keeps track of the rotation of the car in degrees
+        float rotation;
     public:
         Car(std::pair<float, float> , float);
         ~Car();
         SDL_Rect* getChassis();
+        float* getRotation();
         void addPath(std::vector<std::pair<float, float>>);
         void update(float );
         void updatePos(float );
-        void translate(std::pair<float, float> , Vector2, float);
+        void translate(std::pair<float, float> , Vector2 , float );
+        void rotate(Vector2 );
 
 };
 
