@@ -5,6 +5,7 @@
 #include <Scene.h>
 #include <Infrastructure.h>
 #include <Car.h>
+#include <CarHandler.h>
 
 class System {
     private:
@@ -14,7 +15,7 @@ class System {
         SDL_Texture* backgroundTexture;
         SDL_Texture* carTexture;
         Infrastructure* infrastructure;
-        std::vector<Car*>* cars;
+        CarHandler* carHandler;
         Scene* scene;
         //time elapsed since SDL library initialized
         Uint32 time;

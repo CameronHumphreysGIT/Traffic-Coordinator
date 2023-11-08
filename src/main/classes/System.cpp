@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
+#include <cassert>
 #include <BezierPath.h>
 #include <Router.h>
 
@@ -19,11 +20,12 @@ System::System() {
     //texture for Cars
     carTexture = NULL;
     infrastructure = new Infrastructure();
-    cars = new vector<Car*>;
+    carHandler = new CarHandler();
 }
 System::~System() {
     delete infrastructure;
     delete scene;
+    delete carHandler;
 }
 
 bool System::init()   {
@@ -98,37 +100,33 @@ void System::buildInfrastructure() {
     infrastructure->print();
     //update the time
     time = SDL_GetTicks();
-    //TODO temp, move the cars?
-    //Car wants time in seconds
-    cars->push_back(new Car({0,0}, (time * 0.001f)));
+    //Car wants time in seconds, the carHandler will make the car
+    carHandler->addCar({0,0}, (time * 0.001f));
     Intersection* i1 = infrastructure->getI(0,0);
     Intersection* i2 = infrastructure->getI(0,1);
     Intersection* i3 = infrastructure->getI(0,2);
     Intersection* i4 = infrastructure->getI(1,0);
     Intersection* i5 = infrastructure->getI(1,1);
-    Router r;
     vector<Intersection*>* vec = new vector<Intersection*>();
     vec->push_back(i1);
     vec->push_back(i2);
     vec->push_back(i3);
     vec->push_back(i4);
     vec->push_back(i5);
-    cout<<r.setRoute(cars->at(0), vec);
+    assert(carHandler->setRoute(0, vec));
     //redraw background
     loadMedia(false);
     scene->setBackground(backgroundTexture);
 }
 
 void System::testdraw() {
-    vector<SDL_Rect*> rects;
-    vector<float*> rotations;
-    for (int i = 0; i < cars->size(); i++) {
+    for (int i = 0; i < carHandler->size(); i++) {
         //update the cars
         time = SDL_GetTicks();
-        cars->at(i)->update(time * 0.001f);
-        rects.push_back(cars->at(i)->getChassis());
-        rotations.push_back(cars->at(i)->getRotation());
+        carHandler->updateCar(i, (time * 0.001f));
     }
+    vector<SDL_Rect*> rects = carHandler->getData().first;
+    vector<float*> rotations = carHandler->getData().second;
     vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
     scene->draw(rects, sampled, carTexture, rotations);
 }

@@ -10,7 +10,7 @@ Car::Car(pair<float, float> start, float time) {
     chassis.y = start.second;
     chassis.w = Variables::CAR_WIDTH;
     chassis.h = Variables::CAR_HEIGHT;
-    paths = new vector<vector<pair<float, float>>>;
+    paths = new vector<vector<pair<float, float>>>();
     currentPath = 0;
     currentWaypoint = 0;
     state = rest;
@@ -21,13 +21,7 @@ Car::Car(pair<float, float> start, float time) {
 }
 
 Car::~Car() {
-    delete[] paths;
-    
-    /*for (int i =0; i < paths->size(); i++) {
-        for (int i2 = 0; i2 < paths->at(i).size(); i2++) {
-            delete paths
-        }
-    }*/
+    delete paths;
 }
 
 SDL_Rect* Car::getChassis() {
