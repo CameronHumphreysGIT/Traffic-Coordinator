@@ -13,6 +13,7 @@ int main() {
     system->init();
     system->loadMedia(true);
     system->buildInfrastructure();
+    system->scenario(0);
 
     system->run();
 

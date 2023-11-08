@@ -26,7 +26,8 @@ class System {
         bool loadMedia(bool);
         void close();
         void buildInfrastructure();
-        void testdraw();
+        void scenario(int );
+        void draw();
         void run();
 };
 

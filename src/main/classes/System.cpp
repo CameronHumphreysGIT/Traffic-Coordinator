@@ -98,28 +98,36 @@ void System::buildInfrastructure() {
     //this line is for debugging the infrastructure
     SDL_UpdateWindowSurface(window);
     infrastructure->print();
-    //update the time
-    time = SDL_GetTicks();
-    //Car wants time in seconds, the carHandler will make the car
-    carHandler->addCar({0,0}, (time * 0.001f));
-    Intersection* i1 = infrastructure->getI(0,0);
-    Intersection* i2 = infrastructure->getI(0,1);
-    Intersection* i3 = infrastructure->getI(0,2);
-    Intersection* i4 = infrastructure->getI(1,0);
-    Intersection* i5 = infrastructure->getI(1,1);
-    vector<Intersection*>* vec = new vector<Intersection*>();
-    vec->push_back(i1);
-    vec->push_back(i2);
-    vec->push_back(i3);
-    vec->push_back(i4);
-    vec->push_back(i5);
-    assert(carHandler->setRoute(0, vec));
     //redraw background
     loadMedia(false);
     scene->setBackground(backgroundTexture);
 }
 
-void System::testdraw() {
+void System::scenario(int scenario) {
+    switch (scenario) {
+        case 0:
+            //This function exists to create a car and a path for the car.
+            //update the time
+            time = SDL_GetTicks();
+            //Car wants time in seconds, the carHandler will make the car
+            carHandler->addCar({0,0}, (time * 0.001f));
+            Intersection* i1 = infrastructure->getI(0,0);
+            Intersection* i2 = infrastructure->getI(0,1);
+            Intersection* i3 = infrastructure->getI(0,2);
+            Intersection* i4 = infrastructure->getI(1,0);
+            Intersection* i5 = infrastructure->getI(1,1);
+            vector<Intersection*>* vec = new vector<Intersection*>();
+            vec->push_back(i1);
+            vec->push_back(i2);
+            vec->push_back(i3);
+            vec->push_back(i4);
+            vec->push_back(i5);
+            assert(carHandler->setRoute(0, vec));
+            break;
+    }
+}
+
+void System::draw() {
     for (int i = 0; i < carHandler->size(); i++) {
         //update the cars
         time = SDL_GetTicks();
@@ -142,7 +150,7 @@ void System::run() {
         }
         time = SDL_GetTicks();
         if ((time - startTime) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {
-            testdraw();
+            draw();
             startTime = time;
         }
     }
