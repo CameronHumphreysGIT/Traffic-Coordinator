@@ -5,6 +5,7 @@
 #include <cassert>
 #include <BezierPath.h>
 #include <Router.h>
+#include <SDL2/SDL_ttf.h>
 
 using namespace std;
 
@@ -21,11 +22,13 @@ System::System() {
     carTexture = NULL;
     infrastructure = new Infrastructure();
     carHandler = new CarHandler();
+    toggleBackground = new Button(970, 50, 100, 50);
 }
 System::~System() {
     delete infrastructure;
     delete scene;
     delete carHandler;
+    delete toggleBackground;
 }
 
 bool System::init()   {
@@ -36,8 +39,7 @@ bool System::init()   {
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 && IMG_Init(IMG_INIT_PNG) )    {
         cout<<"SDL could not initialize! SDL_Error:";
         success = false;
-    }
-    else    {
+    }else    {
         //Create window
         window = SDL_CreateWindow( "Traffic Controller", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Variables::SCREEN_WIDTH, Variables::SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
         //make renderer
@@ -53,6 +55,11 @@ bool System::init()   {
             screenSurface = SDL_GetWindowSurface( window );
         }
     }
+    //initialize ttf
+    if (TTF_Init() < 0 ) {
+	    cout << "Error initializing SDL_ttf: " << TTF_GetError() << endl;
+    }
+
     time = SDL_GetTicks();
     return success;
 }
@@ -64,33 +71,53 @@ bool System::loadMedia(bool svgFlag)  {
     SDL_RWops* io;
     //Loading success flag
     bool success = true;
-    if (svgFlag) {
-        //Load splash image
-        io = SDL_RWFromFile(Variables::BACKGROUND_PATH, "r+");
-        background = IMG_LoadSVG_RW(io);
-        if( background == NULL )   {
-            cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
-            success = false;
-        }
-    }else {
-        io = SDL_RWFromFile(Variables::MAP_PATH, "r");
-        background = IMG_LoadPNG_RW(io);
-        if( background == NULL )   {
-            cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
-            success = false;
-        }
+    io = SDL_RWFromFile(Variables::MAP_PATH, "r");
+    background = IMG_LoadPNG_RW(io);
+    if( background == NULL )   {
+        cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
+        success = false;
     }
     //blitting the surface sets the surface.
-    SDL_BlitSurface( background, NULL, screenSurface, NULL );
+    SDL_BlitSurface(background, NULL, screenSurface, NULL );
     //we now turn that surface into a texture
-    backgroundTexture = SDL_CreateTextureFromSurface(renderer, screenSurface);
+    satalliteBackground = SDL_CreateTextureFromSurface(renderer, screenSurface);
+
+    io = SDL_RWFromFile(Variables::BACKGROUND_PATH, "r+");
+    background = IMG_LoadSVG_RW(io);
+    if( background == NULL )   {
+        cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
+        success = false;
+    }
+    SDL_FillRect(screenSurface, NULL, 0x000000);
+    //blitting the surface sets the surface.
+    SDL_BlitSurface(background, NULL, screenSurface, NULL );
+    //we now turn that surface into a texture
+    intersectionsBackground = SDL_CreateTextureFromSurface(renderer, screenSurface);
+    if (svgFlag) {
+        backgroundTexture = intersectionsBackground;
+    }else {
+        backgroundTexture = satalliteBackground;
+    }
     //load in the Car texture:
     io = SDL_RWFromFile(Variables::CAR_PATH, "r");
     SDL_Surface* car = IMG_LoadPNG_RW(io);
     carTexture = SDL_CreateTextureFromSurface(renderer, car);
+    //font for the text
+    font = TTF_OpenFont("fonts/Bold.ttf", 28);
+    if ( !font ) {
+        cout << "Failed to load font: " << TTF_GetError() << endl;
+    }
     //we can now create the scene:
-    scene = new Scene(renderer);
+    scene = new Scene(renderer, font);
     return success;
+}
+
+void System::swapBackground() {
+    if (backgroundTexture == intersectionsBackground) {
+        backgroundTexture = satalliteBackground;
+    }else if (backgroundTexture == satalliteBackground) {
+        backgroundTexture = intersectionsBackground;
+    }
 }
 
 void System::buildInfrastructure() {
@@ -99,7 +126,7 @@ void System::buildInfrastructure() {
     SDL_UpdateWindowSurface(window);
     infrastructure->print();
     //redraw background
-    loadMedia(false);
+    swapBackground();
 }
 
 void System::scenario(int scenario) {
@@ -135,9 +162,11 @@ void System::draw() {
     vector<SDL_Rect*> rects = carHandler->getData().first;
     vector<float*> rotations = carHandler->getData().second;
     vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
+    scene->clear();
     scene->drawBackground(backgroundTexture);
     scene->drawRoads(sampled);
     scene->drawCars(rects, carTexture, rotations);
+    scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
     scene->present();
 }
 
@@ -148,7 +177,13 @@ void System::run() {
     while(quit == false)  {
         //check for quit
         while(SDL_PollEvent(&e) != 0)    {
-           if(e.type == SDL_QUIT) quit = true;
+            if(e.type == SDL_QUIT) {
+                quit = true;
+            }else {
+                if(toggleBackground->isClicked(e)) {
+                    swapBackground();
+                };
+            }    
         }
         time = SDL_GetTicks();
         if ((time - startTime) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {
@@ -171,8 +206,12 @@ void System::close()  {
     SDL_DestroyRenderer(renderer);
     renderer = NULL;
 
+    TTF_CloseFont( font );
+    font = NULL;
     //quit IMG
     IMG_Quit();
+    //quit ttf:
+    TTF_Quit();
     //Quit SDL subsystems
     SDL_Quit();
 }

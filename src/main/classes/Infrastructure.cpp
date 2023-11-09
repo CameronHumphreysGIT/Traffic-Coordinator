@@ -189,14 +189,6 @@ Intersection* Infrastructure::findBelow(int row, int col) {
 
         while (i2 < j) {
             mid = (i2 + j) / 2;
-            cout<<intersections->at(i)->at(mid)->getCorners().at(0).first<<" ";
-            if (mid > 0) {
-                cout<<intersections->at(i)->at(mid - 1)->getCorners().at(0).first<<" ";
-            }
-            if (mid < n - 1) {
-                cout<<intersections->at(i)->at(mid+1)->getCorners().at(0).first<<" ";
-            }
-            
             if (intersections->at(i)->at(mid)->getCorners().at(0).first == target) {
                 return intersections->at(i)->at(mid);
             }

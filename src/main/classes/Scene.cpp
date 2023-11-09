@@ -4,17 +4,23 @@
 
 using namespace std;
 
-Scene::Scene(SDL_Renderer* &r) {
+Scene::Scene(SDL_Renderer* &r, TTF_Font* & f) {
     renderer = r;
     boundary = new SDL_Rect();
     boundary->x = 0;
     boundary->y = 0;
     boundary->w = Variables::SCREEN_WIDTH;
     boundary->h = Variables::SCREEN_HEIGHT;
+    font = f;
 }
 
 Scene::~Scene() {
     delete boundary;
+}
+
+void Scene::clear() {
+    SDL_SetRenderDrawColor(renderer, 0,0,0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer);
 }
 
 void Scene::drawBackground(SDL_Texture* background) {
@@ -24,7 +30,7 @@ void Scene::drawBackground(SDL_Texture* background) {
 
 void Scene::drawRoads(vector<vector<vector<pair<float, float>>>> intersections) {
     //drawstuff
-    SDL_SetRenderDrawColor(renderer, 0,0,0, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 255,0,0, SDL_ALPHA_OPAQUE);
     //intersections are the set of the lines going into each intersection
     for (int i = 0; i < intersections.size(); i++) {
         //each intersection has 4 lines
@@ -56,6 +62,28 @@ void Scene::drawCars(vector<SDL_Rect*> rectangles, SDL_Texture* carTexture, vect
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         SDL_RenderCopyEx(renderer, carTexture, NULL, rectangles.at(i), (*rotations.at(i)), NULL, flip);
     }
+}
+
+void Scene::drawButton(SDL_Rect* borders, vector<int> colour, const char * words) {
+    SDL_SetRenderDrawColor(renderer, colour.at(0), colour.at(1), colour.at(2), SDL_ALPHA_OPAQUE);
+    //create a text surface
+    SDL_Surface* text;
+    // Set color to black
+    SDL_Color color = { 0, 0, 0 };
+    text = TTF_RenderText_Solid( font, words, color );
+    if ( !text ) {
+        cout << "Failed to render text: " << TTF_GetError() << endl;
+    }
+    //convert the surface to a texture:
+    SDL_Texture* text_texture;
+    text_texture = SDL_CreateTextureFromSurface( renderer, text );
+    //draw the button
+    SDL_RenderFillRect(renderer, borders);
+    //draw a border
+    SDL_SetRenderDrawColor(renderer, (colour.at(0) + 40), (colour.at(1) + 40), (colour.at(2) + 40), SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawRect(renderer, borders);
+    //copy over the text
+    SDL_RenderCopy(renderer, text_texture, NULL, borders);
 }
 
 void Scene::present() {

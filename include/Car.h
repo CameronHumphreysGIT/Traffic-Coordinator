@@ -13,7 +13,7 @@ class Car {
         int currentPath;
         //each curved path is made up of waypoints, this is the current waypoint.
         int currentWaypoint;
-        SDL_Rect chassis;
+        SDL_Rect* chassis;
         enum STATE { rest, moving};
         STATE state;
         //time of last Update in seconds

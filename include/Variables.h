@@ -15,7 +15,6 @@ class Variables {
         static inline const char* BACKGROUND_PATH = "./images/Map.svg";
         static inline const char* MAP_PATH = "./images/Map.png";
         static inline std::vector<int> INTERSECTIONCOLOUR = {0,255,0};
-        static inline std::vector<int> ROADCOLOUR = {0,0,255};
         //default speed of carse in pixels/second
         static inline float DEFAULT_SPEED = 25.0f;
         //defining the square width and height of intersections.
@@ -37,6 +36,10 @@ class Variables {
         enum Side { TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3, END = 4};
         //Expression used for the Car to rotate
         static inline float RAD_TO_DEG = (180.0f/3.14159265);
+        //Colour for the buttons
+        static inline std::vector<int> BUTTONCOLOUR = {135, 135, 135};
+        //Hover colour for buttons
+        static inline std::vector<int> HOVERCOLOUR = {150, 150, 150};
 };
 
 #endif

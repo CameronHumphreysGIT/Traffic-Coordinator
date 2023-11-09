@@ -6,10 +6,11 @@
 using namespace std;
 
 Car::Car(pair<float, float> start, float time) {
-    chassis.x = start.first;
-    chassis.y = start.second;
-    chassis.w = Variables::CAR_WIDTH;
-    chassis.h = Variables::CAR_HEIGHT;
+    chassis = new SDL_Rect();
+    chassis->x = start.first;
+    chassis->y = start.second;
+    chassis->w = Variables::CAR_WIDTH;
+    chassis->h = Variables::CAR_HEIGHT;
     paths = new vector<vector<pair<float, float>>>();
     currentPath = 0;
     currentWaypoint = 0;
@@ -21,11 +22,12 @@ Car::Car(pair<float, float> start, float time) {
 }
 
 Car::~Car() {
+    delete chassis;
     delete paths;
 }
 
 SDL_Rect* Car::getChassis() {
-    return &chassis;
+    return chassis;
 }
 
 float* Car::getRotation() {
@@ -53,7 +55,7 @@ void Car::update(float time) {
 
 void Car::updatePos(float time) {
     float deltaTime = time - lastUpdate;
-    pair<float, float> oldPos = {chassis.x, chassis.y};
+    pair<float, float> oldPos = {chassis->x, chassis->y};
     pair<float, float> dir = paths->at(currentPath).at(currentWaypoint) - oldPos;
 
     //I used a vector2 here since it's more mathamatically analageous
@@ -93,15 +95,15 @@ void Car::translate(pair<float, float> dir, Vector2 direction, float deltaTime) 
         //change the pos
         if (sums.first < 0) {
             //need to do this for the sake of negative numbers
-            chassis.x += ceil(sums.first);
+            chassis->x += ceil(sums.first);
         }else {
-            chassis.x += sums.first;
+            chassis->x += sums.first;
         }
         if (sums.second < 0) {
             //need to do this for the sake of negative numbers
-            chassis.y += ceil(sums.second);
+            chassis->y += ceil(sums.second);
         }else {
-            chassis.y += sums.second;
+            chassis->y += sums.second;
         }
         sums.first -= (int)sums.first;
         sums.second -= (int)sums.second;
