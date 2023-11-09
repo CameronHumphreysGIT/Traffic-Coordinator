@@ -110,8 +110,7 @@ void Infrastructure::buildRoads() {
                     me->setBottom(me2Bottom, bottom->getId());
                 }
             }
-            if (i2 < (intersections->at(i)->size()) - 1) {
-
+            if (i2 < (intersections->at(i)->size()) - 1 && !((i == 17 && i2 == 2) || (i == 17 && i2 == 6) || (i == 14 && i2 == 3) || (i == 12 && i2 == 2))) {
                 //has space for a road to the right
                 //intersection to the right
                 Intersection* right = intersections->at(i)->at(i2 + 1);
@@ -190,6 +189,14 @@ Intersection* Infrastructure::findBelow(int row, int col) {
 
         while (i2 < j) {
             mid = (i2 + j) / 2;
+            cout<<intersections->at(i)->at(mid)->getCorners().at(0).first<<" ";
+            if (mid > 0) {
+                cout<<intersections->at(i)->at(mid - 1)->getCorners().at(0).first<<" ";
+            }
+            if (mid < n - 1) {
+                cout<<intersections->at(i)->at(mid+1)->getCorners().at(0).first<<" ";
+            }
+            
             if (intersections->at(i)->at(mid)->getCorners().at(0).first == target) {
                 return intersections->at(i)->at(mid);
             }
@@ -200,12 +207,16 @@ Intersection* Infrastructure::findBelow(int row, int col) {
                 // to mid, return closest of two
                 if (mid > 0 && target > intersections->at(i)->at(mid - 1)->getCorners().at(0).first)
                     //return the closest of the two
-                    return getClosest(intersections->at(i)->at(mid - 1), intersections->at(i)->at(mid), target);
+                    if(getClosest(intersections->at(i)->at(mid - 1), intersections->at(i)->at(mid), target) != NULL) {
+                        return getClosest(intersections->at(i)->at(mid - 1), intersections->at(i)->at(mid), target);
+                    }
                 j = mid;
             }else {
                 //target is greater than mid
                 if (mid < n - 1 && target < intersections->at(i)->at(mid + 1)->getCorners().at(0).first)
-                    return getClosest(intersections->at(i)->at(mid), intersections->at(i)->at(mid + 1), target);
+                    if (getClosest(intersections->at(i)->at(mid), intersections->at(i)->at(mid + 1), target) != NULL) {
+                        return getClosest(intersections->at(i)->at(mid), intersections->at(i)->at(mid + 1), target);
+                    }
                 // update i
                 i2 = mid + 1; 
             }
@@ -214,8 +225,6 @@ Intersection* Infrastructure::findBelow(int row, int col) {
         // Only single element left after search
         if (abs(target - intersections->at(i)->at(mid)->getCorners().at(0).first) < Variables::MAX_XDIST) {
             return intersections->at(i)->at(mid);
-        }else {
-            return NULL;
         }
     }
     return NULL;

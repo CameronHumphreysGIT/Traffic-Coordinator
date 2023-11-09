@@ -7,8 +7,8 @@ class Variables {
     public:
         //corner enum is used to identify the corners of a rectangle with a word
         enum Corner { TOPLEFT = 1, TOPRIGHT = 2, BOTTOMLEFT = 3, BOTTOMRIGHT = 4, NOT = 0};
-        static inline int SCREEN_WIDTH = 1920;
-        static inline int SCREEN_HEIGHT = 1080;
+        static inline int SCREEN_WIDTH = 1200;
+        static inline int SCREEN_HEIGHT = 700;
         static inline int BACKGROUND_WIDTH = 1420;
         static inline int BACKGROUND_HEIGHT = 1033;
         //background is the satellite image used for the map
