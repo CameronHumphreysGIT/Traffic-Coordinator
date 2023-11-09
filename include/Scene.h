@@ -6,13 +6,14 @@
 class Scene {
     private:
         SDL_Renderer* renderer;
-        SDL_Texture* backgroundTexture;
         SDL_Rect* boundary;
     public:
-        Scene(SDL_Renderer* &, SDL_Texture* );
+        Scene(SDL_Renderer* &);
         ~Scene();
-        void setBackground(SDL_Texture *);
-        void draw(std::vector<SDL_Rect*> , std::vector<std::vector<std::vector<std::pair<float, float>>>> , SDL_Texture* , std::vector<float*> );
+        void drawBackground(SDL_Texture *);
+        void drawRoads(std::vector<std::vector<std::vector<std::pair<float, float>>>> );
+        void drawCars(std::vector<SDL_Rect*> , SDL_Texture* , std::vector<float*> );
+        void present();
 };
 
 

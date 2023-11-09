@@ -2,9 +2,10 @@
 #include <Variables.h>
 #include <iostream>
 
-Scene::Scene(SDL_Renderer* &r, SDL_Texture* t) {
+using namespace std;
+
+Scene::Scene(SDL_Renderer* &r) {
     renderer = r;
-    backgroundTexture = t;
     boundary = new SDL_Rect();
     boundary->x = 0;
     boundary->y = 0;
@@ -16,14 +17,12 @@ Scene::~Scene() {
     delete boundary;
 }
 
-void Scene::setBackground(SDL_Texture* background) {
-    backgroundTexture = background;
+void Scene::drawBackground(SDL_Texture* background) {
+    //this always needs to be done at the start, otherwise we will end up drawing over everything.
+    SDL_RenderCopy(renderer, background, NULL, boundary);
 }
 
-void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std::vector<std::pair<float, float>>>> intersections, SDL_Texture* carTexture, std::vector<float*> rotations) {
-    //this always needs to be done at the start, otherwise we will end up drawing over everything.
-    SDL_RenderCopy(renderer, backgroundTexture, NULL, boundary);
-    
+void Scene::drawRoads(vector<vector<vector<pair<float, float>>>> intersections) {
     //drawstuff
     SDL_SetRenderDrawColor(renderer, 0,0,0, SDL_ALPHA_OPAQUE);
     //intersections are the set of the lines going into each intersection
@@ -34,21 +33,22 @@ void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std:
             int size = intersections.at(i).at(i2).size();
             //straightline
             if (size == 2) {
-                std::pair<float, float> p1 = intersections.at(i).at(i2).at(0);
-                std::pair<float, float> p2 = intersections.at(i).at(i2).at(1);
+                pair<float, float> p1 = intersections.at(i).at(i2).at(0);
+                pair<float, float> p2 = intersections.at(i).at(i2).at(1);
                 SDL_RenderDrawLine(renderer, p1.first, p1.second, p2.first, p2.second);
             }else {
                 for (int i3 = 0; i3 < size - 1; i3++) {
                     //draw each line
-                    std::pair<float, float> p1 = intersections.at(i).at(i2).at(i3);
-                    std::pair<float, float> p2 = intersections.at(i).at(i2).at(i3 + 1);
+                    pair<float, float> p1 = intersections.at(i).at(i2).at(i3);
+                    pair<float, float> p2 = intersections.at(i).at(i2).at(i3 + 1);
                     SDL_RenderDrawLine(renderer, p1.first, p1.second, p2.first, p2.second);
                 }
             }
         }
     }
+}
 
-
+void Scene::drawCars(vector<SDL_Rect*> rectangles, SDL_Texture* carTexture, vector<float*> rotations) {
     //Now draw Cars:
     for (int i = 0; i < rectangles.size(); i++) {
         //SDL_RenderCopy(renderer, carTexture, NULL, rectangles.at(i));
@@ -56,7 +56,9 @@ void Scene::draw(std::vector<SDL_Rect*> rectangles, std::vector<std::vector<std:
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         SDL_RenderCopyEx(renderer, carTexture, NULL, rectangles.at(i), (*rotations.at(i)), NULL, flip);
     }
+}
 
+void Scene::present() {
     //present to the window
     SDL_RenderPresent(renderer);
 }

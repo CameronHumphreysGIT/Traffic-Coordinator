@@ -89,7 +89,7 @@ bool System::loadMedia(bool svgFlag)  {
     SDL_Surface* car = IMG_LoadPNG_RW(io);
     carTexture = SDL_CreateTextureFromSurface(renderer, car);
     //we can now create the scene:
-    scene = new Scene(renderer, backgroundTexture);
+    scene = new Scene(renderer);
     return success;
 }
 
@@ -100,7 +100,6 @@ void System::buildInfrastructure() {
     infrastructure->print();
     //redraw background
     loadMedia(false);
-    scene->setBackground(backgroundTexture);
 }
 
 void System::scenario(int scenario) {
@@ -136,7 +135,10 @@ void System::draw() {
     vector<SDL_Rect*> rects = carHandler->getData().first;
     vector<float*> rotations = carHandler->getData().second;
     vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
-    scene->draw(rects, sampled, carTexture, rotations);
+    scene->drawBackground(backgroundTexture);
+    scene->drawRoads(sampled);
+    scene->drawCars(rects, carTexture, rotations);
+    scene->present();
 }
 
 void System::run() {
