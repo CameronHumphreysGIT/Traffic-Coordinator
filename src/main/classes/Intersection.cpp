@@ -76,7 +76,7 @@ void Intersection::setInternal(Variables::Side side) {
             //redefine toppoint to the insert point
             topPoint = this->topLeft;
             topPoint.first += (Variables::INTERSECTION_DIMS / 4);
-            internals[side][Variables::RIGHT]->setPath(topPoint,{topPoint.first, (topPoint.second + (Variables::INTERSECTION_DIMS / 2))}, rightPoint, {(rightPoint.first - (Variables::INTERSECTION_DIMS / 2)), rightPoint.second});
+            internals[side][Variables::RIGHT]->setShortPath(topPoint,{topPoint.first, (topPoint.second + (Variables::INTERSECTION_DIMS / 2))}, rightPoint, {(rightPoint.first - (Variables::INTERSECTION_DIMS / 2)), rightPoint.second});
             internals[side][Variables::BOTTOM]->setPath(topPoint,bottomPoint);
             internals[side][Variables::LEFT]->setPath(topPoint,leftPoint);
             break;
@@ -85,7 +85,7 @@ void Intersection::setInternal(Variables::Side side) {
             rightPoint = this->topRight;
             rightPoint.second += (Variables::INTERSECTION_DIMS / 4);
             internals[side][Variables::TOP]->setPath(rightPoint,topPoint);
-            internals[side][Variables::BOTTOM]->setPath(rightPoint,{(rightPoint.first - (Variables::INTERSECTION_DIMS / 2)), rightPoint.second}, bottomPoint, {bottomPoint.first, (bottomPoint.second - (Variables::INTERSECTION_DIMS / 2))});
+            internals[side][Variables::BOTTOM]->setShortPath(rightPoint,{(rightPoint.first - (Variables::INTERSECTION_DIMS / 2)), rightPoint.second}, bottomPoint, {bottomPoint.first, (bottomPoint.second - (Variables::INTERSECTION_DIMS / 2))});
             internals[side][Variables::LEFT]->setPath(rightPoint,leftPoint);
             break;
         case Variables::BOTTOM:
@@ -94,13 +94,13 @@ void Intersection::setInternal(Variables::Side side) {
             bottomPoint.first -= (Variables::INTERSECTION_DIMS / 4);
             internals[side][Variables::TOP]->setPath(bottomPoint,topPoint);
             internals[side][Variables::RIGHT]->setPath(bottomPoint,rightPoint);
-            internals[side][Variables::LEFT]->setPath(bottomPoint,{bottomPoint.first, (bottomPoint.second - (Variables::INTERSECTION_DIMS / 2))}, leftPoint, {(leftPoint.first + (Variables::INTERSECTION_DIMS / 2)), leftPoint.second});
+            internals[side][Variables::LEFT]->setShortPath(bottomPoint,{bottomPoint.first, (bottomPoint.second - (Variables::INTERSECTION_DIMS / 2))}, leftPoint, {(leftPoint.first + (Variables::INTERSECTION_DIMS / 2)), leftPoint.second});
             break;
         case Variables::LEFT:
             //redefine leftpoint to the insert point
             leftPoint = this->bottomLeft;
             leftPoint.second -= (Variables::INTERSECTION_DIMS / 4);
-            internals[side][Variables::TOP]->setPath(leftPoint,{(leftPoint.first + (Variables::INTERSECTION_DIMS / 2)), leftPoint.second}, topPoint, {topPoint.first, (topPoint.second + (Variables::INTERSECTION_DIMS / 2))});
+            internals[side][Variables::TOP]->setShortPath(leftPoint,{(leftPoint.first + (Variables::INTERSECTION_DIMS / 2)), leftPoint.second}, topPoint, {topPoint.first, (topPoint.second + (Variables::INTERSECTION_DIMS / 2))});
             internals[side][Variables::RIGHT]->setPath(leftPoint,rightPoint);
             internals[side][Variables::BOTTOM]->setPath(leftPoint,bottomPoint);
             break;

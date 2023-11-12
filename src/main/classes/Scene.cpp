@@ -61,6 +61,8 @@ void Scene::drawCars(vector<SDL_Rect*> rectangles, SDL_Texture* carTexture, vect
         //need to use renderCopyEx to rotate the car.
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         SDL_RenderCopyEx(renderer, carTexture, NULL, rectangles.at(i), (*rotations.at(i)), NULL, flip);
+        SDL_SetRenderDrawColor(renderer, 255,255,255, SDL_ALPHA_OPAQUE);
+        SDL_RenderDrawRect(renderer, rectangles.at(i));
     }
 }
 

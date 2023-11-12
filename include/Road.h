@@ -13,6 +13,7 @@ class Road {
         ~Road();
         void setPath(pair<float, float>, pair<float, float>);
         void setPath(pair<float, float>, pair<float, float>, pair<float, float>, pair<float, float>);
+        void setShortPath(pair<float, float>, pair<float, float>, pair<float, float>, pair<float, float>);
         BezierPath getPath();
         vector<pair<float, float>> getSampled();
         void print();

@@ -57,21 +57,30 @@ void Car::updatePos(float time) {
     float deltaTime = time - lastUpdate;
     pair<float, float> oldPos = {chassis->x, chassis->y};
     pair<float, float> dir = paths->at(currentPath).at(currentWaypoint) - oldPos;
-
     //I used a vector2 here since it's more mathamatically analageous
     Vector2 direction = {dir.first, dir.second};
+    bool waypointFlag = false;
     //check if we have "reached" the currentWaypoint
     if (direction.MagnitudeSqr() < Variables::WAYPOINT_TOL) {
         currentWaypoint++;
+        waypointFlag = true;
     }
     //makesure haven't reached the end of the path
     if (currentWaypoint < paths->at(currentPath).size()) {
-        //change direction:
+        if (currentPath == paths->size() - 1) {
+            cout<<"x: "<<chassis->x<<"y: "<<chassis->y<<"dir: "<<direction.x<<" "<<direction.y<<"\n";
+        }
+        //redefine dir and direction:
         dir = paths->at(currentPath).at(currentWaypoint) - oldPos;
-        //use a function since we need to also change rotation, and this shouldn't be too bulky
         direction = {dir.first, dir.second};
+        //use a function since we need to also change rotation, and this shouldn't be too bulky
         translate(dir, direction, deltaTime);
-        rotate(direction);
+        //rotate only once per waypoint:
+        if (waypointFlag || currentWaypoint == 0) {
+            rotate(direction);
+            waypointFlag = false;
+        }
+        
     }else {
         //we've reached the last waypoint of this path
         currentPath++;
@@ -111,16 +120,19 @@ void Car::translate(pair<float, float> dir, Vector2 direction, float deltaTime) 
 }
 
 void Car::rotate(Vector2 direction) {
-    //we can do this since the direction is a vector
-    rotation = (atan2(direction.y, direction.x) * Variables::RAD_TO_DEG) + 90.0f;
+    //check nonzero:
+    if (direction.x != 0 || direction.y != 0) {
+        //we can do this since the direction is a vector
+        rotation = (atan2(direction.y, direction.x) * Variables::RAD_TO_DEG) - 90.0f;
 
-    //Wraps the angle between 0 and 360 degrees, addition and subtraction is sed to avoid snapping
-    //Updated to deal with degrees higher than 360 and -360
-    if (rotation > 360.0f) {
-        int mul = rotation / 360;
-        rotation -= 360.0f * mul;
-    }else if (rotation < 0.0f) {
-        int mul = (rotation / 360) - 1;
-        rotation -= 360.0f * mul;
+        //Wraps the angle between 0 and 360 degrees, addition and subtraction is sed to avoid snapping
+        //Updated to deal with degrees higher than 360 and -360
+        if (rotation > 360.0f) {
+            int mul = rotation / 360;
+            rotation -= 360.0f * mul;
+        }else if (rotation < 0.0f) {
+            int mul = (rotation / 360) - 1;
+            rotation -= 360.0f * mul;
+        }
     }
 }
