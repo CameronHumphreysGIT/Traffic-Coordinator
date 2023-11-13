@@ -67,9 +67,6 @@ void Car::updatePos(float time) {
     }
     //makesure haven't reached the end of the path
     if (currentWaypoint < paths->at(currentPath).size()) {
-        if (currentPath == paths->size() - 1) {
-            cout<<"x: "<<chassis->x<<"y: "<<chassis->y<<"dir: "<<direction.x<<" "<<direction.y<<"\n";
-        }
         //redefine dir and direction:
         dir = paths->at(currentPath).at(currentWaypoint) - oldPos;
         direction = {dir.first, dir.second};
@@ -80,7 +77,6 @@ void Car::updatePos(float time) {
             rotate(direction);
             waypointFlag = false;
         }
-        
     }else {
         //we've reached the last waypoint of this path
         currentPath++;
