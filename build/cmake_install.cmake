@@ -2,7 +2,7 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files/Traffic-Coordinator")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Traffic-Coordinator")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -35,6 +35,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("C:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/build/src/cmake_install.cmake")
+  include("C:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/build/test/cmake_install.cmake")
 
 endif()
 

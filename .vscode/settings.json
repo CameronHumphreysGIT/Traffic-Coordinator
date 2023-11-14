@@ -1,6 +1,6 @@
 {
     "cmake.configureOnOpen": true,
-    "cmake.generator": "Visual Studio 16 2019",
+    "cmake.generator": "Visual Studio 17 2022",
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.associations": {
         "iostream": "cpp"

@@ -14,7 +14,8 @@ add_custom_command(TARGET main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${PROJECT_SOURCE_DIR}/libs"
         $<TARGET_FILE_DIR:main>)
-target_compile_features(main PUBLIC cxx_std_20)
+add_subdirectory(test)
+target_compile_features(main PUBLIC cxx_std_14)
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 #set(SDL2_DIR "C:\\Users\\Cameron\\Desktop\\SDL2-2.28.5") 
 #
