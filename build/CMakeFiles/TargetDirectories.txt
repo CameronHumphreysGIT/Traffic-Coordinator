@@ -1,0 +1,5 @@
+C:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/build/CMakeFiles/main.dir
+C:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/build/src/CMakeFiles/src.dir
+C:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/build/src/CMakeFiles/ALL_BUILD.dir
