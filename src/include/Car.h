@@ -2,7 +2,7 @@
 #define CAR_H
 #include <utility>
 #include <vector>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <MathHelper.h>
 

@@ -1,8 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <vector>
-#include <SDL2/SDL_ttf.h>
+#include <SDL_ttf.h>
 
 class Scene {
     private:
