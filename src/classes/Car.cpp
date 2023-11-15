@@ -132,3 +132,10 @@ void Car::rotate(Vector2 direction) {
         }
     }
 }
+
+bool Car::isNotRest() {
+    if (state == rest) {
+        return false;
+    }
+    return true;
+}

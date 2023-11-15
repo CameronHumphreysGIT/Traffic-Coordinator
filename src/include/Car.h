@@ -34,7 +34,7 @@ class Car {
         void updatePos(float );
         void translate(std::pair<float, float> , Vector2 , float );
         void rotate(Vector2 );
-
+        bool isNotRest();
 };
 
 #endif

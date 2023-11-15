@@ -14,7 +14,8 @@ class CarHandler {
         bool setRoute(int ,std::vector<Intersection*>* );
         void addCar(std::pair<float, float> , float );
         int size();
-        void updateCar(int , float ); 
+        void updateCar(int , float );
+        bool isNotDone();
 
 };
 

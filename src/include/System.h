@@ -35,6 +35,8 @@ class System {
         void scenario(int );
         void draw();
         void run();
+        void run(int );
+        std::vector<std::vector<Intersection*>*>* getIntersections();
 };
 
 

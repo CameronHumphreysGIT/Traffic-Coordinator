@@ -1,15 +1,23 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <cstdint>
+#include <System.h>
 
-uint32_t factorial( uint32_t number ) {
-    return number > 1 ? factorial(number-1)*number : 1;
-}
 
-TEST_CASE( "Factorials are computed", "[factorial]" ) {
-    REQUIRE( factorial( 0) == 1 );
-    REQUIRE( factorial( 1) == 1 );
-    REQUIRE( factorial( 2) == 2 );
-    REQUIRE( factorial( 3) == 6 );
-    REQUIRE( factorial(10) == 3'628'800 );
+TEST_CASE("System Initialization") {
+    System* system = new System();
+    REQUIRE(system->init());
+    REQUIRE(system->loadMedia(true));
+    system->buildInfrastructure();
+    //verify infrastructure dimentions and intersections:
+    vector<vector<Intersection*>*>* inters = system->getIntersections();
+    REQUIRE(inters->size() == 19);
+    vector<int> expectedSizes = {9,7,8,8,8,14,9,9,6,9,9,15,12,9,7,6,2,11,14};
+    for (int i =0; i < expectedSizes.size(); i++) {
+        CHECK(inters->at(i)->size() == expectedSizes.at(i));
+    }
+
+    system->close();
+    //Delete all objects;
+    delete system;
 }

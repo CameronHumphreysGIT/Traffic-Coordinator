@@ -193,6 +193,35 @@ void System::run() {
     }
 }
 
+//Run function used for testing takes in a timeout, also closes when scenario is done.
+void System::run(int timeout) {
+    SDL_Event e;
+    bool quit = false;
+    Uint32 startTime = time;
+    Uint32 lastUpdate = time;
+    while(!quit && (int)((time - startTime)/1000) < timeout)  {
+        //check for quit
+        while(SDL_PollEvent(&e) != 0)    {
+            if(toggleBackground->isClicked(e)) {
+                swapBackground();
+            }  
+        }
+        time = SDL_GetTicks();
+        if ((time - lastUpdate) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {
+            draw();
+            lastUpdate = time;
+        }
+        //once we have drawn the system, check that all cars haven't reached the end.
+        if (!carHandler->isNotDone()) {
+            quit = true;
+        }
+    }
+}
+
+vector<vector<Intersection*>*>* System::getIntersections() {
+    return infrastructure->getIntersections();
+}
+
 void System::close()  {
     //Deallocate surface
     SDL_FreeSurface( screenSurface );

@@ -44,3 +44,13 @@ int CarHandler::size() {
 void CarHandler::updateCar(int index, float time) {
     cars->at(index)->update(time);
 }
+
+//function for checking if the cars have all come to rest
+bool CarHandler::isNotDone() {
+    for (int i = 0; i < cars->size(); i++) {
+        if (cars->at(i)->isNotRest()) {
+            return true;
+        }
+    }
+    return false;
+}

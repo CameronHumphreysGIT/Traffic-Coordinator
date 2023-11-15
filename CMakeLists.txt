@@ -14,8 +14,26 @@ add_custom_command(TARGET main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${PROJECT_SOURCE_DIR}/libs"
         $<TARGET_FILE_DIR:main>)
-add_subdirectory(test)
-target_compile_features(main PUBLIC cxx_std_14)
+
+#add_definitions(-DUNICODE -D_UNICODE)
+find_package(Catch2 3 REQUIRED)
+
+#compile and link the tests.exe
+# These tests can use the Catch2-provided main
+add_executable(tests ${PROJECT_SOURCE_DIR}/test/test.cpp)
+target_link_libraries(tests 
+    PUBLIC Catch2::Catch2WithMain
+    PUBLIC src)
+
+#custom command copies the necessary dll and images over to build/test/:
+#message("doing custom command")
+#add_custom_command(TARGET tests POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_directory
+#        "${PROJECT_SOURCE_DIR}/libs"
+#        $<TARGET_FILE_DIR:tests>)
+#
+target_compile_features(main PUBLIC cxx_std_20)
+target_compile_features(tests PUBLIC cxx_std_20)
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 #set(SDL2_DIR "C:\\Users\\Cameron\\Desktop\\SDL2-2.28.5") 
 #

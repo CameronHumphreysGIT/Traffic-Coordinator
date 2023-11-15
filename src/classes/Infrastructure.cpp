@@ -33,6 +33,10 @@ Intersection* Infrastructure::getI(int row, int column) {
     return intersections->at(row)->at(column);
 }
 
+vector<vector<Intersection*>*>* Infrastructure::getIntersections() {
+    return intersections;
+}
+
 void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     //surface must be locked for modification
     SDL_LockSurface(screenSurface);
