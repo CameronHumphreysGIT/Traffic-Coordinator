@@ -34,6 +34,10 @@ float* Car::getRotation() {
     return &rotation;
 }
 
+pair<int,int> Car::getPos() {
+    return {chassis->x, chassis->y};
+}
+
 void Car::addPath(vector<pair<float, float>> path) {
     paths->push_back(path);
     //start moving

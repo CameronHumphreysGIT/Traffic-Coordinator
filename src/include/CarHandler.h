@@ -11,6 +11,7 @@ class CarHandler {
         CarHandler();
         ~CarHandler();
         std::pair<std::vector<SDL_Rect*>,std::vector<float*>> getData();
+        Car* getCar(int );
         bool setRoute(int ,std::vector<Intersection*>* );
         void addCar(std::pair<float, float> , float );
         int size();

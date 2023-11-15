@@ -29,6 +29,7 @@ class Car {
         ~Car();
         SDL_Rect* getChassis();
         float* getRotation();
+        std::pair<int,int> getPos();
         void addPath(std::vector<std::pair<float, float>>);
         void update(float );
         void updatePos(float );

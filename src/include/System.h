@@ -29,14 +29,16 @@ class System {
         ~System();
         bool init();
         bool loadMedia(bool);
-        void swapBackground();
-        void close();
         void buildInfrastructure();
+        void swapBackground();
+        std::vector<std::vector<Intersection*>*>* getIntersections();
+        CarHandler* getCarHandler();
         void scenario(int );
         void draw();
         void run();
         void run(int );
-        std::vector<std::vector<Intersection*>*>* getIntersections();
+        void close();
+
 };
 
 

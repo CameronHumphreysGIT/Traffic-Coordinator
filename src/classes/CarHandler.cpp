@@ -28,6 +28,11 @@ pair<vector<SDL_Rect*>, vector<float*>>CarHandler::getData() {
     return {rects, rotations};
 }
 
+//function used in Testing
+Car* CarHandler::getCar(int index) {
+    return cars->at(index);
+}
+
 bool CarHandler::setRoute(int index, vector<Intersection*>* path) {
     return router->setRoute((cars->at(index)), path);
 }

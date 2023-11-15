@@ -66,15 +66,17 @@ bool System::init()   {
 
 //loads media and sets the backgroundTexture
 bool System::loadMedia(bool svgFlag)  {
+    
     SDL_Surface* background;
     //used temporarily to read from a file
     SDL_RWops* io;
     //Loading success flag
     bool success = true;
     io = SDL_RWFromFile(Variables::MAP_PATH, "r");
+    cout<<"TESTING"<<SDL_GetBasePath()<<" "<<io<<" "<<"\n";
     background = IMG_LoadPNG_RW(io);
     if( background == NULL )   {
-        cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
+        cout<<"Unable to load image"<<Variables::MAP_PATH<<"! SDL Error: "<<SDL_GetError();
         success = false;
     }
     //blitting the surface sets the surface.
@@ -82,7 +84,7 @@ bool System::loadMedia(bool svgFlag)  {
     //we now turn that surface into a texture
     satalliteBackground = SDL_CreateTextureFromSurface(renderer, screenSurface);
 
-    io = SDL_RWFromFile(Variables::BACKGROUND_PATH, "r+");
+    io = SDL_RWFromFile(Variables::BACKGROUND_PATH, "r");
     background = IMG_LoadSVG_RW(io);
     if( background == NULL )   {
         cout<<"Unable to load image"<<Variables::BACKGROUND_PATH<<"! SDL Error: "<<SDL_GetError();
@@ -127,6 +129,15 @@ void System::buildInfrastructure() {
     infrastructure->print();
     //redraw background
     swapBackground();
+}
+
+//This getter is used in testing
+vector<vector<Intersection*>*>* System::getIntersections() {
+    return infrastructure->getIntersections();
+}
+//This getter is used in testing
+CarHandler* System::getCarHandler() {
+    return carHandler;
 }
 
 void System::scenario(int scenario) {
@@ -216,10 +227,6 @@ void System::run(int timeout) {
             quit = true;
         }
     }
-}
-
-vector<vector<Intersection*>*>* System::getIntersections() {
-    return infrastructure->getIntersections();
 }
 
 void System::close()  {
