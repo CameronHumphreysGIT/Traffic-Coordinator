@@ -1,6 +1,0 @@
-# CMake generation dependency list for this directory.
-C:/Program Files (x86)/Catch2/lib/cmake/Catch2/Catch2Config.cmake
-C:/Program Files (x86)/Catch2/lib/cmake/Catch2/Catch2ConfigVersion.cmake
-C:/Program Files (x86)/Catch2/lib/cmake/Catch2/Catch2Targets-debug.cmake
-C:/Program Files (x86)/Catch2/lib/cmake/Catch2/Catch2Targets.cmake
-C:/Users/Cameron/Documents/COMP4905/Traffic Coordinator/test/CMakeLists.txt
