@@ -37,6 +37,21 @@ vector<vector<Intersection*>*>* Infrastructure::getIntersections() {
     return intersections;
 }
 
+vector<vector<vector<pair<float, float>>>> Infrastructure::getSampled() {
+    return sampledRoads;
+}
+
+vector<vector<vector<vector<pair<float, float>>>>> Infrastructure::getLights() {
+    vector<vector<vector<vector<pair<float, float>>>>> vec;
+    for (int i = 0; i < intersections->size(); i++) {
+        for (int i2 = 0; i2 < (intersections->at(i)->size()); i2++) {
+            vec.push_back(intersections->at(i)->at(i2)->getLights());
+        }
+    }
+    return vec;
+}
+
+
 void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     //surface must be locked for modification
     SDL_LockSurface(screenSurface);
@@ -84,10 +99,6 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
     colourCorners(pixelArray, pitch, bytes);
     buildRoads();
     SDL_UnlockSurface(screenSurface);
-}
-
-vector<vector<vector<pair<float, float>>>> Infrastructure::getSampled() {
-    return sampledRoads;
 }
 
 void Infrastructure::buildRoads() {

@@ -3,13 +3,13 @@
 #include <Variables.h>
 using namespace std;
 
-
-
+//enum trafficDirs {Vertical = 1, Horizontal = 0};
 Intersection::Intersection() {
     top = new Road;
     right = new Road;
     bottom = new Road;
     left = new Road;
+    isVerticalGreen = false;
     //loop through each side, and set internals
     for (int side = Variables::TOP; side != Variables::END; side++) {
         for (int side2 = Variables::TOP; side2 != Variables::END; side2++) {
@@ -129,6 +129,50 @@ vector<vector<pair<float, float>>> Intersection::getSampledInternals(Variables::
     //use in conjunction with
     //sampledRoads.push_back(intersections->at(1)->at(1)->getSampledInternals(Variables::BOTTOM));
     vector<vector<pair<float, float>>> vec = {internals[side][Variables::TOP]->getSampled(),internals[side][Variables::RIGHT]->getSampled(),internals[side][Variables::BOTTOM]->getSampled(),internals[side][Variables::LEFT]->getSampled()};
+    return vec;
+}
+
+//using vectors instead of pairs to make this more readable, vec.at(0) is greenlights, vec.at(1) are redlights
+vector<vector<vector<pair<float, float>>>> Intersection::getLights() {
+    vector<vector<vector<pair<float, float>>>> vec = {{},{}};
+    pair<int,int> noNeighbor = {-1,-1};
+    for (int i = 0; i < 4; i++) {
+        //check we have a neighbor at the location
+        if (neighbors[i] != noNeighbor) {
+            //are the vertical pathways green
+            if (isVerticalGreen) {
+                //greenlights
+                if ((i == Variables::TOP)) {
+                    vec.at(0).push_back({this->topLeft,this->topRight});
+                }
+                if ((i == Variables::BOTTOM)) {
+                    vec.at(0).push_back({this->bottomLeft,this->bottomRight});
+                }
+                //setReds
+                if ((i == Variables::LEFT)) {
+                    vec.at(1).push_back({this->topLeft,this->bottomLeft});
+                }
+                if ((i == Variables::RIGHT)) {
+                    vec.at(1).push_back({this->topRight,this->bottomRight});
+                }
+            }else {
+                //horizontal pathways green
+                if ((i == Variables::LEFT)) {
+                    vec.at(0).push_back({this->topLeft,this->bottomLeft});
+                }
+                if ((i == Variables::RIGHT)) {
+                    vec.at(0).push_back({this->topRight,this->bottomRight});
+                }
+                //set redlights:
+                if ((i == Variables::TOP)) {
+                    vec.at(1).push_back({this->topLeft,this->topRight});
+                }
+                if ((i == Variables::BOTTOM)) {
+                    vec.at(1).push_back({this->bottomLeft,this->bottomRight});
+                }
+            }
+        }
+    }
     return vec;
 }
 

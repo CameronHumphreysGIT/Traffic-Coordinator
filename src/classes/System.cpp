@@ -321,6 +321,8 @@ void System::draw() {
     scene->clear();
     scene->drawBackground(backgroundTexture);
     scene->drawRoads(sampled);
+    vector<vector<vector<vector<pair<float, float>>>>> lights = infrastructure->getLights();
+    scene->drawLights(lights);
     scene->drawCars(rects, carTexture, rotations);
     scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
     scene->present();

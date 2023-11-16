@@ -66,6 +66,27 @@ void Scene::drawCars(vector<SDL_Rect*> rectangles, SDL_Texture* carTexture, vect
     }
 }
 
+void Scene::drawLights(vector<vector<vector<vector<pair<float, float>>>>> lights) {
+    for (int i = 0; i < lights.size(); i++) {
+        //draw green:
+        SDL_SetRenderDrawColor(renderer, 0,200,0, SDL_ALPHA_OPAQUE);
+        for (int i2 = 0; i2 < lights.at(i).at(0).size(); i2++) {
+            //loop through the ligns
+            pair<float, float> p1 = lights.at(i).at(0).at(i2).at(0);
+            pair<float, float> p2 = lights.at(i).at(0).at(i2).at(1);
+            SDL_RenderDrawLine(renderer, p1.first, p1.second, p2.first, p2.second);
+        }
+        //draw redligns:
+        SDL_SetRenderDrawColor(renderer, 200,0,0, SDL_ALPHA_OPAQUE);
+        for (int i2 = 0; i2 < lights.at(i).at(1).size(); i2++) {
+            //loop through the ligns
+            pair<float, float> p1 = lights.at(i).at(1).at(i2).at(0);
+            pair<float, float> p2 = lights.at(i).at(1).at(i2).at(1);
+            SDL_RenderDrawLine(renderer, p1.first, p1.second, p2.first, p2.second);
+        }
+    }
+}
+
 void Scene::drawButton(SDL_Rect* borders, vector<int> colour, const char * words) {
     SDL_SetRenderDrawColor(renderer, colour.at(0), colour.at(1), colour.at(2), SDL_ALPHA_OPAQUE);
     //create a text surface

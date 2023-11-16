@@ -25,9 +25,10 @@ class Infrastructure {
         bool removeI(Intersection*);
         Intersection* getI(int, int);
         std::vector<std::vector<Intersection*>*>* getIntersections();
+        std::vector<std::vector<std::vector<std::pair<float, float>>>> getSampled();
+        std::vector<std::vector<std::vector<std::vector<std::pair<float, float>>>>> getLights();
         void buildInfrastructure(SDL_Surface*);
         void buildRoads();
-        std::vector<std::vector<std::vector<std::pair<float, float>>>> getSampled();
         void print();      
 };
 

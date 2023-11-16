@@ -13,6 +13,8 @@ class Intersection : public Rectangle {
         Road* right;
         Road* bottom;
         Road* left;
+        //boolean to represent if the vertical pathways are green
+        bool isVerticalGreen;
         //internals is a 2d array of sides
         Road* internals[4][4];
     public:
@@ -28,6 +30,7 @@ class Intersection : public Rectangle {
         pair<int,int> getNeighbor(Variables::Side);
         vector<vector<pair<float, float>>> getSampled();
         vector<vector<pair<float, float>>> getSampledInternals(Variables::Side);
+        vector<vector<vector<pair<float, float>>>> getLights();
         void print();
 };
 
