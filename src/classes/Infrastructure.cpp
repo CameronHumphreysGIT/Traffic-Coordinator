@@ -87,7 +87,6 @@ void Infrastructure::buildInfrastructure(SDL_Surface* screenSurface) {
 }
 
 vector<vector<vector<pair<float, float>>>> Infrastructure::getSampled() {
-    sampledRoads.push_back(intersections->at(0)->at(2)->getSampledInternals(Variables::LEFT));
     return sampledRoads;
 }
 

@@ -73,7 +73,6 @@ bool System::loadMedia(bool svgFlag)  {
     //Loading success flag
     bool success = true;
     io = SDL_RWFromFile(Variables::MAP_PATH, "r");
-    cout<<"TESTING"<<SDL_GetBasePath()<<" "<<io<<" "<<"\n";
     background = IMG_LoadPNG_RW(io);
     if( background == NULL )   {
         cout<<"Unable to load image"<<Variables::MAP_PATH<<"! SDL Error: "<<SDL_GetError();
@@ -141,26 +140,100 @@ CarHandler* System::getCarHandler() {
 }
 
 void System::scenario(int scenario) {
-    switch (scenario) {
-        case 0:
-            //This function exists to create a car and a path for the car.
-            //update the time
-            time = SDL_GetTicks();
-            //Car wants time in seconds, the carHandler will make the car
-            carHandler->addCar({0,0}, (time * 0.001f));
-            Intersection* i1 = infrastructure->getI(0,0);
-            Intersection* i2 = infrastructure->getI(0,1);
-            Intersection* i3 = infrastructure->getI(0,2);
-            Intersection* i4 = infrastructure->getI(1,0);
-            Intersection* i5 = infrastructure->getI(1,1);
-            vector<Intersection*>* vec = new vector<Intersection*>();
-            vec->push_back(i1);
-            vec->push_back(i2);
-            vec->push_back(i3);
-            vec->push_back(i4);
-            vec->push_back(i5);
-            assert(carHandler->setRoute(0, vec));
-            break;
+    //using an iff statement instead of switch to avoid redefinition issues
+    if (scenario == 0) {
+        //This function exists to create a car and a path for the car.
+        //update the time
+        time = SDL_GetTicks();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({0,0}, (time * 0.001f));
+        Intersection* i1 = infrastructure->getI(0,0);
+        Intersection* i2 = infrastructure->getI(0,1);
+        Intersection* i3 = infrastructure->getI(0,2);
+        Intersection* i4 = infrastructure->getI(1,0);
+        Intersection* i5 = infrastructure->getI(1,1);
+        vector<Intersection*> vec = {i1,i2,i3,i4,i5};
+        //vec->push_back(i1);
+        //vec->push_back(i2);
+        //vec->push_back(i3);
+        //vec->push_back(i4);
+        //vec->push_back(i5);
+        assert(carHandler->setRoute(0, &vec));
+    }
+    if (scenario == 1) {
+        //This function exists to create a car and a path for the car.
+        //update the time
+        time = SDL_GetTicks();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({319,369}, (time * 0.001f));//orig(9,1) //dest (8,2)
+        Intersection* i1 = infrastructure->getI(9,1);
+        Intersection* i2 = infrastructure->getI(9,0);
+        Intersection* i3 = infrastructure->getI(8,5);
+        Intersection* i4 = infrastructure->getI(8,4);
+        Intersection* i5 = infrastructure->getI(8,3);
+        Intersection* i6 = infrastructure->getI(8,2);
+        vector<Intersection*> vec = {i1,i2,i3,i4,i5,i6};
+        assert(carHandler->setRoute(0, &vec));
+        carHandler->addCar({144,579}, (time * 0.001f));//orig(16,0) //dest (3,0)
+        i1 = infrastructure->getI(16,0);
+        i2 = infrastructure->getI(14,1);
+        i3 = infrastructure->getI(11,4);
+        i4 = infrastructure->getI(8,3);
+        i5 = infrastructure->getI(8,4);
+        i6 = infrastructure->getI(5,4);
+        Intersection* i7 = infrastructure->getI(5,5);
+        Intersection* i8 = infrastructure->getI(4,0);
+        Intersection* i9 = infrastructure->getI(3,0);
+        vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9};
+        assert(carHandler->setRoute(1, &vec));
+        carHandler->addCar({130,351}, (time * 0.001f));//orig(8,5) //dest (11,13)
+        i1 = infrastructure->getI(8,5);
+        i2 = infrastructure->getI(9,0);
+        i3 = infrastructure->getI(9,1);
+        i4 = infrastructure->getI(9,2);
+        i5 = infrastructure->getI(9,3);
+        i6 = infrastructure->getI(9,4);
+        i7 = infrastructure->getI(9,5);
+        i8 = infrastructure->getI(9,6);
+        i9 = infrastructure->getI(9,7);
+        Intersection* i10 = infrastructure->getI(10,7);
+        Intersection* i11 = infrastructure->getI(11,13);
+        vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11};
+        assert(carHandler->setRoute(2, &vec));
+        carHandler->addCar({273,215}, (time * 0.001f));//orig(4,0) //dest (16,0)
+        i1 = infrastructure->getI(4,0);
+        i2 = infrastructure->getI(5,5);
+        i3 = infrastructure->getI(6,0);
+        i4 = infrastructure->getI(7,0);
+        i5 = infrastructure->getI(8,5);
+        i6 = infrastructure->getI(9,0);
+        i7 = infrastructure->getI(10,0);
+        i8 = infrastructure->getI(11,6);
+        i9 = infrastructure->getI(12,3);
+        i10 = infrastructure->getI(13,0);
+        i11 = infrastructure->getI(14,3);
+        Intersection* i12 = infrastructure->getI(14,2);
+        Intersection* i13 = infrastructure->getI(14,1);
+        Intersection* i14 = infrastructure->getI(16,0);
+        vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11, i12, i13, i14};
+        assert(carHandler->setRoute(3, &vec));
+        carHandler->addCar({717,453}, (time * 0.001f));//orig(11,12) //dest (8,1)
+        i1 = infrastructure->getI(11,12);
+        i2 = infrastructure->getI(11,11);
+        i3 = infrastructure->getI(11,10);
+        i4 = infrastructure->getI(11,9);
+        i5 = infrastructure->getI(11,8);
+        i6 = infrastructure->getI(11,7);
+        i7 = infrastructure->getI(11,6);
+        i8 = infrastructure->getI(10,0);
+        i9 = infrastructure->getI(9,0);
+        i10 = infrastructure->getI(8,5);
+        i11 = infrastructure->getI(8,4);
+        i12 = infrastructure->getI(8,3);
+        i13 = infrastructure->getI(8,2);
+        i14 = infrastructure->getI(8,1);
+        vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11, i12, i13, i14};
+        assert(carHandler->setRoute(4, &vec));
     }
 }
 
@@ -213,9 +286,13 @@ void System::run(int timeout) {
     while(!quit && (int)((time - startTime)/1000) < timeout)  {
         //check for quit
         while(SDL_PollEvent(&e) != 0)    {
-            if(toggleBackground->isClicked(e)) {
-                swapBackground();
-            }  
+            if(e.type == SDL_QUIT) {
+                quit = true;
+            }else {
+                if(toggleBackground->isClicked(e)) {
+                    swapBackground();
+                };
+            }
         }
         time = SDL_GetTicks();
         if ((time - lastUpdate) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {

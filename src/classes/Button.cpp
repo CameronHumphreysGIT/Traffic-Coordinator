@@ -1,5 +1,6 @@
 #include <Button.h>
 #include <Variables.h>
+#include <iostream>
 
 using namespace std;
 
@@ -32,7 +33,7 @@ bool Button::isClicked(SDL_Event &e) {
         case SDL_MOUSEBUTTONDOWN:
             //mouse clicked
             if (isWithin(x,y)) {
-                if (text == "Satallite Off") {
+                if (strcmp(text,"Satallite Off") == 0) {
                     text = "Satallite On";
                 }else {
                     text = "Satallite Off";

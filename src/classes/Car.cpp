@@ -42,7 +42,6 @@ void Car::addPath(vector<pair<float, float>> path) {
     paths->push_back(path);
     //start moving
     state = moving;
-    cout<<paths->size();
 }
 
 void Car::update(float time) {
