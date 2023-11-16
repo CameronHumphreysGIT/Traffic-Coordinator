@@ -140,39 +140,50 @@ CarHandler* System::getCarHandler() {
 }
 
 void System::scenario(int scenario) {
-    //using an iff statement instead of switch to avoid redefinition issues
+    //declare all the variables:
+    Intersection* i1;
+    Intersection* i2;
+    Intersection* i3;
+    Intersection* i4;
+    Intersection* i5;
+    Intersection* i6;
+    Intersection* i7;
+    Intersection* i8;
+    Intersection* i9;
+    Intersection* i10;
+    Intersection* i11;
+    Intersection* i12;
+    Intersection* i13;
+    Intersection* i14;
+    vector<Intersection*> vec;
+    //using an if statement instead of switch to avoid redefinition issues
     if (scenario == 0) {
         //This function exists to create a car and a path for the car.
         //update the time
         time = SDL_GetTicks();
         //Car wants time in seconds, the carHandler will make the car
         carHandler->addCar({0,0}, (time * 0.001f));
-        Intersection* i1 = infrastructure->getI(0,0);
-        Intersection* i2 = infrastructure->getI(0,1);
-        Intersection* i3 = infrastructure->getI(0,2);
-        Intersection* i4 = infrastructure->getI(1,0);
-        Intersection* i5 = infrastructure->getI(1,1);
-        vector<Intersection*> vec = {i1,i2,i3,i4,i5};
-        //vec->push_back(i1);
-        //vec->push_back(i2);
-        //vec->push_back(i3);
-        //vec->push_back(i4);
-        //vec->push_back(i5);
+        i1 = infrastructure->getI(0,0);
+        i2 = infrastructure->getI(0,1);
+        i3 = infrastructure->getI(0,2);
+        i4 = infrastructure->getI(1,0);
+        i5 = infrastructure->getI(1,1);
+        vec = {i1,i2,i3,i4,i5};
         assert(carHandler->setRoute(0, &vec));
     }
     if (scenario == 1) {
-        //This function exists to create a car and a path for the car.
+        //five cars random start random end.
         //update the time
         time = SDL_GetTicks();
         //Car wants time in seconds, the carHandler will make the car
         carHandler->addCar({319,369}, (time * 0.001f));//orig(9,1) //dest (8,2)
-        Intersection* i1 = infrastructure->getI(9,1);
-        Intersection* i2 = infrastructure->getI(9,0);
-        Intersection* i3 = infrastructure->getI(8,5);
-        Intersection* i4 = infrastructure->getI(8,4);
-        Intersection* i5 = infrastructure->getI(8,3);
-        Intersection* i6 = infrastructure->getI(8,2);
-        vector<Intersection*> vec = {i1,i2,i3,i4,i5,i6};
+        i1 = infrastructure->getI(9,1);
+        i2 = infrastructure->getI(9,0);
+        i3 = infrastructure->getI(8,5);
+        i4 = infrastructure->getI(8,4);
+        i5 = infrastructure->getI(8,3);
+        i6 = infrastructure->getI(8,2);
+        vec = {i1,i2,i3,i4,i5,i6};
         assert(carHandler->setRoute(0, &vec));
         carHandler->addCar({144,579}, (time * 0.001f));//orig(16,0) //dest (3,0)
         i1 = infrastructure->getI(16,0);
@@ -181,9 +192,9 @@ void System::scenario(int scenario) {
         i4 = infrastructure->getI(8,3);
         i5 = infrastructure->getI(8,4);
         i6 = infrastructure->getI(5,4);
-        Intersection* i7 = infrastructure->getI(5,5);
-        Intersection* i8 = infrastructure->getI(4,0);
-        Intersection* i9 = infrastructure->getI(3,0);
+        i7 = infrastructure->getI(5,5);
+        i8 = infrastructure->getI(4,0);
+        i9 = infrastructure->getI(3,0);
         vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9};
         assert(carHandler->setRoute(1, &vec));
         carHandler->addCar({130,351}, (time * 0.001f));//orig(8,5) //dest (11,13)
@@ -196,8 +207,8 @@ void System::scenario(int scenario) {
         i7 = infrastructure->getI(9,5);
         i8 = infrastructure->getI(9,6);
         i9 = infrastructure->getI(9,7);
-        Intersection* i10 = infrastructure->getI(10,7);
-        Intersection* i11 = infrastructure->getI(11,13);
+        i10 = infrastructure->getI(10,7);
+        i11 = infrastructure->getI(11,13);
         vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11};
         assert(carHandler->setRoute(2, &vec));
         carHandler->addCar({273,215}, (time * 0.001f));//orig(4,0) //dest (16,0)
@@ -212,9 +223,9 @@ void System::scenario(int scenario) {
         i9 = infrastructure->getI(12,3);
         i10 = infrastructure->getI(13,0);
         i11 = infrastructure->getI(14,3);
-        Intersection* i12 = infrastructure->getI(14,2);
-        Intersection* i13 = infrastructure->getI(14,1);
-        Intersection* i14 = infrastructure->getI(16,0);
+        i12 = infrastructure->getI(14,2);
+        i13 = infrastructure->getI(14,1);
+        i14 = infrastructure->getI(16,0);
         vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11, i12, i13, i14};
         assert(carHandler->setRoute(3, &vec));
         carHandler->addCar({717,453}, (time * 0.001f));//orig(11,12) //dest (8,1)
@@ -234,6 +245,67 @@ void System::scenario(int scenario) {
         i14 = infrastructure->getI(8,1);
         vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11, i12, i13, i14};
         assert(carHandler->setRoute(4, &vec));
+    }
+    if (scenario == 2) {
+        //6 cars around 1 intersection to test traffic
+        //update the time
+        time = SDL_GetTicks();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({544,105}, (time * 0.001f));//orig(1,2) //dest (0,3)
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(0,3);
+        vec = {i1,i2,i3};
+        assert(carHandler->setRoute(0, &vec));
+
+        carHandler->addCar({544,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        vec = {i1,i2,i3};
+        assert(carHandler->setRoute(1, &vec));
+
+        carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (0,3)
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(0,3);
+        vec = {i1,i2,i3};
+        assert(carHandler->setRoute(2, &vec));
+
+        carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (1,2)
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        vec = {i1,i2,i3};
+        assert(carHandler->setRoute(3, &vec));
+
+        carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (0,3)
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(0,3);
+        vec = {i1,i2,i3};
+        assert(carHandler->setRoute(4, &vec));
+
+        carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (1,2)
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        vec = {i1,i2,i3};
+        assert(carHandler->setRoute(5, &vec));
+
+        carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,2)
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        vec = {i1,i2,i3};
+        assert(carHandler->setRoute(6, &vec));
+
+        carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,0)
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        vec = {i1,i2,i3};
+        assert(carHandler->setRoute(7, &vec));
     }
 }
 
