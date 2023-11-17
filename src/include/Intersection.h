@@ -21,6 +21,8 @@ class Intersection {
         bool isVerticalGreen;
         //internals is a 2d array of sides
         Road* internals[4][4];
+        //float for the time that the last intersection change was made
+        float lastChange;
     public:
         Intersection();
         ~Intersection();
@@ -38,6 +40,7 @@ class Intersection {
         vector<vector<pair<float, float>>> getSampled();
         vector<vector<pair<float, float>>> getSampledInternals(Variables::Side);
         vector<vector<vector<pair<float, float>>>> getLights();
+        bool isPassable(pair<int, int> , float );
         void print();
 };
 

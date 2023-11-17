@@ -16,6 +16,7 @@ Intersection::Intersection() {
             internals[side][side2] = new Road();
         }
     }
+    lastChange = 0;
 }
 
 Intersection::~Intersection() {
@@ -87,10 +88,10 @@ void Intersection::setLeft(Road* r, pair<int,int> i) {
 
 void Intersection::setInternal(Variables::Side side) {
     //these four points are the four endpoints of the internal paths
-    pair<int, int> topPoint = this->topRight;
-    pair<int, int> leftPoint = this->topLeft;
-    pair<int, int> rightPoint = this->bottomRight;
-    pair<int, int> bottomPoint = this->bottomLeft;
+    pair<float, float> topPoint = {(float)topRight.first, (float)topRight.second};
+    pair<float, float> leftPoint = {(float)topLeft.first, (float)topLeft.second};
+    pair<float, float> rightPoint = {(float)bottomRight.first, (float)bottomRight.second};
+    pair<float, float> bottomPoint = {(float)bottomLeft.first, (float)bottomLeft.second};
 
     topPoint.first -= (Variables::INTERSECTION_DIMS / 4);
     leftPoint.second += (Variables::INTERSECTION_DIMS / 4);
@@ -100,7 +101,7 @@ void Intersection::setInternal(Variables::Side side) {
     switch(side) {
         case Variables::TOP:
             //redefine toppoint to the insert point
-            topPoint = this->topLeft;
+            topPoint = {(float)topLeft.first, (float)topLeft.second};
             topPoint.first += (Variables::INTERSECTION_DIMS / 4);
             internals[side][Variables::RIGHT]->setShortPath(topPoint,{topPoint.first, (topPoint.second + (Variables::INTERSECTION_DIMS / 2))}, rightPoint, {(rightPoint.first - (Variables::INTERSECTION_DIMS / 2)), rightPoint.second});
             internals[side][Variables::BOTTOM]->setPath(topPoint,bottomPoint);
@@ -108,7 +109,7 @@ void Intersection::setInternal(Variables::Side side) {
             break;
         case Variables::RIGHT:
             //redefine rightpoint to the insert point
-            rightPoint = this->topRight;
+            rightPoint = {(float)topRight.first, (float)topRight.second};
             rightPoint.second += (Variables::INTERSECTION_DIMS / 4);
             internals[side][Variables::TOP]->setPath(rightPoint,topPoint);
             internals[side][Variables::BOTTOM]->setShortPath(rightPoint,{(rightPoint.first - (Variables::INTERSECTION_DIMS / 2)), rightPoint.second}, bottomPoint, {bottomPoint.first, (bottomPoint.second - (Variables::INTERSECTION_DIMS / 2))});
@@ -116,7 +117,7 @@ void Intersection::setInternal(Variables::Side side) {
             break;
         case Variables::BOTTOM:
             //redefine bottompoint to the insert point
-            bottomPoint = this->bottomRight;
+            bottomPoint = {(float)bottomRight.first, (float)bottomRight.second};
             bottomPoint.first -= (Variables::INTERSECTION_DIMS / 4);
             internals[side][Variables::TOP]->setPath(bottomPoint,topPoint);
             internals[side][Variables::RIGHT]->setPath(bottomPoint,rightPoint);
@@ -124,7 +125,7 @@ void Intersection::setInternal(Variables::Side side) {
             break;
         case Variables::LEFT:
             //redefine leftpoint to the insert point
-            leftPoint = this->bottomLeft;
+            leftPoint = {(float)bottomLeft.first, (float)bottomLeft.second};
             leftPoint.second -= (Variables::INTERSECTION_DIMS / 4);
             internals[side][Variables::TOP]->setShortPath(leftPoint,{(leftPoint.first + (Variables::INTERSECTION_DIMS / 2)), leftPoint.second}, topPoint, {topPoint.first, (topPoint.second + (Variables::INTERSECTION_DIMS / 2))});
             internals[side][Variables::RIGHT]->setPath(leftPoint,rightPoint);
@@ -174,37 +175,73 @@ vector<vector<vector<pair<float, float>>>> Intersection::getLights() {
             if (isVerticalGreen) {
                 //greenlights
                 if ((i == Variables::TOP)) {
-                    vec.at(0).push_back({this->topLeft,this->topRight});
+                    vec.at(0).push_back({{(float)topLeft.first, (float)topLeft.second},{(float)topRight.first, (float)topRight.second}});
                 }
                 if ((i == Variables::BOTTOM)) {
-                    vec.at(0).push_back({this->bottomLeft,this->bottomRight});
+                    vec.at(0).push_back({{(float)bottomLeft.first, (float)bottomLeft.second},{(float)bottomRight.first, (float)bottomRight.second}});
                 }
                 //setReds
                 if ((i == Variables::LEFT)) {
-                    vec.at(1).push_back({this->topLeft,this->bottomLeft});
+                    vec.at(1).push_back({{(float)topLeft.first, (float)topLeft.second},{(float)bottomLeft.first, (float)bottomLeft.second}});
                 }
                 if ((i == Variables::RIGHT)) {
-                    vec.at(1).push_back({this->topRight,this->bottomRight});
+                    vec.at(1).push_back({{(float)topRight.first, (float)topRight.second},{(float)bottomRight.first, (float)bottomRight.second}});
                 }
             }else {
                 //horizontal pathways green
                 if ((i == Variables::LEFT)) {
-                    vec.at(0).push_back({this->topLeft,this->bottomLeft});
+                    vec.at(0).push_back({{(float)topLeft.first, (float)topLeft.second},{(float)bottomLeft.first, (float)bottomLeft.second}});
                 }
                 if ((i == Variables::RIGHT)) {
-                    vec.at(0).push_back({this->topRight,this->bottomRight});
+                    vec.at(0).push_back({{(float)topRight.first, (float)topRight.second},{(float)bottomRight.first, (float)bottomRight.second}});
                 }
                 //set redlights:
                 if ((i == Variables::TOP)) {
-                    vec.at(1).push_back({this->topLeft,this->topRight});
+                    vec.at(1).push_back({{(float)topLeft.first, (float)topLeft.second},{(float)topRight.first, (float)topRight.second}});
                 }
                 if ((i == Variables::BOTTOM)) {
-                    vec.at(1).push_back({this->bottomLeft,this->bottomRight});
+                    vec.at(1).push_back({{(float)bottomLeft.first, (float)bottomLeft.second},{(float)bottomRight.first, (float)bottomRight.second}});
                 }
             }
         }
     }
     return vec;
+}
+
+//function to determine if a car can pass a side of the intersection
+bool Intersection::isPassable(pair<int, int> pos, float time) {
+    //check if we should change the lights
+    bool lightsChange = false;
+    if (lastChange == 0 || (time - lastChange) > Variables::LIGHTTIME) {
+        lightsChange = true;
+        lastChange = time;
+    }
+    //check if passable
+    bool passable;
+    if (pos.second < topLeft.second) {
+        //is above
+        passable = isVerticalGreen;
+    }
+    if (pos.second > bottomRight.second) {
+        //is below
+        passable = isVerticalGreen;
+    }
+    if (pos.first < topLeft.first) {
+        //is left
+        passable = !isVerticalGreen;
+    }
+    if (pos.first > bottomRight.first) {
+        //is right
+        passable = !isVerticalGreen;
+    }
+    //if we are supposed to change the lights, and the car can't pass
+    if (lightsChange && !passable) {
+        //change the lights
+        isVerticalGreen = !isVerticalGreen;
+        //it now is passable
+        passable = !passable;
+    }
+    return passable;
 }
 
 void Intersection::print() {

@@ -23,12 +23,12 @@ bool Router::setRoute(Car* &car, stack<Intersection*>* route) {
                 if (prevSide == Variables::Side::END) {
                     //first route, don't worry about internals
                     //add sampled path at the side that the neigbor was found on
-                    car->addPath(current->getSampled().at(side));
+                    car->addPath(current->getSampled().at(side), false);
                 }else {
                     //this means we came from another intersection and need to path through an intersection
-                    car->addPath(current->getSampledInternals(prevSide).at(side));
+                    car->addPath(current->getSampledInternals(prevSide).at(side), true);
                     //now add the actual route
-                    car->addPath(current->getSampled().at(side));
+                    car->addPath(current->getSampled().at(side), false);
                     prevSide = (Variables::Side)side;
                 }
                 //nextside is adjacent to previous side

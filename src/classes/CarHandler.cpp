@@ -7,16 +7,20 @@ CarHandler::CarHandler() {
     cars = new vector<Car*>();
     router = new Router();
     routes = new vector<stack<Intersection*>*>;
+    trafficRules = new TrafficRules();
 }
 
 CarHandler::~CarHandler() {
     for (int i = 0; i < cars->size(); i++) {
         delete cars->at(i);
         cars->at(i) = NULL;
+        delete routes->at(i);
+        routes->at(i) = NULL;
     }
     delete cars;
     delete router;
     delete routes;
+    delete trafficRules;
 }
 
 //This function returns a pair with a vector of SDL_Rect's and a vector of floats for the rotation of each, in degrees
@@ -36,7 +40,10 @@ Car* CarHandler::getCar(int index) {
 }
 
 bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
-    routes->at(index) = route;
+    stack<Intersection*>* newRoute = new stack<Intersection*>(*route);
+    //pop the first intersection, since it's the starting point.
+    newRoute->pop();
+    routes->at(index) = newRoute;
     return router->setRoute((cars->at(index)), route);
 }
 
@@ -52,7 +59,18 @@ int CarHandler::size() {
 }
 
 void CarHandler::updateCar(int index, float time) {
-    cars->at(index)->update(time);
+    //check if the next path for this car is an internal road
+    if (cars->at(index)->isInternal()) {
+        bool passable = routes->at(index)->top()->isPassable(cars->at(index)->getPos(), time);
+        if (!passable) {
+            cars->at(index)->update(time, true);
+        }else {
+            cars->at(index)->update(time, false);
+            routes->at(index)->pop();
+        }
+    }else {
+        cars->at(index)->update(time);
+    }
 }
 
 //function for checking if the cars have all come to rest

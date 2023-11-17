@@ -17,8 +17,9 @@ Car::Car(pair<int, int> start, float time) {
     state = rest;
     lastUpdate = time;
     speed = Variables::DEFAULT_SPEED;
-    sums = {0,0};
+    sums = {0.0f,0.0f};
     rotation = 0;
+    internals = {};
 }
 
 Car::~Car() {
@@ -38,7 +39,10 @@ pair<int,int> Car::getPos() {
     return {chassis->x, chassis->y};
 }
 
-void Car::addPath(vector<pair<float, float>> path) {
+void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
+    if (isInternal) {
+        internals.push((int)paths->size());
+    }
     paths->push_back(path);
     //start moving
     state = moving;
@@ -47,6 +51,31 @@ void Car::addPath(vector<pair<float, float>> path) {
 void Car::update(float time) {
     switch(state) {
         case rest:
+            break;
+        case stopped:
+            break;
+        case moving:
+            updatePos(time);
+            break;
+    }
+    //update the update time
+    lastUpdate = time;
+}
+
+//update function, that stops the car, or starts it again
+void Car::update(float time, bool isStopped) {
+    if (isStopped) {
+        state = stopped;
+    }else {
+        //this means we are going to start moving
+        state = moving;
+        //get rid of top internal road
+        internals.pop();
+    }
+    switch(state) {
+        case rest:
+            break;
+        case stopped:
             break;
         case moving:
             updatePos(time);
@@ -58,7 +87,7 @@ void Car::update(float time) {
 
 void Car::updatePos(float time) {
     float deltaTime = time - lastUpdate;
-    pair<float, float> oldPos = {chassis->x, chassis->y};
+    pair<float, float> oldPos = {(float)chassis->x, (float)chassis->y};
     pair<float, float> dir = paths->at(currentPath).at(currentWaypoint) - oldPos;
     //I used a vector2 here since it's more mathamatically analageous
     Vector2 direction = {dir.first, dir.second};
@@ -127,10 +156,10 @@ void Car::rotate(Vector2 direction) {
         //Wraps the angle between 0 and 360 degrees, addition and subtraction is sed to avoid snapping
         //Updated to deal with degrees higher than 360 and -360
         if (rotation > 360.0f) {
-            int mul = rotation / 360;
+            int mul = (int)(rotation / 360);
             rotation -= 360.0f * mul;
         }else if (rotation < 0.0f) {
-            int mul = (rotation / 360) - 1;
+            int mul = (int)((rotation / 360) - 1);
             rotation -= 360.0f * mul;
         }
     }
@@ -141,4 +170,12 @@ bool Car::isNotRest() {
         return false;
     }
     return true;
+}
+
+//function to tell if current path is an internal road
+bool Car::isInternal() {
+    if (internals.empty()) {
+        return false;
+    }
+    return (currentPath == internals.front());
 }

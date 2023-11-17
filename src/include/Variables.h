@@ -40,6 +40,8 @@ class Variables {
         static inline std::vector<int> BUTTONCOLOUR = {135, 135, 135};
         //Hover colour for buttons
         static inline std::vector<int> HOVERCOLOUR = {150, 150, 150};
+        //time in seconds that the traffic lights need to switch.
+        static inline int LIGHTTIME = 3;
 };
 
 #endif

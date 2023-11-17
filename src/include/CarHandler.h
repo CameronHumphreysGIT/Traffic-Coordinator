@@ -2,6 +2,7 @@
 #define CARHANDLER_H
 #include <Car.h>
 #include <Router.h>
+#include <TrafficRules.h>
 #include <stack>
 
 class CarHandler {
@@ -9,6 +10,7 @@ class CarHandler {
         std::vector<Car*>* cars;
         std::vector<std::stack<Intersection*>*>* routes;
         Router* router;
+        TrafficRules* trafficRules;
     public:
         CarHandler();
         ~CarHandler();

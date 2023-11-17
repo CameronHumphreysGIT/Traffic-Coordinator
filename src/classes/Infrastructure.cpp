@@ -115,7 +115,7 @@ void Infrastructure::buildRoads() {
                     //all intersections are 12x12 squares, we want the roads to go in three pixels away from the corners.
                     //incoming road from bottom.
                     Road* bottom2Me = new Road();
-                    bottom2Me->setPath({(bottom->getCorners().at(1).first - 3),(bottom->getCorners().at(1).second - 1)}, {(me->getCorners().at(3).first - 3),(me->getCorners().at(3).second + 1)});
+                    bottom2Me->setPath({(float)(bottom->getCorners().at(1).first - 3),(float)(bottom->getCorners().at(1).second - 1)}, {(float)(me->getCorners().at(3).first - 3),(float)(me->getCorners().at(3).second + 1)});
                     //the path from the node on my bottom to me is the path on its bottom side.
                     bottom->setTop(bottom2Me, me->getId());
                     //outgoing
