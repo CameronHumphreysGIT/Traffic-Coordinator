@@ -6,6 +6,7 @@ using namespace std;
 CarHandler::CarHandler() {
     cars = new vector<Car*>();
     router = new Router();
+    routes = new vector<stack<Intersection*>*>;
 }
 
 CarHandler::~CarHandler() {
@@ -15,6 +16,7 @@ CarHandler::~CarHandler() {
     }
     delete cars;
     delete router;
+    delete routes;
 }
 
 //This function returns a pair with a vector of SDL_Rect's and a vector of floats for the rotation of each, in degrees
@@ -33,13 +35,16 @@ Car* CarHandler::getCar(int index) {
     return cars->at(index);
 }
 
-bool CarHandler::setRoute(int index, vector<Intersection*>* path) {
-    return router->setRoute((cars->at(index)), path);
+bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
+    routes->at(index) = route;
+    return router->setRoute((cars->at(index)), route);
 }
 
-void CarHandler::addCar(pair<float, float> start, float time) {
+void CarHandler::addCar(pair<int, int> start, float time) {
     Car* car = new Car(start, time);
     cars->push_back(car);
+    stack<Intersection*> empty;
+    routes->push_back(&empty);
 }
 
 int CarHandler::size() {

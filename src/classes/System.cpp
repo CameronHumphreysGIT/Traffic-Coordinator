@@ -6,6 +6,7 @@
 #include <BezierPath.h>
 #include <Router.h>
 #include <SDL_ttf.h>
+#include <stack>
 
 using namespace std;
 
@@ -155,7 +156,7 @@ void System::scenario(int scenario) {
     Intersection* i12;
     Intersection* i13;
     Intersection* i14;
-    vector<Intersection*> vec;
+    stack<Intersection*> stack = {};
     //using an if statement instead of switch to avoid redefinition issues
     if (scenario == 0) {
         //This function exists to create a car and a path for the car.
@@ -168,8 +169,13 @@ void System::scenario(int scenario) {
         i3 = infrastructure->getI(0,2);
         i4 = infrastructure->getI(1,0);
         i5 = infrastructure->getI(1,1);
-        vec = {i1,i2,i3,i4,i5};
-        assert(carHandler->setRoute(0, &vec));
+        stack.push(i5);
+        stack.push(i4);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(0, &stack));
+        stack = {};
     }
     if (scenario == 1) {
         //five cars random start random end.
@@ -183,8 +189,14 @@ void System::scenario(int scenario) {
         i4 = infrastructure->getI(8,4);
         i5 = infrastructure->getI(8,3);
         i6 = infrastructure->getI(8,2);
-        vec = {i1,i2,i3,i4,i5,i6};
-        assert(carHandler->setRoute(0, &vec));
+        stack.push(i6);
+        stack.push(i5);
+        stack.push(i4);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(0, &stack));
+        stack = {};
         carHandler->addCar({144,579}, (time * 0.001f));//orig(16,0) //dest (3,0)
         i1 = infrastructure->getI(16,0);
         i2 = infrastructure->getI(14,1);
@@ -195,8 +207,17 @@ void System::scenario(int scenario) {
         i7 = infrastructure->getI(5,5);
         i8 = infrastructure->getI(4,0);
         i9 = infrastructure->getI(3,0);
-        vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9};
-        assert(carHandler->setRoute(1, &vec));
+        stack.push(i9);
+        stack.push(i8);
+        stack.push(i7);
+        stack.push(i6);
+        stack.push(i5);
+        stack.push(i4);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(1, &stack));
+        stack = {};
         carHandler->addCar({130,351}, (time * 0.001f));//orig(8,5) //dest (11,13)
         i1 = infrastructure->getI(8,5);
         i2 = infrastructure->getI(9,0);
@@ -209,8 +230,19 @@ void System::scenario(int scenario) {
         i9 = infrastructure->getI(9,7);
         i10 = infrastructure->getI(10,7);
         i11 = infrastructure->getI(11,13);
-        vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11};
-        assert(carHandler->setRoute(2, &vec));
+        stack.push(i11);
+        stack.push(i10);
+        stack.push(i9);
+        stack.push(i8);
+        stack.push(i7);
+        stack.push(i6);
+        stack.push(i5);
+        stack.push(i4);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(2, &stack));
+        stack = {};
         carHandler->addCar({273,215}, (time * 0.001f));//orig(4,0) //dest (16,0)
         i1 = infrastructure->getI(4,0);
         i2 = infrastructure->getI(5,5);
@@ -226,8 +258,22 @@ void System::scenario(int scenario) {
         i12 = infrastructure->getI(14,2);
         i13 = infrastructure->getI(14,1);
         i14 = infrastructure->getI(16,0);
-        vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11, i12, i13, i14};
-        assert(carHandler->setRoute(3, &vec));
+        stack.push(i14);
+        stack.push(i13);
+        stack.push(i12);
+        stack.push(i11);
+        stack.push(i10);
+        stack.push(i9);
+        stack.push(i8);
+        stack.push(i7);
+        stack.push(i6);
+        stack.push(i5);
+        stack.push(i4);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(3, &stack));
+        stack = {};
         carHandler->addCar({717,453}, (time * 0.001f));//orig(11,12) //dest (8,1)
         i1 = infrastructure->getI(11,12);
         i2 = infrastructure->getI(11,11);
@@ -243,8 +289,22 @@ void System::scenario(int scenario) {
         i12 = infrastructure->getI(8,3);
         i13 = infrastructure->getI(8,2);
         i14 = infrastructure->getI(8,1);
-        vec = {i1,i2,i3,i4,i5,i6, i7, i8, i9, i10, i11, i12, i13, i14};
-        assert(carHandler->setRoute(4, &vec));
+        stack.push(i14);
+        stack.push(i13);
+        stack.push(i12);
+        stack.push(i11);
+        stack.push(i10);
+        stack.push(i9);
+        stack.push(i8);
+        stack.push(i7);
+        stack.push(i6);
+        stack.push(i5);
+        stack.push(i4);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(4, &stack));
+        stack = {};
     }
     if (scenario == 2) {
         //6 cars around 1 intersection to test traffic
@@ -255,57 +315,81 @@ void System::scenario(int scenario) {
         i1 = infrastructure->getI(1,2);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(0,3);
-        vec = {i1,i2,i3};
-        assert(carHandler->setRoute(0, &vec));
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(0, &stack));
+        stack = {};
 
         carHandler->addCar({544,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
         i1 = infrastructure->getI(1,2);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,0);
-        vec = {i1,i2,i3};
-        assert(carHandler->setRoute(1, &vec));
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(1, &stack));
+        stack = {};
 
         carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (0,3)
         i1 = infrastructure->getI(2,2);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(0,3);
-        vec = {i1,i2,i3};
-        assert(carHandler->setRoute(2, &vec));
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(2, &stack));
+        stack = {};
 
         carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (1,2)
         i1 = infrastructure->getI(2,2);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,2);
-        vec = {i1,i2,i3};
-        assert(carHandler->setRoute(3, &vec));
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(3, &stack));
+        stack = {};
 
         carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (0,3)
         i1 = infrastructure->getI(1,0);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(0,3);
-        vec = {i1,i2,i3};
-        assert(carHandler->setRoute(4, &vec));
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(4, &stack));
+        stack = {};
 
         carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (1,2)
         i1 = infrastructure->getI(1,0);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,2);
-        vec = {i1,i2,i3};
-        assert(carHandler->setRoute(5, &vec));
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(5, &stack));
+        stack = {};
 
         carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,2)
         i1 = infrastructure->getI(0,3);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,2);
-        vec = {i1,i2,i3};
-        assert(carHandler->setRoute(6, &vec));
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(6, &stack));
+        stack = {};
 
         carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,0)
         i1 = infrastructure->getI(0,3);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,0);
-        vec = {i1,i2,i3};
-        assert(carHandler->setRoute(7, &vec));
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(7, &stack));
+        stack = {};
     }
 }
 
