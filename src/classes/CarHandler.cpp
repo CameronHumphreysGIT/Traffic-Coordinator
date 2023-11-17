@@ -43,7 +43,7 @@ void CarHandler::addCar(pair<float, float> start, float time) {
 }
 
 int CarHandler::size() {
-    return cars->size();
+    return (int)cars->size();
 }
 
 void CarHandler::updateCar(int index, float time) {

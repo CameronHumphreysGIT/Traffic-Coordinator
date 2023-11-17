@@ -25,7 +25,7 @@ class Car {
         //keeps track of the rotation of the car in degrees
         float rotation;
     public:
-        Car(std::pair<float, float> , float);
+        Car(std::pair<int, int> , float);
         ~Car();
         SDL_Rect* getChassis();
         float* getRotation();

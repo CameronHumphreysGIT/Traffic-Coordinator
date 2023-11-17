@@ -36,18 +36,18 @@ void Scene::drawRoads(vector<vector<vector<pair<float, float>>>> intersections) 
         //each intersection has 4 lines
         for (int i2 = 0; i2 < 4; i2++) {
             //each line is made up of points, some are many points since they're curved
-            int size = intersections.at(i).at(i2).size();
+            int size = (int)intersections.at(i).at(i2).size();
             //straightline
             if (size == 2) {
                 pair<float, float> p1 = intersections.at(i).at(i2).at(0);
                 pair<float, float> p2 = intersections.at(i).at(i2).at(1);
-                SDL_RenderDrawLine(renderer, p1.first, p1.second, p2.first, p2.second);
+                SDL_RenderDrawLine(renderer, (int)p1.first, (int)p1.second, (int)p2.first, (int)p2.second);
             }else {
                 for (int i3 = 0; i3 < size - 1; i3++) {
                     //draw each line
                     pair<float, float> p1 = intersections.at(i).at(i2).at(i3);
                     pair<float, float> p2 = intersections.at(i).at(i2).at(i3 + 1);
-                    SDL_RenderDrawLine(renderer, p1.first, p1.second, p2.first, p2.second);
+                    SDL_RenderDrawLine(renderer, (int)p1.first, (int)p1.second, (int)p2.first, (int)p2.second);
                 }
             }
         }
@@ -74,7 +74,7 @@ void Scene::drawLights(vector<vector<vector<vector<pair<float, float>>>>> lights
             //loop through the ligns
             pair<float, float> p1 = lights.at(i).at(0).at(i2).at(0);
             pair<float, float> p2 = lights.at(i).at(0).at(i2).at(1);
-            SDL_RenderDrawLine(renderer, p1.first, p1.second, p2.first, p2.second);
+            SDL_RenderDrawLine(renderer, (int)p1.first, (int)p1.second, (int)p2.first, (int)p2.second);
         }
         //draw redligns:
         SDL_SetRenderDrawColor(renderer, 200,0,0, SDL_ALPHA_OPAQUE);
@@ -82,7 +82,7 @@ void Scene::drawLights(vector<vector<vector<vector<pair<float, float>>>>> lights
             //loop through the ligns
             pair<float, float> p1 = lights.at(i).at(1).at(i2).at(0);
             pair<float, float> p2 = lights.at(i).at(1).at(i2).at(1);
-            SDL_RenderDrawLine(renderer, p1.first, p1.second, p2.first, p2.second);
+            SDL_RenderDrawLine(renderer, (int)p1.first, (int)p1.second, (int)p2.first, (int)p2.second);
         }
     }
 }

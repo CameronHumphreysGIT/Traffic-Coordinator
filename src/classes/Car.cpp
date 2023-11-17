@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Car::Car(pair<float, float> start, float time) {
+Car::Car(pair<int, int> start, float time) {
     chassis = new SDL_Rect();
     chassis->x = start.first;
     chassis->y = start.second;
@@ -103,15 +103,15 @@ void Car::translate(pair<float, float> dir, Vector2 direction, float deltaTime) 
         //change the pos
         if (sums.first < 0) {
             //need to do this for the sake of negative numbers
-            chassis->x += ceil(sums.first);
+            chassis->x += (int)ceil(sums.first);
         }else {
-            chassis->x += sums.first;
+            chassis->x += (int)sums.first;
         }
         if (sums.second < 0) {
             //need to do this for the sake of negative numbers
-            chassis->y += ceil(sums.second);
+            chassis->y += (int)ceil(sums.second);
         }else {
-            chassis->y += sums.second;
+            chassis->y += (int)sums.second;
         }
         sums.first -= (int)sums.first;
         sums.second -= (int)sums.second;

@@ -179,7 +179,7 @@ Intersection* Infrastructure::findBelow(int row, int col) {
     }
     Intersection* me = intersections->at(row)->at(col);
     for (int i = row+1; i < intersections->size(); i++) {
-        int n = intersections->at(i)->size();
+        int n = (int)intersections->at(i)->size();
         //target is the x value of the current intersections topleft corner
         int target = me->getCorners().at(0).first;
         // Doing binary search

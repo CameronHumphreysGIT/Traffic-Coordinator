@@ -35,7 +35,7 @@ class Variables {
         static inline int FRAME_RATE = 60;
         enum Side { TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3, END = 4};
         //Expression used for the Car to rotate
-        static inline float RAD_TO_DEG = (180.0f/3.14159265);
+        static inline float RAD_TO_DEG = (180.0f/3.14159265f);
         //Colour for the buttons
         static inline std::vector<int> BUTTONCOLOUR = {135, 135, 135};
         //Hover colour for buttons

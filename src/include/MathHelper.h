@@ -34,7 +34,7 @@ struct BezierCurve {
     pair<float, float> CalculateCurvePoint(float t) {
         //error case
         if (t > 1 || t < 0) {
-            return {0,0};
+            return {0.0f,0.0f};
         }
         //vars for operation:
         //variable name with repitition is the square or cube of another variable
@@ -46,8 +46,8 @@ struct BezierCurve {
 
         pair<float, float> point = (p1 * uuu) + (c1 * (3 * uu * t)) + (c2 * (3 * u * tt)) + (p2 * ttt);
         //round to closest int
-        point.first = round(point.first);
-        point.second = round(point.second);
+        point.first = (float)round(point.first);
+        point.second = (float)round(point.second);
         return point;
     }
 };
