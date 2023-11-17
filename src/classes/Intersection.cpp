@@ -31,6 +31,32 @@ Intersection::~Intersection() {
     }
 }
 
+void Intersection::setCorner(enum Variables::Corner corner, int x, int y) {
+    std::pair<int, int> coords = {x, y};
+    switch(corner) {
+        case Variables::TOPLEFT:
+            topLeft = coords;
+            break;
+        case Variables::TOPRIGHT:
+            topRight = coords;
+            break;
+        case Variables::BOTTOMLEFT:
+            bottomLeft = coords;
+            break;
+        case Variables::BOTTOMRIGHT:
+            bottomRight = coords;
+            break;
+    }
+}
+
+void Intersection::setCorners(int x, int y) {
+    std::pair<int, int> coords = {x, y};
+    topLeft = coords;
+    topRight = {coords.first + Variables::INTERSECTION_DIMS, coords.second};
+    bottomLeft = {coords.first, coords.second + Variables::INTERSECTION_DIMS};
+    bottomRight = {coords.first + Variables::INTERSECTION_DIMS, coords.second + Variables::INTERSECTION_DIMS};
+}
+
 void Intersection::setTop(Road* r, pair<int,int> i) {
     //save id of neigbor
     neighbors[Variables::TOP] = i;
@@ -109,6 +135,11 @@ void Intersection::setInternal(Variables::Side side) {
 
 void Intersection::setId(pair<int,int> i) {
     id = i;
+}
+
+vector<pair<int,int>> Intersection::getCorners() {
+    std::vector<std::pair<int,int>> corners = {topLeft, topRight, bottomLeft, bottomRight};
+    return corners;
 }
 
 pair<int,int> Intersection::getId() {
