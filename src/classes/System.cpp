@@ -321,7 +321,7 @@ void System::scenario(int scenario) {
         assert(carHandler->setRoute(0, &stack));
         stack = {};
 
-        carHandler->addCar({544,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
+        carHandler->addCar({564,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
         i1 = infrastructure->getI(1,2);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,0);
@@ -341,7 +341,7 @@ void System::scenario(int scenario) {
         assert(carHandler->setRoute(2, &stack));
         stack = {};
 
-        carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (1,2)
+        carHandler->addCar({457,162}, (time * 0.001f));//orig(2,2) //dest (1,2)
         i1 = infrastructure->getI(2,2);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,2);
@@ -361,7 +361,7 @@ void System::scenario(int scenario) {
         assert(carHandler->setRoute(4, &stack));
         stack = {};
 
-        carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (1,2)
+        carHandler->addCar({371,105}, (time * 0.001f));//orig(1,0) //dest (1,2)
         i1 = infrastructure->getI(1,0);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,2);
@@ -381,7 +381,7 @@ void System::scenario(int scenario) {
         assert(carHandler->setRoute(6, &stack));
         stack = {};
 
-        carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,0)
+        carHandler->addCar({437,69}, (time * 0.001f));//orig(0,3) //dest (1,0)
         i1 = infrastructure->getI(0,3);
         i2 = infrastructure->getI(1,1);
         i3 = infrastructure->getI(1,0);

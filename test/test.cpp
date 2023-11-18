@@ -86,7 +86,7 @@ TEST_CASE("Scenarios") {
             CHECK(system->getCarHandler()->getCar(0)->getPos().first == 144);
             CHECK(system->getCarHandler()->getCar(0)->getPos().second == 354);
 
-            CHECK(system->getCarHandler()->getCar(1)->getPos().first == 254);
+            CHECK(system->getCarHandler()->getCar(1)->getPos().first == 250);
             CHECK(system->getCarHandler()->getCar(1)->getPos().second == 270);
 
             CHECK((system->getCarHandler()->getCar(2)->getPos().first == 485 || system->getCarHandler()->getCar(2)->getPos().first == 486));

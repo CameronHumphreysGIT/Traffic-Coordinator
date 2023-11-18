@@ -20,6 +20,8 @@ Car::Car(pair<int, int> start, float time) {
     sums = {0.0f,0.0f};
     rotation = 0;
     internals = {};
+    wait = NULL;
+    lastWaitPos = {-1, -1};
 }
 
 Car::~Car() {
@@ -52,10 +54,32 @@ void Car::update(float time) {
     switch(state) {
         case rest:
             break;
-        case stopped:
+        case redlight:
             break;
         case moving:
             updatePos(time);
+            break;
+        case movetowait:
+            if (withinTwoCarlengths()) {
+                state = waiting;
+                break;
+            }else if ((lastWaitPos != pair<int, int>({-1,-1})) && (lastWaitPos != wait->getPos())) {
+                //the guy we are waiting on has started to move.
+                state = moving;
+                wait = NULL;
+                lastWaitPos = {-1, -1};
+                updatePos(time);
+                break;
+            }else {
+                updatePos(time);
+            }
+        case waiting:
+            if (!withinTwoCarlengths()) {
+                state = moving;
+                wait = NULL;
+                lastWaitPos = {-1, -1};
+                updatePos(time);
+            }
             break;
     }
     //update the update time
@@ -65,7 +89,7 @@ void Car::update(float time) {
 //update function, that stops the car, or starts it again
 void Car::update(float time, bool isStopped) {
     if (isStopped) {
-        state = stopped;
+        state = redlight;
     }else {
         //this means we are going to start moving
         state = moving;
@@ -75,7 +99,7 @@ void Car::update(float time, bool isStopped) {
     switch(state) {
         case rest:
             break;
-        case stopped:
+        case redlight:
             break;
         case moving:
             updatePos(time);
@@ -83,6 +107,43 @@ void Car::update(float time, bool isStopped) {
     }
     //update the update time
     lastUpdate = time;
+}
+
+//function to wait behind a given car.
+void Car::waitBehind(Car* c) {
+    //save the car object and that way we can check their position.
+    wait = c;
+    state = movetowait;
+    //pair<float, float> lastWaypoint = paths->at(currentPath).at((paths->at(currentPath).size() - 1));
+    ////use the position of the car:
+    //pair<float, float> carpos = c->getPos();
+    ////get the position we will be in at the end of the waypoint before the last waypoint:
+    //pair<float, float> prevWaypoint;
+    //if ((paths->at(currentPath).size() > 2) && currentWaypoint != (paths->at(currentPath).size() - 1)) {
+    //    //basically only if we are on a curved road, and we haven't reached the last waypoint.
+    //    prevWaypoint = paths->at(currentPath).at((paths->at(currentPath).size() - 2));check assumptions
+    //}else {
+    //    prevWaypoint = {(float)chassis->x, (float)chassis->y};
+    //}
+    //pair<float, float> dir = carpos - prevWaypoint;
+    //Vector2 direction = {dir.first, dir.second};
+    //int distance = direction.Magnitude();
+    ////normalize:
+    //direction = direction.Normalized();
+    //pair<float, float>
+}
+
+bool Car::withinTwoCarlengths() {
+    if (wait == NULL) {
+        return false;
+    }
+    pair<float, float> carpos = {(float)wait->getPos().first, (float)wait->getPos().second};
+    //get direction
+    pair<float, float> currentPos = {(float)chassis->x, (float)chassis->y};
+    pair<float, float> dir = carpos - currentPos;
+    Vector2 direction = {dir.first, dir.second};
+    lastWaitPos = wait->getPos();
+    return (direction.Magnitude() <= (Variables::CAR_HEIGHT * 2));
 }
 
 void Car::updatePos(float time) {
@@ -178,4 +239,16 @@ bool Car::isInternal() {
         return false;
     }
     return (currentPath == internals.front());
+}
+//TODO consider changing these to a return value, downside: need to give enum to other classes.
+bool Car::isWaiting() {
+    return state == waiting;
+}
+
+bool Car::isMoveToWait() {
+    return state == movetowait;
+}
+
+bool Car::isRedLight() {
+    return state == redlight;
 }
