@@ -16,6 +16,15 @@ class CarHandler {
         std::map<std::pair<int,int>, std::vector<Car*>*>* prevInters;
         //uses the same indeces as cars, and has the id of the last intersection that car visited
         std::vector<std::pair<int,int>>* lastInter;
+        //the time at which the last car to enter the intersection entered the intersection
+        float withinIntersectionTime;
+        //the origin (previous intersection) from which the last car to enter the intersection came.
+        std::pair<int,int> withinIntersectionOrigin;
+        //boolean to indicate if the car within the Intersection is turning left
+        bool withinIntersectionLeft;
+        //helpers
+        void handleStop(int );
+        void handleGo(int , float);
     public:
         CarHandler();
         ~CarHandler();
@@ -25,7 +34,6 @@ class CarHandler {
         void addCar(std::pair<int, int> , float );
         int size();
         void updateCar(int , float );
-        void handleStop(int );
         bool isNotDone();
 
 };

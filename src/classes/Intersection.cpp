@@ -241,6 +241,10 @@ bool Intersection::isPassable(pair<int, int> pos, float time) {
         //it now is passable
         passable = !passable;
     }
+    //check if the car has time to clear the intersection:
+    if ((Variables::LIGHTTIME - (time - lastChange)) < Variables::CLEARTIME) {
+        passable = false;
+    }
     return passable;
 }
 

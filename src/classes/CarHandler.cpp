@@ -10,6 +10,9 @@ CarHandler::CarHandler() {
     trafficRules = new TrafficRules();
     prevInters = new map<pair<int,int>, vector<Car*>*>;
     lastInter = new vector<pair<int,int>>;
+    withinIntersectionTime = -1;
+    withinIntersectionOrigin = {-1,-1};
+    withinIntersectionLeft = false;
 }
 
 CarHandler::~CarHandler() {
@@ -85,39 +88,44 @@ void CarHandler::updateCar(int index, float time) {
             cars->at(index)->update(time, true);
             handleStop(index);
         }else {
-            cars->at(index)->update(time, false);
-            //remove this car from the vector at the previous intersection id
-            vector<Car*>* vec = prevInters->at(lastInter->at(index));
-            for (auto it = vec->begin(); it != vec->end(); it++) {
-                if (*it == cars->at(index)) {
-                    vec->erase(it);
-                    break;
+            //check if this car was stopped, if so, reset the withinIntersection variables to default values.
+            if (cars->at(index)->isLeftTurning()) {
+                //check if the car should go:
+                if ((withinIntersectionTime == -1 && withinIntersectionOrigin.first == -1 && withinIntersectionOrigin.second == -1) || 
+                    (withinIntersectionOrigin == lastInter->at(index) || (time - withinIntersectionTime) > Variables::CLEARTIME) ) {
+                    
+                    withinIntersectionOrigin = lastInter->at(index);
+                    withinIntersectionTime = time;
+                    withinIntersectionLeft = true;
+                    handleGo(index, time);
+                }else {
+                    //we are stopped
+                    cars->at(index)->update(time, true);
+                    handleStop(index);
+                }
+            }else {
+                //check if we should wait for a left turner:
+                if (withinIntersectionLeft && (withinIntersectionOrigin != lastInter->at(index) || (time - withinIntersectionTime) < Variables::CLEARTIME)) {
+                    //we are stopped
+                    cars->at(index)->update(time, true);
+                    handleStop(index);
+                }else {
+                    //set the withinIntersection paramaters
+                    withinIntersectionOrigin = lastInter->at(index);
+                    withinIntersectionTime = time;
+                    withinIntersectionLeft = false;
+                    handleGo(index, time);
                 }
             }
-            //set the new Intersection to prevInter and lastInter
-            //check if we have added a vector of cars with this intersection origin
-            if (prevInters->find(routes->at(index)->top()->getId()) == prevInters->end()) {
-                vector<Car*>* vec = new vector<Car*>();
-                vec->push_back(cars->at(index));
-                prevInters->insert({routes->at(index)->top()->getId(), vec});
-            }else {
-                //there is a vector of cars for this intersection, push this car into that vector
-                prevInters->at(routes->at(index)->top()->getId())->push_back(cars->at(index));
-            }
-            //also keep track of the intersection id:
-            lastInter->at(index) = routes->at(index)->top()->getId();
-            //now pop this intersection from routes
-            routes->at(index)->pop();
         }
     }else if (cars->at(index)->isWaiting()) {
-        pair<float, float> currentPos = cars->at(4)->getPos();
         handleStop(index);
         cars->at(index)->update(time);
-        
-
     }else {
+        //bool thing = cars->at(index)->isLeftTurning();
         cars->at(index)->update(time);
     }
+
 }
 
 void CarHandler::handleStop(int index) {
@@ -140,6 +148,32 @@ void CarHandler::handleStop(int index) {
     if (closest != NULL) {
         closest->waitBehind(me);
     }
+}
+
+void CarHandler::handleGo(int index, float time) {
+    cars->at(index)->update(time, false);
+    //remove this car from the vector at the previous intersection id
+    vector<Car*>* vec = prevInters->at(lastInter->at(index));
+    for (auto it = vec->begin(); it != vec->end(); it++) {
+        if (*it == cars->at(index)) {
+            vec->erase(it);
+            break;
+        }
+    }
+    //set the new Intersection to prevInter and lastInter
+    //check if we have added a vector of cars with this intersection origin
+    if (prevInters->find(routes->at(index)->top()->getId()) == prevInters->end()) {
+        vector<Car*>* vec = new vector<Car*>();
+        vec->push_back(cars->at(index));
+        prevInters->insert({routes->at(index)->top()->getId(), vec});
+    }else {
+        //there is a vector of cars for this intersection, push this car into that vector
+        prevInters->at(routes->at(index)->top()->getId())->push_back(cars->at(index));
+    }
+    //also keep track of the intersection id:
+    lastInter->at(index) = routes->at(index)->top()->getId();
+    //now pop this intersection from routes
+    routes->at(index)->pop();
 }
 
 //function for checking if the cars have all come to rest

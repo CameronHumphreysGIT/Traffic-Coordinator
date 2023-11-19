@@ -50,6 +50,7 @@ class Car {
         bool isWaiting();
         bool isMoveToWait();
         bool isRedLight();
+        bool isLeftTurning();
 };
 
 #endif

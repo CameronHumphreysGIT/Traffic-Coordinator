@@ -114,23 +114,6 @@ void Car::waitBehind(Car* c) {
     //save the car object and that way we can check their position.
     wait = c;
     state = movetowait;
-    //pair<float, float> lastWaypoint = paths->at(currentPath).at((paths->at(currentPath).size() - 1));
-    ////use the position of the car:
-    //pair<float, float> carpos = c->getPos();
-    ////get the position we will be in at the end of the waypoint before the last waypoint:
-    //pair<float, float> prevWaypoint;
-    //if ((paths->at(currentPath).size() > 2) && currentWaypoint != (paths->at(currentPath).size() - 1)) {
-    //    //basically only if we are on a curved road, and we haven't reached the last waypoint.
-    //    prevWaypoint = paths->at(currentPath).at((paths->at(currentPath).size() - 2));check assumptions
-    //}else {
-    //    prevWaypoint = {(float)chassis->x, (float)chassis->y};
-    //}
-    //pair<float, float> dir = carpos - prevWaypoint;
-    //Vector2 direction = {dir.first, dir.second};
-    //int distance = direction.Magnitude();
-    ////normalize:
-    //direction = direction.Normalized();
-    //pair<float, float>
 }
 
 bool Car::withinTwoCarlengths() {
@@ -250,5 +233,16 @@ bool Car::isMoveToWait() {
 }
 
 bool Car::isRedLight() {
+    return state == redlight;
+}
+
+bool Car::isLeftTurning() {
+    //first check that we are on an internal road:
+    if (!isInternal()) {
+        return false;
+    }else {
+        //we are on an internal path
+        return (paths->at(currentPath).size() > 3);
+    }
     return state == redlight;
 }

@@ -42,6 +42,8 @@ class Variables {
         static inline std::vector<int> HOVERCOLOUR = {150, 150, 150};
         //time in seconds that the traffic lights need to switch.
         static inline int LIGHTTIME = 3;
+        //this is an approximate time for clearing an intersection, rounded up.
+        static inline int CLEARTIME = (int)ceil(((sqrt(pow(INTERSECTION_DIMS, 2) + pow(INTERSECTION_DIMS, 2)))/DEFAULT_SPEED));
 };
 
 #endif
