@@ -218,7 +218,7 @@ void System::scenario(int scenario) {
         stack.push(i1);
         assert(carHandler->setRoute(1, &stack));
         stack = {};
-        carHandler->addCar({130,351}, (time * 0.001f));//orig(8,5) //dest (11,13)
+        carHandler->addCar({254,353}, (time * 0.001f));//orig(8,5) //dest (11,13)
         i1 = infrastructure->getI(8,5);
         i2 = infrastructure->getI(9,0);
         i3 = infrastructure->getI(9,1);

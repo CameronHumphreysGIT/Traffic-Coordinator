@@ -23,6 +23,12 @@ class Intersection {
         Road* internals[4][4];
         //float for the time that the last intersection change was made
         float lastChange;
+        //the time at which the last car to enter the intersection entered the intersection
+        float withinIntersectionTime;
+        //the origin (previous intersection) from which the last car to enter the intersection came.
+        pair<int,int> withinIntersectionOrigin;
+        //boolean to indicate if the car within the Intersection is turning left
+        bool withinIntersectionLeft;
     public:
         Intersection();
         ~Intersection();
@@ -34,12 +40,16 @@ class Intersection {
         void setLeft(Road*, pair<int,int>);
         void setInternal(Variables::Side);
         void setId(pair<int,int> );
+        void setWithin(float ,std::pair<int,int> ,bool );
         vector<pair<int,int>> getCorners();
         pair<int,int> getId();
         pair<int,int> getNeighbor(Variables::Side);
         vector<vector<pair<float, float>>> getSampled();
         vector<vector<pair<float, float>>> getSampledInternals(Variables::Side);
         vector<vector<vector<pair<float, float>>>> getLights();
+        float getWithinTime();
+        pair<int,int> getWithinOrigin();
+        bool isWithinLeft();
         bool isPassable(pair<int, int> , float );
         void print();
 };

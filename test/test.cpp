@@ -66,14 +66,14 @@ TEST_CASE("Scenarios") {
         system->scenario(1);
         SECTION("5 second run") {
             system->run(5);
-            CHECK(system->getCarHandler()->getCar(0)->getPos().first == 216);
-            CHECK(system->getCarHandler()->getCar(0)->getPos().second == 358);
+            CHECK(system->getCarHandler()->getCar(0)->getPos().first == 251);
+            CHECK(system->getCarHandler()->getCar(0)->getPos().second == 356);
 
             CHECK(system->getCarHandler()->getCar(1)->getPos().first == 170);
-            CHECK((system->getCarHandler()->getCar(1)->getPos().second == 465 || system->getCarHandler()->getCar(1)->getPos().second == 466));
+            CHECK(system->getCarHandler()->getCar(1)->getPos().second == 465);
 
-            CHECK((system->getCarHandler()->getCar(2)->getPos().first == 254 || system->getCarHandler()->getCar(2)->getPos().first == 253));
-            CHECK(system->getCarHandler()->getCar(2)->getPos().second == 366);
+            CHECK(system->getCarHandler()->getCar(2)->getPos().first == 353);
+            CHECK(system->getCarHandler()->getCar(2)->getPos().second == 378);
 
             CHECK(system->getCarHandler()->getCar(3)->getPos().first == 262);
             CHECK(system->getCarHandler()->getCar(3)->getPos().second == 335);
@@ -86,13 +86,13 @@ TEST_CASE("Scenarios") {
             CHECK(system->getCarHandler()->getCar(0)->getPos().first == 144);
             CHECK(system->getCarHandler()->getCar(0)->getPos().second == 354);
 
-            CHECK(system->getCarHandler()->getCar(1)->getPos().first == 250);
-            CHECK(system->getCarHandler()->getCar(1)->getPos().second == 270);
+            CHECK(system->getCarHandler()->getCar(1)->getPos().first == 234);
+            CHECK(system->getCarHandler()->getCar(1)->getPos().second == 293);
 
-            CHECK((system->getCarHandler()->getCar(2)->getPos().first == 485 || system->getCarHandler()->getCar(2)->getPos().first == 486));
-            CHECK(system->getCarHandler()->getCar(2)->getPos().second == 378);
+            CHECK(system->getCarHandler()->getCar(2)->getPos().first == 600);
+            CHECK(system->getCarHandler()->getCar(2)->getPos().second == 383);
 
-            CHECK((system->getCarHandler()->getCar(3)->getPos().first == 201 || system->getCarHandler()->getCar(3)->getPos().first == 202));
+            CHECK(system->getCarHandler()->getCar(3)->getPos().first == 208);
             CHECK(system->getCarHandler()->getCar(3)->getPos().second == 550);
             
             CHECK(system->getCarHandler()->getCar(4)->getPos().first == 348);
@@ -114,6 +114,72 @@ TEST_CASE("Scenarios") {
             
             CHECK(system->getCarHandler()->getCar(4)->getPos().first == 99);
             CHECK(system->getCarHandler()->getCar(4)->getPos().second == 350);
+        }
+
+        system->close();
+        //Delete all objects;
+        delete system;  
+    }
+
+    SECTION("Scenario 2") {
+        System* system = new System();
+        //mute the console:
+        
+        system->init();
+        system->loadMedia(true);
+        system->buildInfrastructure();
+        system->scenario(2);
+        SECTION("2 second run") {
+            system->run(2);
+            CHECK(system->getCarHandler()->getCar(0)->getPos().first == 496);
+            CHECK(system->getCarHandler()->getCar(0)->getPos().second == 108);
+
+            CHECK(system->getCarHandler()->getCar(1)->getPos().first == 515);
+            CHECK(system->getCarHandler()->getCar(1)->getPos().second == 108);
+
+            CHECK(system->getCarHandler()->getCar(2)->getPos().first == 466);
+            CHECK(system->getCarHandler()->getCar(2)->getPos().second == 101);
+
+            CHECK(system->getCarHandler()->getCar(3)->getPos().first == 468);
+            CHECK(system->getCarHandler()->getCar(3)->getPos().second == 116);
+
+            CHECK(system->getCarHandler()->getCar(4)->getPos().first == 438);
+            CHECK(system->getCarHandler()->getCar(4)->getPos().second == 114);
+
+            CHECK(system->getCarHandler()->getCar(5)->getPos().first == 419);
+            CHECK(system->getCarHandler()->getCar(5)->getPos().second == 114);
+
+            CHECK(system->getCarHandler()->getCar(6)->getPos().first == 460);
+            CHECK(system->getCarHandler()->getCar(6)->getPos().second == 103);
+
+            CHECK(system->getCarHandler()->getCar(7)->getPos().first == 459);
+            CHECK(system->getCarHandler()->getCar(7)->getPos().second == 92);
+        }
+        SECTION("end run") {
+            system->run(1000);
+            CHECK(system->getCarHandler()->getCar(0)->getPos().first == 466);
+            CHECK(system->getCarHandler()->getCar(0)->getPos().second == 83);
+
+            CHECK(system->getCarHandler()->getCar(1)->getPos().first == 405);
+            CHECK(system->getCarHandler()->getCar(1)->getPos().second == 108);
+
+            CHECK(system->getCarHandler()->getCar(2)->getPos().first == 466);
+            CHECK(system->getCarHandler()->getCar(2)->getPos().second == 83);
+
+            CHECK(system->getCarHandler()->getCar(3)->getPos().first == 542);
+            CHECK(system->getCarHandler()->getCar(3)->getPos().second == 114);
+            
+            CHECK(system->getCarHandler()->getCar(4)->getPos().first == 466);
+            CHECK(system->getCarHandler()->getCar(4)->getPos().second == 83);
+            
+            CHECK(system->getCarHandler()->getCar(5)->getPos().first == 542);
+            CHECK(system->getCarHandler()->getCar(5)->getPos().second == 114);
+
+            CHECK(system->getCarHandler()->getCar(6)->getPos().first == 542);
+            CHECK(system->getCarHandler()->getCar(6)->getPos().second == 114);
+
+            CHECK(system->getCarHandler()->getCar(7)->getPos().first == 405);
+            CHECK(system->getCarHandler()->getCar(7)->getPos().second == 108);
         }
 
         system->close();

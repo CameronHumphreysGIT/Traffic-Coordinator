@@ -17,6 +17,9 @@ Intersection::Intersection() {
         }
     }
     lastChange = 0;
+    withinIntersectionTime = -1;
+    withinIntersectionOrigin = {-1,-1};
+    withinIntersectionLeft = false;
 }
 
 Intersection::~Intersection() {
@@ -138,6 +141,12 @@ void Intersection::setId(pair<int,int> i) {
     id = i;
 }
 
+void Intersection::setWithin(float time,std::pair<int,int> origin, bool left) {
+    withinIntersectionTime = time;
+    withinIntersectionOrigin = origin;
+    withinIntersectionLeft = left;
+}
+
 vector<pair<int,int>> Intersection::getCorners() {
     std::vector<std::pair<int,int>> corners = {topLeft, topRight, bottomLeft, bottomRight};
     return corners;
@@ -208,8 +217,21 @@ vector<vector<vector<pair<float, float>>>> Intersection::getLights() {
     return vec;
 }
 
+float Intersection::getWithinTime() {
+    return withinIntersectionTime;
+}
+
+pair<int,int> Intersection::getWithinOrigin() {
+    return withinIntersectionOrigin;
+}
+
+bool Intersection::isWithinLeft() {
+    return withinIntersectionLeft;
+}
+
 //function to determine if a car can pass a side of the intersection
 bool Intersection::isPassable(pair<int, int> pos, float time) {
+    //reset isWithin if enough time has passed
     //check if we should change the lights
     bool lightsChange = false;
     if (lastChange == 0 || (time - lastChange) > Variables::LIGHTTIME) {
@@ -242,7 +264,7 @@ bool Intersection::isPassable(pair<int, int> pos, float time) {
         passable = !passable;
     }
     //check if the car has time to clear the intersection:
-    if ((Variables::LIGHTTIME - (time - lastChange)) < Variables::CLEARTIME) {
+    if (lastChange != time && (Variables::LIGHTTIME - (time - lastChange)) < Variables::CLEARTIME) {
         passable = false;
     }
     return passable;
