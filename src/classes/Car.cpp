@@ -28,7 +28,7 @@ Car::~Car() {
     delete chassis;
     delete paths;
 }
-
+ 
 SDL_Rect* Car::getChassis() {
     return chassis;
 }
@@ -39,6 +39,29 @@ float* Car::getRotation() {
 
 pair<int,int> Car::getPos() {
     return {chassis->x, chassis->y};
+}
+
+vector<vector<pair<float, float>>> Car::getPaths() {
+    //only want remaining paths
+    vector<vector<pair<float, float>>> vec;
+    if (currentPath + 1 < paths->size()) {
+        //we draw differently if our current path is curved.
+        if (paths->at(currentPath).size() == 1) {
+            vec = vector<vector<pair<float, float>>>(paths->begin() + (currentPath + 1), paths->end());
+            //insert the next waypoint, but draw it from current position
+            vec.insert((vec.begin() + 1), {{(float)chassis->x, (float)chassis->y},paths->at(currentPath).at(currentWaypoint)});
+        }else {
+            vec = vector<vector<pair<float, float>>>(paths->begin() + (currentPath + 1), paths->end());
+            //remove prior waypoints from current path, then draw from position to current waypoint
+            vector<pair<float, float>> current = vector<pair<float, float>>(paths->at(currentPath).begin() + (currentWaypoint), paths->at(currentPath).end());
+            current.insert((current.begin() + 1), {{(float)chassis->x, (float)chassis->y}, paths->at(currentPath).at(currentWaypoint)});
+            vec.insert((vec.begin() + 1), current);
+        }
+
+    }else {
+        vec.push_back({{(float)chassis->x, (float)chassis->y},paths->at(currentPath).at(currentWaypoint)});
+    }
+    return vec;
 }
 
 void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
@@ -159,7 +182,7 @@ void Car::updatePos(float time) {
         //reset to first waypoint
         currentWaypoint = 0;
         if (currentPath == paths->size()) {
-            state = rest;
+            state = end;
         }
     }
 }
@@ -245,4 +268,8 @@ bool Car::isLeftTurning() {
         return (paths->at(currentPath).size() > 3);
     }
     return state == redlight;
+}
+
+bool Car::isAtEnd() {
+    return (state == end);
 }

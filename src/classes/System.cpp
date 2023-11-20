@@ -394,11 +394,13 @@ void System::scenario(int scenario) {
 }
 
 void System::draw() {
+    
     for (int i = 0; i < carHandler->size(); i++) {
         //update the cars
         time = SDL_GetTicks();
-        carHandler->updateCar(i, (time * 0.001f));
+        carHandler->updateCar(i, (time * 0.001f));  
     }
+    vector<vector<vector<pair<float, float>>>> paths = (carHandler->getPaths());
     vector<SDL_Rect*> rects = carHandler->getData().first;
     vector<float*> rotations = carHandler->getData().second;
     vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
@@ -408,6 +410,7 @@ void System::draw() {
     vector<vector<vector<vector<pair<float, float>>>>> lights = infrastructure->getLights();
     scene->drawLights(lights);
     scene->drawCars(rects, carTexture, rotations);
+    scene->drawPaths(paths);
     scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
     scene->present();
 }

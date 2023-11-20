@@ -109,6 +109,22 @@ void Scene::drawButton(SDL_Rect* borders, vector<int> colour, const char * words
     SDL_RenderCopy(renderer, text_texture, NULL, borders);
 }
 
+void Scene::drawPaths(vector<vector<vector<pair<float, float>>>> paths) {
+    SDL_SetRenderDrawColor(renderer, 0,255,255, SDL_ALPHA_OPAQUE);
+    //for each car
+    for (int i =0; i < paths.size(); i++) {
+        //for each path
+        for (int i2 = 0; i2 < paths.at(i).size(); i2++) {
+            //for each line
+            for (int i3 = 0; i3 < (paths.at(i).at(i2).size() - 1); i3++) {
+                pair<float, float> p1 = paths.at(i).at(i2).at(i3);
+                pair<float, float> p2 = paths.at(i).at(i2).at(i3+1);
+                SDL_RenderDrawLine(renderer, (int)p1.first, (int)p1.second, (int)p2.first, (int)p2.second);
+            }
+        }
+    }
+}
+
 void Scene::present() {
     //present to the window
     SDL_RenderPresent(renderer);

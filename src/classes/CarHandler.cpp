@@ -37,8 +37,11 @@ pair<vector<SDL_Rect*>, vector<float*>>CarHandler::getData() {
     vector<SDL_Rect*> rects;
     vector<float*> rotations;
     for (int i = 0; i < cars->size(); i++) {
-        rects.push_back(cars->at(i)->getChassis());
-        rotations.push_back(cars->at(i)->getRotation());
+        //TODO fix this
+        if (!cars->at(i)->isAtEnd()) {
+            rects.push_back(cars->at(i)->getChassis());
+            rotations.push_back(cars->at(i)->getRotation());
+        }
     }
     return {rects, rotations};
 }
@@ -46,6 +49,17 @@ pair<vector<SDL_Rect*>, vector<float*>>CarHandler::getData() {
 //function used in Testing
 Car* CarHandler::getCar(int index) {
     return cars->at(index);
+}
+
+vector<vector<vector<pair<float, float>>>> CarHandler::getPaths() {
+    vector<vector<vector<pair<float, float>>>> paths;
+    for (int i =0; i < cars->size(); i++) {
+        //TODO fix this
+        if (!cars->at(i)->isAtEnd()) {
+            paths.push_back(cars->at(i)->getPaths());
+        }
+    }
+    return paths;
 }
 
 bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
@@ -81,51 +95,70 @@ int CarHandler::size() {
 }
 
 void CarHandler::updateCar(int index, float time) {
-    //check if the next path for this car is an internal road
-    if (cars->at(index)->isInternal()) {
-        bool passable = routes->at(index)->top()->isPassable(cars->at(index)->getPos(), time);
-        if (!passable) {
-            cars->at(index)->update(time, true);
-            handleStop(index);
-        }else {
-            //check if this car was stopped, if so, reset the withinIntersection variables to default values.
-            if (cars->at(index)->isLeftTurning()) {
-                //check if the car should go:
-                if ((withinIntersectionTime == -1 && withinIntersectionOrigin.first == -1 && withinIntersectionOrigin.second == -1) || 
-                    (withinIntersectionOrigin == lastInter->at(index) || (time - withinIntersectionTime) > Variables::CLEARTIME) ) {
-                    
-                    withinIntersectionOrigin = lastInter->at(index);
-                    withinIntersectionTime = time;
-                    withinIntersectionLeft = true;
-                    handleGo(index, time);
-                }else {
-                    //we are stopped
-                    cars->at(index)->update(time, true);
-                    handleStop(index);
-                }
+    //TODO fix this 
+   // if (cars->at(index)->isAtEnd()) {
+   //    //this car has made it to the end of their path.
+   //    //set last Inter to default value
+   //    vector<Car*>* vec = prevInters->at(lastInter->at(index));
+   //    //find the car
+   //    for (auto it = vec->begin(); it != vec->end(); it++) {
+   //        if (*it == cars->at(index)) {
+   //            prevInters->at(lastInter->at(index))->erase(it);
+   //            break;
+   //        }
+   //    }
+   //    //now erase from the lastInter array
+   //    auto it2 = lastInter->begin() + index;
+   //    lastInter->erase(it2);
+   //    //finally, erase from the cars array.
+   //    auto it3 = cars->begin() + index;
+   //    cars->erase(it3);
+   // }else {
+        //check if the next path for this car is an internal road
+        if (cars->at(index)->isInternal()) {
+            bool passable = routes->at(index)->top()->isPassable(cars->at(index)->getPos(), time);
+            if (!passable) {
+                cars->at(index)->update(time, true);
+                handleStop(index);
             }else {
-                //check if we should wait for a left turner:
-                if (withinIntersectionLeft && (withinIntersectionOrigin != lastInter->at(index) || (time - withinIntersectionTime) < Variables::CLEARTIME)) {
-                    //we are stopped
-                    cars->at(index)->update(time, true);
-                    handleStop(index);
+                //check if this car was stopped, if so, reset the withinIntersection variables to default values.
+                if (cars->at(index)->isLeftTurning()) {
+                    //check if the car should go:
+                    if ((withinIntersectionTime == -1 && withinIntersectionOrigin.first == -1 && withinIntersectionOrigin.second == -1) || 
+                        (withinIntersectionOrigin == lastInter->at(index) || (time - withinIntersectionTime) > Variables::CLEARTIME) ) {
+                        
+                        withinIntersectionOrigin = lastInter->at(index);
+                        withinIntersectionTime = time;
+                        withinIntersectionLeft = true;
+                        handleGo(index, time);
+                    }else {
+                        //we are stopped
+                        cars->at(index)->update(time, true);
+                        handleStop(index);
+                    }
                 }else {
-                    //set the withinIntersection paramaters
-                    withinIntersectionOrigin = lastInter->at(index);
-                    withinIntersectionTime = time;
-                    withinIntersectionLeft = false;
-                    handleGo(index, time);
+                    //check if we should wait for a left turner:
+                    if (withinIntersectionLeft && (withinIntersectionOrigin != lastInter->at(index) || (time - withinIntersectionTime) < Variables::CLEARTIME)) {
+                        //we are stopped
+                        cars->at(index)->update(time, true);
+                        handleStop(index);
+                    }else {
+                        //set the withinIntersection paramaters
+                        withinIntersectionOrigin = lastInter->at(index);
+                        withinIntersectionTime = time;
+                        withinIntersectionLeft = false;
+                        handleGo(index, time);
+                    }
                 }
             }
+        }else if (cars->at(index)->isWaiting()) {
+            handleStop(index);
+            cars->at(index)->update(time);
+        }else {
+            //bool thing = cars->at(index)->isLeftTurning();
+            cars->at(index)->update(time);
         }
-    }else if (cars->at(index)->isWaiting()) {
-        handleStop(index);
-        cars->at(index)->update(time);
-    }else {
-        //bool thing = cars->at(index)->isLeftTurning();
-        cars->at(index)->update(time);
-    }
-
+    //}
 }
 
 void CarHandler::handleStop(int index) {
