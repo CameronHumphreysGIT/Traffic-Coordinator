@@ -7,7 +7,6 @@ CarHandler::CarHandler() {
     cars = new vector<Car*>();
     router = new Router();
     routes = new vector<stack<Intersection*>*>;
-    trafficRules = new TrafficRules();
     prevInters = new map<pair<int,int>, vector<Car*>*>;
     lastInter = new vector<pair<int,int>>;
 }
@@ -26,7 +25,6 @@ CarHandler::~CarHandler() {
     delete lastInter;
     delete router;
     delete routes;
-    delete trafficRules;
 }
 
 //This function returns a pair with a vector of SDL_Rect's and a vector of floats for the rotation of each, in degrees

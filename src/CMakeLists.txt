@@ -18,8 +18,7 @@ add_library(${PROJECT_NAME}
     classes/Road.cpp 
     classes/Router.cpp 
     classes/Scene.cpp 
-    classes/System.cpp
-    classes/TrafficRules.cpp)
+    classes/System.cpp)
 
 
 target_include_directories(${PROJECT_NAME}
