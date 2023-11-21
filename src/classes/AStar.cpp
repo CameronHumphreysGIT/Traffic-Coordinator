@@ -25,18 +25,13 @@ stack<Intersection*> AStar::findRoute(Intersection* start, Intersection* end, ve
     while (!endFlag) {
         Node* topNode = nodes.begin()->second;
         Intersection* top = nodes.begin()->second->getIntersection();
-        path.push_back(top);
         nodes.erase(nodes.begin());
-        if (top == end) {
-            endFlag = true;
-            break;
-        }
         //search the neigbors of the top of the queue
         for (int side = Variables::TOP; side != Variables::END; side++) {
             if (top->getNeighbor((Variables::Side)side).first != -1 && top->getNeighbor((Variables::Side)side).second != -1) {
                 Intersection* neighbor = intersections->at(top->getNeighbor((Variables::Side)side).first)->at(top->getNeighbor((Variables::Side)side).second);
                 //make sure neigbor isn't the intersection we just came from on the path.
-                if (neighbor != topNode->getParent()->getIntersection()) {
+                if (path.empty() || neighbor != path.at(path.size() - 1)) {
                     //figure out magnitude from top to neighbor, and from neigbor to end, add together for score.
                     pair<int, int> dir = (top->getCorners().at(0) - neighbor->getCorners().at(0));
                     Vector2 direction = {(float)dir.first, (float)dir.second};
@@ -56,9 +51,15 @@ stack<Intersection*> AStar::findRoute(Intersection* start, Intersection* end, ve
                 }
             }
         }
+        path.push_back(top);
+        if (top == end) {
+            endFlag = true;
+        }
     }
     stack<Intersection*> s;
-
+    for (int i = (int)path.size() - 1; i >=0; i--) {
+        s.push(path.at(i));
+    }
 
     return s;
 }
