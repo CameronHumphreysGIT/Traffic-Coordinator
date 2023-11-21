@@ -20,6 +20,20 @@ inline pair<float, float> operator *(const pair<float, float>& lhs, const float&
     return {lhs.first*rhs, lhs.second*rhs};
 }
 
+//overload opperators for use with pairs:
+inline pair<int, int> operator +(const pair<int, int>& lhs, const pair<int, int>& rhs) {
+    return {lhs.first+rhs.first, lhs.second+rhs.second};
+}
+inline pair<int, int> operator -(const pair<int, int>& lhs, const pair<int, int>& rhs) {
+    return {lhs.first-rhs.first, lhs.second-rhs.second};
+}
+inline pair<int, int> operator *(const pair<int, int>& lhs, const pair<int, int>& rhs) {
+    return {lhs.first*rhs.first, lhs.second*rhs.second};
+}
+inline pair<int, int> operator *(const pair<int, int>& lhs, const int& rhs) {
+    return {lhs.first*rhs, lhs.second*rhs};
+}
+
 
 //bezier curve struct:
 struct BezierCurve {

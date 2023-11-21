@@ -120,7 +120,7 @@ void Infrastructure::buildRoads() {
                     bottom->setTop(bottom2Me, me->getId());
                     //outgoing
                     Road* me2Bottom = new Road();
-                    me2Bottom->setPath({(me->getCorners().at(2).first + 3),(me->getCorners().at(2).second + 1)}, {(bottom->getCorners().at(0).first + 3),(bottom->getCorners().at(0).second - 1)});
+                    me2Bottom->setPath({(float)(me->getCorners().at(2).first + 3),(float)(me->getCorners().at(2).second + 1)}, {(float)(bottom->getCorners().at(0).first + 3),(float)(bottom->getCorners().at(0).second - 1)});
                     me->setBottom(me2Bottom, bottom->getId());
                 }
             }
@@ -139,19 +139,19 @@ void Infrastructure::buildRoads() {
                 if (i == 0 && i2 == 0) {
                     //this road is curved
                     //incoming road.
-                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(rightCorners.at(0).first - 80), (rightCorners.at(0).second - 10)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)}, {(myCorners.at(1).first + 60),(myCorners.at(1).second + 3)});
+                    right2Me->setPath({(float)(rightCorners.at(0).first - 1),(float)(rightCorners.at(0).second + 3)}, {(float)(rightCorners.at(0).first - 80), (float)(rightCorners.at(0).second - 10)}, {(float)(myCorners.at(1).first + 1),(float)(myCorners.at(1).second + 3)}, {(float)(myCorners.at(1).first + 60),(float)(myCorners.at(1).second + 3)});
                     //outgoing
-                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(myCorners.at(3).first + 60),(myCorners.at(3).second + 3)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)}, {(rightCorners.at(2).first - 80),(rightCorners.at(2).second - 10)});
+                    me2Right->setPath({(float)(myCorners.at(3).first + 1),(float)(myCorners.at(3).second - 3)}, {(float)(myCorners.at(3).first + 60),(float)(myCorners.at(3).second + 3)}, {(float)(rightCorners.at(2).first - 1),(float)(rightCorners.at(2).second - 3)}, {(float)(rightCorners.at(2).first - 80),(float)(rightCorners.at(2).second - 10)});
                 }else if (i == 0 && i2 == 1) {
-                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(rightCorners.at(0).first - 80),(rightCorners.at(0).second - 3)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)}, {(myCorners.at(1).first + 50),(myCorners.at(1).second + 50)});
-                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(myCorners.at(3).first + 50),(myCorners.at(3).second + 50)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)}, {(rightCorners.at(2).first - 80),(rightCorners.at(2).second - 3)});
+                    right2Me->setPath({(float)(rightCorners.at(0).first - 1),(float)(rightCorners.at(0).second + 3)}, {(float)(rightCorners.at(0).first - 80),(float)(rightCorners.at(0).second - 3)}, {(float)(myCorners.at(1).first + 1),(float)(myCorners.at(1).second + 3)}, {(float)(myCorners.at(1).first + 50),(float)(myCorners.at(1).second + 50)});
+                    me2Right->setPath({(float)(myCorners.at(3).first + 1),(float)(myCorners.at(3).second - 3)}, {(float)(myCorners.at(3).first + 50),(float)(myCorners.at(3).second + 50)}, {(float)(rightCorners.at(2).first - 1),(float)(rightCorners.at(2).second - 3)}, {(float)(rightCorners.at(2).first - 80),(float)(rightCorners.at(2).second - 3)});
                 }else if (i == 3 && i2 == 0) {
-                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(rightCorners.at(0).first - 80),(rightCorners.at(0).second + 2)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)}, {(myCorners.at(1).first + 20),(myCorners.at(1).second - 10)});
-                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(myCorners.at(3).first + 30),(myCorners.at(3).second - 20)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)}, {(rightCorners.at(2).first - 80),(rightCorners.at(2).second - 3)});
+                    right2Me->setPath({(float)(rightCorners.at(0).first - 1),(float)(rightCorners.at(0).second + 3)}, {(float)(rightCorners.at(0).first - 80),(float)(rightCorners.at(0).second + 2)}, {(float)(myCorners.at(1).first + 1),(float)(myCorners.at(1).second + 3)}, {(float)(myCorners.at(1).first + 20),(float)(myCorners.at(1).second - 10)});
+                    me2Right->setPath({(float)(myCorners.at(3).first + 1),(float)(myCorners.at(3).second - 3)}, {(float)(myCorners.at(3).first + 30),(float)(myCorners.at(3).second - 20)}, {(float)(rightCorners.at(2).first - 1),(float)(rightCorners.at(2).second - 3)}, {(float)(rightCorners.at(2).first - 80),(float)(rightCorners.at(2).second - 3)});
                 }else {
                     //straightline
-                    right2Me->setPath({(rightCorners.at(0).first - 1),(rightCorners.at(0).second + 3)}, {(myCorners.at(1).first + 1),(myCorners.at(1).second + 3)});
-                    me2Right->setPath({(myCorners.at(3).first + 1),(myCorners.at(3).second - 3)}, {(rightCorners.at(2).first - 1),(rightCorners.at(2).second - 3)});
+                    right2Me->setPath({(float)(rightCorners.at(0).first - 1),(float)(rightCorners.at(0).second + 3)}, {(float)(myCorners.at(1).first + 1),(float)(myCorners.at(1).second + 3)});
+                    me2Right->setPath({(float)(myCorners.at(3).first + 1),(float)(myCorners.at(3).second - 3)}, {(float)(rightCorners.at(2).first - 1),(float)(rightCorners.at(2).second - 3)});
                 }
                 //the path from the node on my right to me is the path on its left side.
                 right->setLeft(right2Me, me->getId());

@@ -7,6 +7,7 @@
 #include <Router.h>
 #include <SDL_ttf.h>
 #include <stack>
+#include <AStar.h>
 
 using namespace std;
 
@@ -389,6 +390,19 @@ void System::scenario(int scenario) {
         stack.push(i2);
         stack.push(i1);
         assert(carHandler->setRoute(7, &stack));
+        stack = {};
+    }
+    if (scenario == 3) {
+        //This function exists to create a car and a path for the car, testing the A* algorithm
+        //update the time
+        time = SDL_GetTicks();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({0,0}, (time * 0.001f));
+        AStar* algo = new AStar();
+        i1 = infrastructure->getI(0,0);
+        i2 = infrastructure->getI(1,1);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(0, &stack));
         stack = {};
     }
 }
