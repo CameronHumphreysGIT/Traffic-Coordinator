@@ -9,6 +9,7 @@ class AStar {
     private:
         //helpers
         std::map<float, Node*>::iterator findNode(Intersection* , std::map<float, Node*>&);
+        std::stack<Intersection*> makeStack(std::vector<Node*> );
     public:
         AStar();
         ~AStar();

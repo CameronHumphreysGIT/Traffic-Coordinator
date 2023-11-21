@@ -189,3 +189,26 @@ TEST_CASE("Scenarios") {
 
    cout.clear();
 }
+
+//TEST_CASE("AStar test") {
+//    cout.setstate(ios_base::failbit);
+//    System* system = new System();
+//    system->init();
+//    system->loadMedia(true);
+//    system->buildInfrastructure();
+//    system->scenario(4);
+//    vector<Intersection*> vec = {system->getIntersections()->at(3)->at(4)};
+//    stack<Intersection*, std::vector<Intersection*>> route1(vec);
+//
+//    vector<stack<Intersection*>> routes;
+//    routes.push_back((stack<Intersection*>)route1);
+//    //verify paths
+//    for (int i = 0; i < 10; i++) {
+//        CHECK(system->getCarHandler()->getRoute(i) == routes.at(i));
+//    }
+//
+//    system->close();
+//    //Delete all objects;
+//    delete system;
+//    cout.clear();
+//}
