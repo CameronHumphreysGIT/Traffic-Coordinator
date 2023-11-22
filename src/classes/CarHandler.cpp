@@ -57,6 +57,10 @@ vector<vector<vector<pair<float, float>>>> CarHandler::getPaths() {
     return paths;
 }
 
+stack<Intersection*> CarHandler::getRoute(int index) {
+    return *(routes->at(index));
+}
+
 bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     stack<Intersection*>* newRoute = new stack<Intersection*>(*route);
     //check if we have added a vector of cars with this intersection origin
