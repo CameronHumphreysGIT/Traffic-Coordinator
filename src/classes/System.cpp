@@ -8,6 +8,7 @@
 #include <SDL_ttf.h>
 #include <stack>
 #include <AStar.h>
+#include <TrafficCoordinator.h>
 
 using namespace std;
 
@@ -480,6 +481,222 @@ void System::scenario(int scenario) {
         assert(carHandler->setRoute(9, &stack));
         stack = {};
     }
+    if (scenario == 5) {
+        //30 car scenario for testing the algorithm
+        //update the time
+        time = SDL_GetTicks();
+        AStar* algo = new AStar();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({633,175}, (time * 0.001f));
+        i1 = infrastructure->getI(3,4);
+        i2 = infrastructure->getI(8,0);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(0, &stack));
+        stack = {};
+
+        carHandler->addCar({83,69}, (time * 0.001f));
+        i1 = infrastructure->getI(0,0);
+        i2 = infrastructure->getI(5,9);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(1, &stack));
+        stack = {};
+
+        carHandler->addCar({633,453}, (time * 0.001f));
+        i1 = infrastructure->getI(11,11);
+        i2 = infrastructure->getI(9,7);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(2, &stack));
+        stack = {};
+
+        carHandler->addCar({93,69}, (time * 0.001f));
+        i1 = infrastructure->getI(0,0);
+        i2 = infrastructure->getI(3,3);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(3, &stack));
+        stack = {};
+
+        carHandler->addCar({717,491}, (time * 0.001f));
+        i1 = infrastructure->getI(12,9);
+        i2 = infrastructure->getI(10,4);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(4, &stack));
+        stack = {};
+
+        carHandler->addCar({890,212}, (time * 0.001f));
+        i1 = infrastructure->getI(4,7);
+        i2 = infrastructure->getI(7,8);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(5, &stack));
+        stack = {};
+
+        carHandler->addCar({387,489}, (time * 0.001f));
+        i1 = infrastructure->getI(12,5);
+        i2 = infrastructure->getI(9,2);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(6, &stack));
+        stack = {};
+
+        carHandler->addCar({219,566}, (time * 0.001f));
+        i1 = infrastructure->getI(15,0);
+        i2 = infrastructure->getI(9,1);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(7, &stack));
+        stack = {};
+
+        carHandler->addCar({717,261}, (time * 0.001f));
+        i1 = infrastructure->getI(5,11);
+        i2 = infrastructure->getI(6,8);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(8, &stack));
+        stack = {};
+
+        carHandler->addCar({287,141}, (time * 0.001f));
+        i1 = infrastructure->getI(2,0);
+        i2 = infrastructure->getI(1,0);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(9, &stack));
+        stack = {};
+
+        carHandler->addCar({880,212}, (time * 0.001f));
+        i1 = infrastructure->getI(4,7);
+        i2 = infrastructure->getI(8,3);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(10, &stack));
+        stack = {};
+
+        carHandler->addCar({855,64}, (time * 0.001f));
+        i1 = infrastructure->getI(0,8);
+        i2 = infrastructure->getI(3,7);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(11, &stack));
+        stack = {};
+
+        carHandler->addCar({885,493}, (time * 0.001f));
+        i1 = infrastructure->getI(12,11);
+        i2 = infrastructure->getI(5,6);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(12, &stack));
+        stack = {};
+
+        carHandler->addCar({73,69}, (time * 0.001f));
+        i1 = infrastructure->getI(0,0);
+        i2 = infrastructure->getI(9,1);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(13, &stack));
+        stack = {};
+
+        carHandler->addCar({633,570}, (time * 0.001f));
+        i1 = infrastructure->getI(15,5);
+        i2 = infrastructure->getI(5,7);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(14, &stack));
+        stack = {};
+
+        carHandler->addCar({457,178}, (time * 0.001f));
+        i1 = infrastructure->getI(3,2);
+        i2 = infrastructure->getI(7,5);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(15, &stack));
+        stack = {};
+        
+        carHandler->addCar({391,105}, (time * 0.001f));
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(18,13);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(16, &stack));
+        stack = {};
+                
+        carHandler->addCar({391,410}, (time * 0.001f));
+        i1 = infrastructure->getI(10,2);
+        i2 = infrastructure->getI(11,3);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(17, &stack));
+        stack = {};
+
+        carHandler->addCar({250,370}, (time * 0.001f));
+        i1 = infrastructure->getI(9,0);
+        i2 = infrastructure->getI(18,13);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(18, &stack));
+        stack = {};
+
+        carHandler->addCar({633,212}, (time * 0.001f));
+        i1 = infrastructure->getI(4,4);
+        i2 = infrastructure->getI(11,6);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(19, &stack));
+        stack = {};
+
+        carHandler->addCar({801,554}, (time * 0.001f));
+        i1 = infrastructure->getI(14,6);
+        i2 = infrastructure->getI(10,7);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(20, &stack));
+        stack = {};
+
+        carHandler->addCar({85,347}, (time * 0.001f));
+        i1 = infrastructure->getI(8,1);
+        i2 = infrastructure->getI(15,1);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(21, &stack));
+        stack = {};
+
+        carHandler->addCar({456,606}, (time * 0.001f));
+        i1 = infrastructure->getI(17,5);
+        i2 = infrastructure->getI(12,8);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(22, &stack));
+        stack = {};
+
+        carHandler->addCar({387,608}, (time * 0.001f));
+        i1 = infrastructure->getI(17,4);
+        i2 = infrastructure->getI(17,0);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(23, &stack));
+        stack = {};
+        
+        carHandler->addCar({377,489}, (time * 0.001f));
+        i1 = infrastructure->getI(12,5);
+        i2 = infrastructure->getI(5,0);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(24, &stack));
+        stack = {};
+
+        carHandler->addCar({144,579}, (time * 0.001f));
+        i1 = infrastructure->getI(16,0);
+        i2 = infrastructure->getI(2,7);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(25, &stack));
+        stack = {};
+        
+        carHandler->addCar({457,69}, (time * 0.001f));
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(13,5);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(26, &stack));
+        stack = {};
+                
+        carHandler->addCar({172,646}, (time * 0.001f));
+        i1 = infrastructure->getI(18,4);
+        i2 = infrastructure->getI(13,8);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(27, &stack));
+        stack = {};
+        
+        carHandler->addCar({391,178}, (time * 0.001f));
+        i1 = infrastructure->getI(3,1);
+        i2 = infrastructure->getI(11,9);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(28, &stack));
+        stack = {};
+    
+        carHandler->addCar({717,103}, (time * 0.001f));
+        i1 = infrastructure->getI(1,4);
+        i2 = infrastructure->getI(3,3);
+        stack = algo->findRoute(i1, i2, infrastructure->getIntersections());
+        assert(carHandler->setRoute(29, &stack));
+        stack = {};
+    }
 }
 
 void System::draw() {
@@ -488,6 +705,30 @@ void System::draw() {
         //update the cars
         time = SDL_GetTicks();
         carHandler->updateCar(i, (time * 0.001f));  
+    }
+    vector<vector<vector<pair<float, float>>>> paths = (carHandler->getPaths());
+    vector<SDL_Rect*> rects = carHandler->getData().first;
+    vector<float*> rotations = carHandler->getData().second;
+    vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
+    scene->clear();
+    scene->drawBackground(backgroundTexture);
+    scene->drawRoads(sampled);
+    vector<vector<vector<vector<pair<float, float>>>>> lights = infrastructure->getLights();
+    scene->drawLights(lights);
+    scene->drawCars(rects, carTexture, rotations);
+    scene->drawPaths(paths);
+    scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
+    scene->present();
+}
+
+void System::drawWCoordinator() {
+    TrafficCoordinator* trafficcoord = new TrafficCoordinator(carHandler);
+    for (int i = 0; i < carHandler->size(); i++) {
+        //update the cars
+        time = SDL_GetTicks();
+        //try recalculating path
+        trafficcoord->recalculatePath(i,(time * 0.001f));
+        carHandler->updateCar(i, (time * 0.001f));
     }
     vector<vector<vector<pair<float, float>>>> paths = (carHandler->getPaths());
     vector<SDL_Rect*> rects = carHandler->getData().first;
@@ -547,6 +788,35 @@ void System::run(int timeout) {
         time = SDL_GetTicks();
         if ((time - lastUpdate) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {
             draw();
+            lastUpdate = time;
+        }
+        //once we have drawn the system, check that all cars haven't reached the end.
+        if (!carHandler->isNotDone()) {
+            quit = true;
+        }
+    }
+}
+
+//Run function used for testing takes in a timeout, also closes when scenario is done.
+void System::runWCoordinator(int timeout) {
+    SDL_Event e;
+    bool quit = false;
+    Uint32 startTime = time;
+    Uint32 lastUpdate = time;
+    while(!quit && (int)((time - startTime)/1000) < timeout)  {
+        //check for quit
+        while(SDL_PollEvent(&e) != 0)    {
+            if(e.type == SDL_QUIT) {
+                quit = true;
+            }else {
+                if(toggleBackground->isClicked(e)) {
+                    swapBackground();
+                };
+            }
+        }
+        time = SDL_GetTicks();
+        if ((time - lastUpdate) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {
+            drawWCoordinator();
             lastUpdate = time;
         }
         //once we have drawn the system, check that all cars haven't reached the end.

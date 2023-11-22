@@ -37,6 +37,8 @@ class System {
         void draw();
         void run();
         void run(int );
+        void drawWCoordinator();
+        void runWCoordinator(int );
         void close();
 
 };
