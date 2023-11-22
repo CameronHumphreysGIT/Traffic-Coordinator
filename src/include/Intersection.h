@@ -49,6 +49,7 @@ class Intersection {
         vector<vector<vector<pair<float, float>>>> getLights();
         float getWithinTime();
         pair<int,int> getWithinOrigin();
+        pair<int,int> getCenter();
         bool isWithinLeft();
         bool isPassable(pair<int, int> , float );
         void print();

@@ -225,6 +225,10 @@ pair<int,int> Intersection::getWithinOrigin() {
     return withinIntersectionOrigin;
 }
 
+pair<int,int> Intersection::getCenter() {
+    return {(topLeft.first + Variables::INTERSECTION_DIMS/2),(topLeft.second + Variables::INTERSECTION_DIMS/2)};
+}
+
 bool Intersection::isWithinLeft() {
     return withinIntersectionLeft;
 }

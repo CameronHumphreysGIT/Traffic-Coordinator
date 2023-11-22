@@ -18,7 +18,7 @@ stack<Intersection*> AStar::findRoute(Intersection* start, Intersection* end, ve
     map<float, Node*> nodes;
     vector<Node*> path;
     //calculate distance to end
-    pair<int, int> dir = (start->getCorners().at(0) - end->getCorners().at(0));
+    pair<int, int> dir = (start->getCenter() - end->getCenter());
     Vector2 direction2 = {(float)dir.first, (float)dir.second};
     nodes.insert({0.0f, new Node(start, NULL, 0.0f, direction2.Magnitude())});
     bool endFlag = false;
@@ -33,9 +33,9 @@ stack<Intersection*> AStar::findRoute(Intersection* start, Intersection* end, ve
                 //make sure neigbor isn't the intersection we just came from on the path.
                 if (path.empty() || neighbor != path.at(path.size() - 1)->getIntersection()) {
                     //figure out magnitude from top to neighbor, and from neigbor to end, add together for score.
-                    pair<int, int> dir = (top->getCorners().at(0) - neighbor->getCorners().at(0));
+                    pair<int, int> dir = (top->getCenter() - neighbor->getCenter());
                     Vector2 direction = {(float)dir.first, (float)dir.second};
-                    dir = (neighbor->getCorners().at(0) - end->getCorners().at(0));
+                    dir = (neighbor->getCenter() - end->getCenter());
                     Vector2 direction2 = {(float)dir.first, (float)dir.second};
                     //now make it into a node:
                     Node* node = new Node(neighbor, topNode, (direction.Magnitude() + topNode->getDistToMe()), direction2.Magnitude());
