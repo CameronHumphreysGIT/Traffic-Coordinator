@@ -20,6 +20,7 @@ Intersection::Intersection() {
     withinIntersectionTime = -1;
     withinIntersectionOrigin = {-1,-1};
     withinIntersectionLeft = false;
+    timeTillLastChange = 0;
 }
 
 Intersection::~Intersection() {
@@ -273,6 +274,126 @@ bool Intersection::isPassable(pair<int, int> pos, float time) {
     }
     return passable;
 }
+
+
+//helper for traffic Coordinator to tell it how long a given carr would have to wait to pass an intersection.
+float Intersection::timeTillPass(pair<int, int> prev, float time) {
+    //firstly, let's find where this car is coming from:
+    Variables::Side side;
+    for (int s = 0; s < Variables::Side::END; s++) {
+        if (prev == neighbors[s]) {
+            side = (Variables::Side)s;
+            break;
+        }
+    }
+    //logic more or less follows the actual logic:
+    bool lightsChange = false;
+    if (lastChange == 0 || (time - lastChange) > Variables::LIGHTTIME) {
+        lightsChange = true;
+        timeTillLastChange = time;
+    }
+    bool passable;
+    switch(side) {
+        case Variables::BOTTOM:
+            passable = isVerticalGreen;
+            break;
+        case Variables::TOP:
+            passable = isVerticalGreen;
+            break;
+        default:
+            passable = !isVerticalGreen;
+    }
+    if (lightsChange && !passable) {
+        //it now is passable
+        passable = !passable;
+    }
+    if (passable && timeTillLastChange != time && (Variables::LIGHTTIME - (time - lastChange)) < Variables::CLEARTIME) {
+        passable = false;
+        //we have to wait until this light turns red, then wait until it turns green again.
+        return Variables::LIGHTTIME - (time - lastChange) + Variables::LIGHTTIME;
+    }
+    //now we can get to it.
+    if (!passable) {
+        return Variables::LIGHTTIME - (time - lastChange);
+    }
+    //the intersection is passable, lets see if we have to wait for a car:
+    if ((withinIntersectionLeft || withinIntersectionOrigin == prev) && (time - withinIntersectionTime) < Variables::CLEARTIME) {
+        return Variables::CLEARTIME - (time - withinIntersectionTime);
+    }else {
+        return 0.0f;
+    }
+}
+
+//helper for traffic Coordinator to tell it how long a given carr would have to wait to pass an intersection, given the last car to enter the intersection.
+float Intersection::timeTillPass(pair<int, int> prev, float time, float withinTime, pair<int, int> withinOrig, pair<int, int> withinDest) {
+    //firstly, let's find where this car is coming from:
+    Variables::Side mySide;
+    Variables::Side withinOrigSide;
+    Variables::Side withinDestSide;
+    for (int s = 0; s < Variables::Side::END; s++) {
+        if (prev == neighbors[s]) {
+            mySide = (Variables::Side)s;
+        }
+        if (withinOrig == neighbors[s]) {
+            withinOrigSide = (Variables::Side)s;
+        }
+        if (withinDest == neighbors[s]) {
+            withinDestSide = (Variables::Side)s;
+        }
+    }
+    //logic more or less follows the actual logic:
+    bool lightsChange = false;
+    if ((time - timeTillLastChange) > Variables::LIGHTTIME) {
+        lightsChange = true;
+        timeTillLastChange = time;
+    }
+    bool passable;
+    bool vertGreen = (withinOrigSide == Variables::TOP || withinOrigSide == Variables::BOTTOM);
+    switch(mySide) {
+        case Variables::BOTTOM:
+            passable = vertGreen;
+            break;
+        case Variables::TOP:
+            passable = vertGreen;
+            break;
+        default:
+            passable = !vertGreen;
+    }
+    if (lightsChange && !passable) {
+        //it now is passable
+        passable = !passable;
+    }
+    float addedTime = 0;
+    if (time < withinTime) {
+        //means we must wait until within starts moving.
+        addedTime = (withinTime - time);
+    }
+    if (passable && timeTillLastChange != time && (Variables::LIGHTTIME - (time - timeTillLastChange)) < Variables::CLEARTIME) {
+        return addedTime + (Variables::LIGHTTIME - (time - timeTillLastChange) + Variables::LIGHTTIME);
+    }
+    //now we can get to it.
+    if (!passable) {
+        return addedTime + (Variables::LIGHTTIME - (time - timeTillLastChange));
+    }
+    //the intersection is passable, lets see if we have to wait for a car:
+    if (addedTime == 0) {
+        //tells us if the dest is vertical
+        bool withinDestVert = (withinDestSide == Variables::TOP || withinDestSide == Variables::BOTTOM);
+        if (((withinDestVert == !vertGreen) || withinOrig == prev) && (time - withinTime) < Variables::CLEARTIME) {
+            return Variables::CLEARTIME - (time - withinTime);
+        }else {
+            return 0.0f;
+        }
+    }else {
+        //here there is a dillema since i don't know if the previous car is waiting for something that this car doesn;t have to wait for. I ignored this dillemma.
+        bool withinDestVert = (withinDestSide == Variables::TOP || withinDestSide == Variables::BOTTOM);
+        if ((withinDestVert == !vertGreen) || withinOrig == prev) {
+            //they're turning left or something
+            return addedTime + Variables::CLEARTIME;
+        }
+        return addedTime;
+    }
+}   
 
 void Intersection::print() {
     cout<<"I am an Intersection "<<"corners: "<<topLeft.first<<","<<topLeft.second<<"  "<<topRight.first<<","<<topRight.second<<"  "<<bottomLeft.first<<","<<bottomLeft.second<<"  "<<bottomRight.first<<","<<bottomRight.second<<"\n";

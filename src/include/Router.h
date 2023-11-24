@@ -9,6 +9,7 @@ class Router {
         Router();
         ~Router();
         bool setRoute(Car* &, std::stack<Intersection*>* );
+        float findLength(pair<int, int> , stack<Intersection*> );
 };
 
 #endif

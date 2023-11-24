@@ -29,6 +29,8 @@ class Intersection {
         pair<int,int> withinIntersectionOrigin;
         //boolean to indicate if the car within the Intersection is turning left
         bool withinIntersectionLeft;
+        //the timeTill function needs a last change tracker
+        float timeTillLastChange;
     public:
         Intersection();
         ~Intersection();
@@ -52,6 +54,8 @@ class Intersection {
         pair<int,int> getCenter();
         bool isWithinLeft();
         bool isPassable(pair<int, int> , float );
+        float timeTillPass(pair<int, int> , float );
+        float timeTillPass(pair<int, int> , float , float , pair<int, int> , pair<int, int> );
         void print();
 };
 

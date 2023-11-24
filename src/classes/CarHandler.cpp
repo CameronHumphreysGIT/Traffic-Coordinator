@@ -9,6 +9,7 @@ CarHandler::CarHandler() {
     routes = new vector<stack<Intersection*>*>;
     prevInters = new map<pair<int,int>, vector<Car*>*>;
     lastInter = new vector<pair<int,int>>;
+    destInters = new map<pair<int, int>, vector<int>*>;
 }
 
 CarHandler::~CarHandler() {
@@ -19,6 +20,9 @@ CarHandler::~CarHandler() {
         routes->at(i) = NULL;
     }
     for (auto it = prevInters->begin(); it != prevInters->end(); it++) {
+        delete it->second;
+    }
+    for (auto it = destInters->begin(); it != destInters->end(); it++) {
         delete it->second;
     }
     delete cars;
@@ -61,6 +65,18 @@ stack<Intersection*> CarHandler::getRoute(int index) {
     return *(routes->at(index));
 }
 
+pair<int,int> CarHandler::getLastInter(int index) {
+    return lastInter->at(index);
+}
+
+Router* CarHandler::getRouter() {
+    return router;
+}
+
+vector<int> CarHandler::getDestIds(pair<int, int> intersection) {
+    return *(destInters->at(intersection));
+}
+
 bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     stack<Intersection*>* newRoute = new stack<Intersection*>(*route);
     //check if we have added a vector of cars with this intersection origin
@@ -76,6 +92,15 @@ bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     lastInter->at(index) = newRoute->top()->getId();
     //pop the first intersection, since it's the starting point.
     newRoute->pop();
+    //check if we have added a vector of car id's with this intersection dest
+    if (destInters->find(newRoute->top()->getId()) == destInters->end()) {
+        vector<int>* vec = new vector<int>();
+        vec->push_back(index);
+        destInters->insert({newRoute->top()->getId(), vec});
+    }else {
+        //there is a vector of cars for this intersection, push this car into that vector
+        destInters->at(newRoute->top()->getId())->push_back(index);
+    }
     routes->at(index) = newRoute;
     return router->setRoute((cars->at(index)), route);
 }
@@ -190,6 +215,14 @@ void CarHandler::handleGo(int index, float time) {
             break;
         }
     }
+    //remove this car from the vector at the destination intersection id
+    vector<int>* vec2 = destInters->at(routes->at(index)->top()->getId());
+    for (auto it = vec2->begin(); it != vec2->end(); it++) {
+        if (*it == index) {
+            vec2->erase(it);
+            break;
+        }
+    }
     //set the new Intersection to prevInter and lastInter
     //check if we have added a vector of cars with this intersection origin
     if (prevInters->find(routes->at(index)->top()->getId()) == prevInters->end()) {
@@ -204,6 +237,15 @@ void CarHandler::handleGo(int index, float time) {
     lastInter->at(index) = routes->at(index)->top()->getId();
     //now pop this intersection from routes
     routes->at(index)->pop();
+    //check if we have added a vector of cars with this intersection dest
+    if (destInters->find(routes->at(index)->top()->getId()) == destInters->end()) {
+        vector<int>* vec = new vector<int>();
+        vec->push_back(index);
+        destInters->insert({routes->at(index)->top()->getId(), vec});
+    }else {
+        //there is a vector of cars for this intersection, push this car into that vector
+        destInters->at(routes->at(index)->top()->getId())->push_back(index);
+    }
 }
 
 //function for checking if the cars have all come to rest

@@ -722,7 +722,7 @@ void System::draw() {
 }
 
 void System::drawWCoordinator() {
-    TrafficCoordinator* trafficcoord = new TrafficCoordinator(carHandler);
+    TrafficCoordinator* trafficcoord = new TrafficCoordinator(carHandler, infrastructure->getIntersections());
     for (int i = 0; i < carHandler->size(); i++) {
         //update the cars
         time = SDL_GetTicks();
