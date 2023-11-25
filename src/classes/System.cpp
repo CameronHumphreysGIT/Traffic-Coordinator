@@ -8,7 +8,6 @@
 #include <SDL_ttf.h>
 #include <stack>
 #include <AStar.h>
-#include <TrafficCoordinator.h>
 
 using namespace std;
 
@@ -721,29 +720,6 @@ void System::draw() {
     scene->present();
 }
 
-void System::drawWCoordinator() {
-    TrafficCoordinator* trafficcoord = new TrafficCoordinator(carHandler);
-    for (int i = 0; i < carHandler->size(); i++) {
-        //update the cars
-        time = SDL_GetTicks();
-        //try recalculating path
-        trafficcoord->recalculatePath(i,(time * 0.001f));
-        carHandler->updateCar(i, (time * 0.001f));
-    }
-    vector<vector<vector<pair<float, float>>>> paths = (carHandler->getPaths());
-    vector<SDL_Rect*> rects = carHandler->getData().first;
-    vector<float*> rotations = carHandler->getData().second;
-    vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
-    scene->clear();
-    scene->drawBackground(backgroundTexture);
-    scene->drawRoads(sampled);
-    vector<vector<vector<vector<pair<float, float>>>>> lights = infrastructure->getLights();
-    scene->drawLights(lights);
-    scene->drawCars(rects, carTexture, rotations);
-    scene->drawPaths(paths);
-    scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
-    scene->present();
-}
 
 void System::run() {
     SDL_Event e;
@@ -797,34 +773,6 @@ void System::run(int timeout) {
     }
 }
 
-//Run function used for testing takes in a timeout, also closes when scenario is done.
-void System::runWCoordinator(int timeout) {
-    SDL_Event e;
-    bool quit = false;
-    Uint32 startTime = time;
-    Uint32 lastUpdate = time;
-    while(!quit && (int)((time - startTime)/1000) < timeout)  {
-        //check for quit
-        while(SDL_PollEvent(&e) != 0)    {
-            if(e.type == SDL_QUIT) {
-                quit = true;
-            }else {
-                if(toggleBackground->isClicked(e)) {
-                    swapBackground();
-                };
-            }
-        }
-        time = SDL_GetTicks();
-        if ((time - lastUpdate) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {
-            drawWCoordinator();
-            lastUpdate = time;
-        }
-        //once we have drawn the system, check that all cars haven't reached the end.
-        if (!carHandler->isNotDone()) {
-            quit = true;
-        }
-    }
-}
 
 void System::close()  {
     //Deallocate surface

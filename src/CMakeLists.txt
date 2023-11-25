@@ -20,8 +20,7 @@ add_library(${PROJECT_NAME}
     classes/Scene.cpp 
     classes/System.cpp
     classes/AStar.cpp
-    classes/Node.cpp
-    classes/TrafficCoordinator.cpp)
+    classes/Node.cpp)
 
 
 target_include_directories(${PROJECT_NAME}
