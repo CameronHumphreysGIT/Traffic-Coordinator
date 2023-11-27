@@ -696,6 +696,354 @@ void System::scenario(int scenario) {
         assert(carHandler->setRoute(29, &stack));
         stack = {};
     }
+    if (scenario == 6) {
+        //6 cars around 1 intersection to test traffic with diversions of left turning cars
+        //update the time
+        time = SDL_GetTicks();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({544,105}, (time * 0.001f));//orig(1,2) //dest (0,3)
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(0, &stack));
+        stack = {};
+
+        carHandler->addCar({564,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(1, &stack));
+        stack = {};
+
+        carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (0,3)
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(2, &stack));
+        stack = {};
+
+        carHandler->addCar({457,162}, (time * 0.001f));//orig(2,2) //dest (1,2)
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(3, &stack));
+        stack = {};
+
+        carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (0,3) //divert
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(0,2);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(4, &stack));
+        stack = {};
+
+        carHandler->addCar({371,105}, (time * 0.001f));//orig(1,0) //dest (1,2)
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(5, &stack));
+        stack = {};
+
+        carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,2) //divert
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(0,4);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(6, &stack));
+        stack = {};
+
+        carHandler->addCar({437,69}, (time * 0.001f));//orig(0,3) //dest (1,0)
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(7, &stack));
+        stack = {};
+    }
+    if (scenario == 7) {
+        //8 cars around 1 intersection to test traffic with diversions around red lights
+        //update the time
+        time = SDL_GetTicks();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({554,105}, (time * 0.001f));//orig(1,2) //dest (0,3) //divert
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(0,4);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(0, &stack));
+        stack = {};
+
+        carHandler->addCar({564,105}, (time * 0.001f));//orig(1,2) //dest (1,0) //divert above
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(0,4);
+        i3 = infrastructure->getI(0,3);
+        i4 = infrastructure->getI(0,2);
+        i5 = infrastructure->getI(1,0);
+        stack.push(i5);
+        stack.push(i4);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(1, &stack));
+        stack = {};
+
+        carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (0,3)
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(2, &stack));
+        stack = {};
+
+        carHandler->addCar({457,162}, (time * 0.001f));//orig(2,2) //dest (1,2)
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(3, &stack));
+        stack = {};
+
+        carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (0,3) //divert
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(0,2);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(4, &stack));
+        stack = {};
+
+        carHandler->addCar({371,105}, (time * 0.001f));//orig(1,0) //dest (1,2) //divert above
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(0,2);
+        i3 = infrastructure->getI(0,3);
+        i4 = infrastructure->getI(0,4);
+        i5 = infrastructure->getI(1,2);
+        stack.push(i5);
+        stack.push(i4);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(5, &stack));
+        stack = {};
+
+        carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,2)
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(6, &stack));
+        stack = {};
+
+        carHandler->addCar({437,69}, (time * 0.001f));//orig(0,3) //dest (1,0)
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(7, &stack));
+        stack = {};
+    }
+    if (scenario == 8) {
+        //6 cars around 1 intersection to test traffic with diversions of left and right turning cars
+        //update the time
+        time = SDL_GetTicks();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({544,105}, (time * 0.001f));//orig(1,2) //dest (0,3) //divert
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(0,4);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(0, &stack));
+        stack = {};
+
+        carHandler->addCar({564,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(1, &stack));
+        stack = {};
+
+        carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (0,3)
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(2, &stack));
+        stack = {};
+
+        carHandler->addCar({457,162}, (time * 0.001f));//orig(2,2) //dest (1,2) //divert
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(2,3);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(3, &stack));
+        stack = {};
+
+        carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (0,3) //divert
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(0,2);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(4, &stack));
+        stack = {};
+
+        carHandler->addCar({371,105}, (time * 0.001f));//orig(1,0) //dest (1,2)
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(5, &stack));
+        stack = {};
+
+        carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,2) //divert
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(0,4);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(6, &stack));
+        stack = {};
+
+        carHandler->addCar({437,69}, (time * 0.001f));//orig(0,3) //dest (1,0) //divert
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(0,2);
+        i3 = infrastructure->getI(1,0);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(7, &stack));
+        stack = {};
+    }
+    if (scenario == 9) {
+        //6 cars around 1 intersection to test traffic with diversions of left and right turning cars
+        //update the time
+        time = SDL_GetTicks();
+        //Car wants time in seconds, the carHandler will make the car
+        carHandler->addCar({544,105}, (time * 0.001f));//orig(1,2) //dest (0,3) //divert
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(0,4);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(0, &stack));
+        stack = {};
+
+        carHandler->addCar({564,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(1, &stack));
+        stack = {};
+
+        carHandler->addCar({457,142}, (time * 0.001f));//orig(2,2) //dest (0,3)
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(2, &stack));
+        stack = {};
+
+        carHandler->addCar({457,162}, (time * 0.001f));//orig(2,2) //dest (1,2) //divert
+        i1 = infrastructure->getI(2,2);
+        i2 = infrastructure->getI(2,3);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(3, &stack));
+        stack = {};
+
+        carHandler->addCar({391,105}, (time * 0.001f));//orig(1,0) //dest (0,3) //divert
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(0,2);
+        i3 = infrastructure->getI(0,3);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(4, &stack));
+        stack = {};
+
+        carHandler->addCar({371,105}, (time * 0.001f));//orig(1,0) //dest (1,2)
+        i1 = infrastructure->getI(1,0);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(5, &stack));
+        stack = {};
+
+        carHandler->addCar({457,69}, (time * 0.001f));//orig(0,3) //dest (1,2) //divert 
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(0,4);
+        i3 = infrastructure->getI(1,2);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(6, &stack));
+        stack = {};
+
+        carHandler->addCar({437,69}, (time * 0.001f));//orig(0,3) //dest (1,0)
+        i1 = infrastructure->getI(0,3);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(7, &stack));
+        stack = {};
+    }
 }
 
 void System::draw() {

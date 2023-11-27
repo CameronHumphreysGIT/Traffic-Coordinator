@@ -4,6 +4,7 @@
 #include <Router.h>
 #include <stack>
 #include <map>
+#include <set>
 
 class CarHandler {
     private:
@@ -14,6 +15,7 @@ class CarHandler {
         std::map<std::pair<int,int>, std::vector<Car*>*>* prevInters;
         //uses the same indeces as cars, and has the id of the last intersection that car visited
         std::vector<std::pair<int,int>>* lastInter;
+        std::set<int> ended;
         //helpers
         void handleStop(int );
         void handleGo(int , float);

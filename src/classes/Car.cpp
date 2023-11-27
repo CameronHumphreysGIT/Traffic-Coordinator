@@ -2,6 +2,7 @@
 #include <Variables.h>
 
 #include <iostream>
+#include <chrono>
 
 using namespace std;
 
@@ -71,6 +72,7 @@ void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
     paths->push_back(path);
     //start moving
     state = moving;
+    start = timeSinceEpochMillisec();
 }
 
 void Car::update(float time) {
@@ -152,6 +154,12 @@ bool Car::withinTwoCarlengths() {
     return (direction.Magnitude() <= (Variables::CAR_HEIGHT * 2));
 }
 
+//helper function found on stackoverflow.
+uint64_t Car::timeSinceEpochMillisec() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+
 void Car::updatePos(float time) {
     float deltaTime = time - lastUpdate;
     pair<float, float> oldPos = {(float)chassis->x, (float)chassis->y};
@@ -183,6 +191,8 @@ void Car::updatePos(float time) {
         currentWaypoint = 0;
         if (currentPath == paths->size()) {
             state = end;
+            double travel = (double)(timeSinceEpochMillisec() - start);
+            cout<<"This car arrived at end, x: "<<chassis->x<<" y: "<<chassis->y<<" traveled for "<<travel/1000<<" ";
         }
     }
 }

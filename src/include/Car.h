@@ -4,6 +4,7 @@
 #include <vector>
 #include <queue>
 #include <SDL.h>
+#include <cstdint>
 
 #include <MathHelper.h>
 
@@ -31,6 +32,7 @@ class Car {
         Car* wait;
         //the last position of the car we are waiting on, we need to know if it changed
         pair<int, int> lastWaitPos;
+        uint64_t start;
     public:
         Car(std::pair<int, int> , float);
         ~Car();
@@ -43,6 +45,7 @@ class Car {
         void update(float , bool );
         void waitBehind(Car*);
         bool withinTwoCarlengths();
+        uint64_t timeSinceEpochMillisec();
         void updatePos(float );
         void translate(std::pair<float, float> , Vector2 , float );
         void rotate(Vector2 );

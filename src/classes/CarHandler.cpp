@@ -9,6 +9,7 @@ CarHandler::CarHandler() {
     routes = new vector<stack<Intersection*>*>;
     prevInters = new map<pair<int,int>, vector<Car*>*>;
     lastInter = new vector<pair<int,int>>;
+    ended;
 }
 
 CarHandler::~CarHandler() {
@@ -156,6 +157,10 @@ void CarHandler::updateCar(int index, float time) {
             cars->at(index)->update(time);
         }
     //}
+    if (cars->at(index)->isAtEnd() && ended.find(index) == ended.end()) {
+        cout<<"Car at "<<index<<"\n";
+        ended.insert(index);
+    }
 }
 
 void CarHandler::handleStop(int index) {

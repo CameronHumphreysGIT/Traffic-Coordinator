@@ -1,8 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 
 #include <cstdint>
 #include <iostream>
 #include <System.h>
+#include <chrono>
 
 
 TEST_CASE("System Initialization") {
@@ -123,7 +125,6 @@ TEST_CASE("Scenarios") {
 
     SECTION("Scenario 2") {
         System* system = new System();
-        //mute the console:
         
         system->init();
         system->loadMedia(true);
@@ -302,3 +303,95 @@ TEST_CASE("AStar test") {
     delete system;
     cout.clear();
 }
+
+void takedown(System* system) {
+    system->close();
+    //Delete all objects;
+    delete system;
+};
+
+System* setup(int num) {
+    cout.setstate(ios_base::failbit);
+    System* system = new System();
+
+    system->init();
+    system->loadMedia(true);
+    system->buildInfrastructure();
+    system->scenario(num);
+    cout.clear();
+    return system;
+};
+
+TEST_CASE("Benchmarking") {
+    SECTION("Default") {
+        double sum = 0;
+        for (int i =0; i < 3; i++) {
+            System* system = setup(2);
+            uint64_t start, end;
+            start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            system->run(1000);
+            end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            takedown(system);
+            sum += (end - start);
+            cout<<"====================================================ENDRUN\n";
+        }
+        cout<<"Average time: "<<(sum/3)/1000<<"\n";
+    }
+    SECTION("Divert Left Turns") {
+        double sum = 0;
+        for (int i =0; i < 3; i++) {
+            System* system = setup(6);
+            uint64_t start, end;
+            start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            system->run(1000);
+            end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            takedown(system);
+            sum += (end - start);
+            cout<<"====================================================ENDRUN\n";
+        }
+        cout<<"Average time: "<<(sum/3)/1000<<"\n";
+    }
+    SECTION("Divert Stop Lights") {
+        double sum = 0;
+        for (int i =0; i < 3; i++) {
+            System* system = setup(7);
+            uint64_t start, end;
+            start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            system->run(1000);
+            end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            takedown(system);
+            sum += (end - start);
+            cout<<"====================================================ENDRUN\n";
+        }
+        cout<<"Average time: "<<(sum/3)/1000<<"\n";
+    }
+    SECTION("Divert All Turns") {
+        double sum = 0;
+        for (int i =0; i < 3; i++) {
+            System* system = setup(8);
+            uint64_t start, end;
+            start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            system->run(1000);
+            end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            takedown(system);
+            sum += (end - start);
+            cout<<"====================================================ENDRUN\n";
+        }
+        cout<<"Average time: "<<(sum/3)/1000<<"\n";
+    }
+    SECTION("Optimized") {
+        double sum = 0;
+        for (int i =0; i < 3; i++) {
+            System* system = setup(9);
+            uint64_t start, end;
+            start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            system->run(1000);
+            end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            takedown(system);
+            sum += (end - start);
+            cout<<"====================================================ENDRUN\n";
+        }
+        cout<<"Average time: "<<(sum/3)/1000<<"\n";
+    }
+}
+
