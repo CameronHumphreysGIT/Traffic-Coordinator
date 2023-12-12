@@ -7,6 +7,7 @@
 #include <Car.h>
 #include <CarHandler.h>
 #include <Button.h>
+#include <ScenarioBuilder.h>
 
 class System {
     private:
@@ -20,6 +21,7 @@ class System {
         Infrastructure* infrastructure;
         CarHandler* carHandler;
         Scene* scene;
+        ScenarioBuilder* scenBuild;
         //time elapsed since SDL library initialized
         Uint32 time;
         Button* toggleBackground;

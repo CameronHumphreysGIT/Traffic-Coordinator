@@ -26,12 +26,14 @@ System::System() {
     infrastructure = new Infrastructure();
     carHandler = new CarHandler();
     toggleBackground = new Button(970, 50, 100, 50);
+    scenBuild = new ScenarioBuilder();
 }
 System::~System() {
     delete infrastructure;
     delete scene;
     delete carHandler;
     delete toggleBackground;
+    delete scenBuild;
 }
 
 bool System::init()   {
@@ -143,11 +145,9 @@ CarHandler* System::getCarHandler() {
 }
 
 void System::scenario(int scenario) {
-    ScenarioBuilder* scenBuild = new ScenarioBuilder();
-    Uint32 time = SDL_GetTicks();
+    time = SDL_GetTicks();
     //build the scenario
-    assert(scenBuild->scenario(scenario, time, carHandler, infrastructure));
-    delete scenBuild;
+    scenBuild->scenario(scenario, time, carHandler, infrastructure);
 }
 
 void System::draw() {
