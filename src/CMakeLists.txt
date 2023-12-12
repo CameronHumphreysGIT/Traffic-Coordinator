@@ -20,7 +20,8 @@ add_library(${PROJECT_NAME}
     classes/Scene.cpp 
     classes/System.cpp
     classes/AStar.cpp
-    classes/Node.cpp)
+    classes/Node.cpp
+    classes/ScenarioBuilder.cpp)
 
 
 target_include_directories(${PROJECT_NAME}
