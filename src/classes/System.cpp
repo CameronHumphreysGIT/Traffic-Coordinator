@@ -198,6 +198,8 @@ void System::run() {
 
 //Run function used for testing takes in a timeout, also closes when scenario is done.
 void System::run(int timeout) {
+    //this means that we are being called from the test suite for a run 
+    carHandler->setDestroy(false);
     SDL_Event e;
     bool quit = false;
     Uint32 startTime = time;

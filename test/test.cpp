@@ -29,6 +29,7 @@ TEST_CASE("System Initialization") {
 
 TEST_CASE("Scenarios") {
     cout.setstate(ios_base::failbit);
+
     SECTION("Scenario 0") {
         System* system = new System();
         //mute the console:
@@ -48,7 +49,8 @@ TEST_CASE("Scenarios") {
             CHECK(system->getCarHandler()->getCar(0)->getPos().second == 65);
         }
         SECTION("end run") {
-            system->run(1000);
+            cout.clear();
+            system->run(INT_MAX);
             CHECK(system->getCarHandler()->getCar(0)->getPos().first == 455);
             CHECK(system->getCarHandler()->getCar(0)->getPos().second == 114);
         }
@@ -101,7 +103,7 @@ TEST_CASE("Scenarios") {
             CHECK(system->getCarHandler()->getCar(4)->getPos().second == 451);
         }
         SECTION("end run") {
-            system->run(1000);
+            system->run(INT_MAX);
             CHECK(system->getCarHandler()->getCar(0)->getPos().first == 144);
             CHECK(system->getCarHandler()->getCar(0)->getPos().second == 354);
 
@@ -157,7 +159,7 @@ TEST_CASE("Scenarios") {
             CHECK(system->getCarHandler()->getCar(7)->getPos().second == 92);
         }
         SECTION("end run") {
-            system->run(1000);
+            system->run(INT_MAX);
             CHECK(system->getCarHandler()->getCar(0)->getPos().first == 466);
             CHECK(system->getCarHandler()->getCar(0)->getPos().second == 83);
 
@@ -329,7 +331,7 @@ TEST_CASE("Benchmarking") {
             System* system = setup(2);
             uint64_t start, end;
             start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
-            system->run(1000);
+            system->run(INT_MAX);
             end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
             takedown(system);
             sum += (end - start);
@@ -343,7 +345,7 @@ TEST_CASE("Benchmarking") {
             System* system = setup(6);
             uint64_t start, end;
             start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
-            system->run(1000);
+            system->run(INT_MAX);
             end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
             takedown(system);
             sum += (end - start);
@@ -357,7 +359,7 @@ TEST_CASE("Benchmarking") {
             System* system = setup(7);
             uint64_t start, end;
             start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
-            system->run(1000);
+            system->run(INT_MAX);
             end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
             takedown(system);
             sum += (end - start);
@@ -371,7 +373,7 @@ TEST_CASE("Benchmarking") {
             System* system = setup(8);
             uint64_t start, end;
             start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
-            system->run(1000);
+            system->run(INT_MAX);
             end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
             takedown(system);
             sum += (end - start);
@@ -385,7 +387,7 @@ TEST_CASE("Benchmarking") {
             System* system = setup(9);
             uint64_t start, end;
             start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
-            system->run(1000);
+            system->run(INT_MAX);
             end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
             takedown(system);
             sum += (end - start);
