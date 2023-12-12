@@ -96,7 +96,34 @@ int CarHandler::size() {
 
 void CarHandler::updateCar(int index, float time) {
     //TODO fix this 
-   // if (cars->at(index)->isAtEnd()) {
+    if (cars->at(index)->isAtEnd()) {
+        cout<<"-========================================CAR eNDED-==============================-\n";
+        //handle prevIntersections
+        //vector<Car*>* vec = prevInters->at(lastInter->at(index));
+        //for (auto it = vec->begin(); it != vec->end(); it++) {
+        //    if (*it == cars->at(index)) {
+        //        vec->erase(it);
+        //        break;
+        //    }
+        //}
+        ////keep a ref so we can delete it
+        //Car* reference = cars->at(index);
+        ////handle cars:
+        //cars->erase(cars->begin() + index);
+        ////handle routes
+        //routes->erase(routes->begin() + index);
+        ////handle lastInter
+        //lastInter->erase(lastInter->begin() + index);
+        //delete reference;
+        /*
+        cars = new vector<Car*>();
+        routes = new vector<stack<Intersection*>*>;
+        lastInter = new vector<pair<int,int>>;
+        ended;*/
+        if (ended.find(index) == ended.end()) {
+            cout<<"Car at "<<index<<"\n";
+            ended.insert(index);
+        }
    //    //this car has made it to the end of their path.
    //    //set last Inter to default value
    //    vector<Car*>* vec = prevInters->at(lastInter->at(index));
@@ -113,7 +140,7 @@ void CarHandler::updateCar(int index, float time) {
    //    //finally, erase from the cars array.
    //    auto it3 = cars->begin() + index;
    //    cars->erase(it3);
-   // }else {
+    }else {
         //check if the next path for this car is an internal road
         if (cars->at(index)->isInternal()) {
             bool passable = routes->at(index)->top()->isPassable(cars->at(index)->getPos(), time);
@@ -156,11 +183,8 @@ void CarHandler::updateCar(int index, float time) {
             //bool thing = cars->at(index)->isLeftTurning();
             cars->at(index)->update(time);
         }
-    //}
-    if (cars->at(index)->isAtEnd() && ended.find(index) == ended.end()) {
-        cout<<"Car at "<<index<<"\n";
-        ended.insert(index);
     }
+
 }
 
 void CarHandler::handleStop(int index) {
@@ -213,6 +237,7 @@ void CarHandler::handleGo(int index, float time) {
 
 //function for checking if the cars have all come to rest
 bool CarHandler::isNotDone() {
+    //TODO reduntant
     for (int i = 0; i < cars->size(); i++) {
         if (!cars->at(i)->isAtEnd()) {
             return true;
