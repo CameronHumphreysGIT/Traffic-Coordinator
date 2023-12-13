@@ -151,10 +151,12 @@ void System::scenario(int scenario) {
 }
 
 void System::draw() {
-    
+    time = SDL_GetTicks();
+    //spawn more cars if necessary
+    scenBuild->spawnMore((time * 0.001f), carHandler, infrastructure->getIntersections());
     for (int i = 0; i < carHandler->size(); i++) {
-        //update the cars
         time = SDL_GetTicks();
+        //update the cars
         carHandler->updateCar(i, (time * 0.001f));  
     }
     vector<vector<vector<pair<float, float>>>> paths = (carHandler->getPaths());

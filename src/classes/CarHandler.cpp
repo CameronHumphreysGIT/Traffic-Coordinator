@@ -97,9 +97,7 @@ int CarHandler::size() {
 }
 
 void CarHandler::updateCar(int index, float time) {
-    //TODO fix this 
     if (destroy && cars->at(index)->isAtEnd()) {
-        cout<<"deleting AHHHHHHHHHHHHHHHHHHHHHHHHHHHH"<<index<<"\n";
         //handle prevIntersections
         vector<Car*>* vec = prevInters->at(lastInter->at(index));
         for (auto it = vec->begin(); it != vec->end(); it++) {

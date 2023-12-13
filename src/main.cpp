@@ -13,9 +13,9 @@ int main() {
     system->init();
     system->loadMedia(true);
     system->buildInfrastructure();
-    system->scenario(0);
+    system->scenario(10);
 
-    system->run(INT_MAX);
+    system->run();
 
     system->close();
     //Delete all objects;

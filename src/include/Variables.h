@@ -44,6 +44,8 @@ class Variables {
         static inline int LIGHTTIME = 3;
         //this is an approximate time for clearing an intersection, rounded up.
         static inline int CLEARTIME = (int)ceil(((sqrt(pow(INTERSECTION_DIMS, 2) + pow(INTERSECTION_DIMS, 2)))/DEFAULT_SPEED));
+        //The amount of time between spawning vehicles, set to a follow distance of 2 car lengths.
+        static inline float SPAWNDIFF = (CAR_HEIGHT * 2)/DEFAULT_SPEED;
 };
 
 #endif

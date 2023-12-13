@@ -1,16 +1,91 @@
 #include <ScenarioBuilder.h>
 #include <cassert>
 #include <Astar.h>
+#include <time.h>
+#include <queue>
+#include <random>
+#include <iostream>
 
- ScenarioBuilder::ScenarioBuilder(){
+ScenarioBuilder::ScenarioBuilder(){
+    origins = new map<Intersection*, queue<pair<int, int>>*>;
+    lastSpawn = 0.0f;
+}
+ScenarioBuilder::~ScenarioBuilder() {
+    for (auto it = origins->begin(); it != origins->end(); it++) {
+        delete it->second;
+    }
+    delete origins;
+}
+/// @brief Function that chooses random start point on the right edge of the map. any time a Intersection start point is repeated, the origins object stores the pair start point into the queue for that intersection in the origins map. 
+/// @param carHandler This paramater is used in the cases when the random intersection start point is novel, in this case, the car is added to the carHandler, and a random destination on the opposite(left) side is generated. the a star algorithm object creates the Intersection path between these two points, and is aded to the car's routes.
+/// @param intersections This parameter is used to generate the random origins and destinations, and to push the proper queue and queue elements into the origins map.
+/// @param amount This is the amount of random cars to spawn
+/// @param startTime The time that these random cars are spawned, in seconds.
+void ScenarioBuilder::spawnRandom(CarHandler* & carHandler, vector<vector<Intersection*>*>* intersections, int amount, float startTime) {
+    lastSpawn = startTime;
+    AStar* algo = new AStar();
+    random_device rd;
+    mt19937 generator(rd());
+    uniform_int_distribution<int> distribution(0,(int)(intersections->size() - 1));
+    for (int i = 0; i < amount; i++) {
+        //random row id origin
+        int randRow = distribution(generator);
+        int size = (int)intersections->at(randRow)->size();
+        //origin is from the far right
+        Intersection* origin = intersections->at(randRow)->at(size - 1);
+        //default start point is center of the intersection origin
+        pair<int, int> startPoint = origin->getCenter();
+        //have we already spawned a car here?
+        auto it = origins->find(origin);
+        if (it != origins->end()) {
+            //add to it's queue
+            it->second->push(startPoint);
+        }else {
+            queue<pair<int, int>>* addQueue = new queue<pair<int, int>>();
+            origins->insert({origin, addQueue});
+            carHandler->addCar(startPoint, startTime);
+            //now choose a destination.
+            int randRow = distribution(generator);
+            Intersection* dest = intersections->at(randRow)->at(0);
+            stack<Intersection*> stack = algo->findRoute(origin, dest, intersections);
+            assert(carHandler->setRoute((carHandler->size() - 1), &stack));
+        }
+    }
+}
+/// @brief This function spawns in more cars according to the queue for each intersection from origins. 
+/// @param time the time that spawning occurs, in seconds
+/// @param carHandler the carHandler from system, passed as a reference so new cars can be created and routes can be set.
+/// @param intersections the intersections 2d list, used to find the intersection destination.
+/// @return whether or not anything was spawned when this function was called.
+bool ScenarioBuilder::spawnMore(float time, CarHandler*& carHandler, vector<vector<Intersection*>*>* intersections) {
+    AStar* algo = new AStar();
+    random_device rd;
+    mt19937 generator(rd());
+    uniform_int_distribution<int> distribution(0,(int)(intersections->size() - 1));
+    if ((time - lastSpawn) > Variables::SPAWNDIFF) {
+        bool spawned = false;
+        //now spawn all vehicles in the queue
+        for (auto iter = origins->begin(); iter != origins->end(); iter++) {
+            if (!iter->second->empty()) {
+                pair<int, int> startPoint = iter->second->front();
+                iter->second->pop();
+                carHandler->addCar(startPoint, time);
+                //now choose a destination.
+                int randRow = distribution(generator);
+                Intersection* dest = intersections->at(randRow)->at(0);
+                stack<Intersection*> stack = algo->findRoute(iter->first, dest, intersections);
+                assert(carHandler->setRoute((carHandler->size() - 1), &stack));
+                spawned = true;
+            }
+        }
+        lastSpawn = time;
+        return spawned;
+    }
+    return false;
+}
 
- }
- ScenarioBuilder::~ScenarioBuilder() {
-
- }
-
-bool  ScenarioBuilder::scenario(int scenario, Uint32 time, CarHandler* & carHandler, Infrastructure* infrastructure) {
-     //declare all the variables:
+bool ScenarioBuilder::scenario(int scenario, Uint32 time, CarHandler* & carHandler, Infrastructure* infrastructure) {
+    //declare all the variables:
     Intersection* i1;
     Intersection* i2;
     Intersection* i3;
@@ -930,6 +1005,11 @@ bool  ScenarioBuilder::scenario(int scenario, Uint32 time, CarHandler* & carHand
         stack.push(i1);
         assert(carHandler->setRoute(7, &stack));
         stack = {};
+        delete algo;
+        return true;
+    }
+    if (scenario == 10) {
+        spawnRandom(carHandler, infrastructure->getIntersections(), 50, (time * 0.001f));
         delete algo;
         return true;
     }

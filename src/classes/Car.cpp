@@ -191,8 +191,6 @@ void Car::updatePos(float time) {
         currentWaypoint = 0;
         if (currentPath == paths->size()) {
             state = end;
-            double travel = (double)(timeSinceEpochMillisec() - start);
-            cout<<"This car arrived at end, x: "<<chassis->x<<" y: "<<chassis->y<<" traveled for "<<travel/1000<<" ";
         }
     }
 }
