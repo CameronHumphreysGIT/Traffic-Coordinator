@@ -27,12 +27,19 @@ void ScenarioBuilder::spawnRandom(CarHandler* & carHandler, vector<vector<Inters
     random_device rd;
     mt19937 generator(rd());
     uniform_int_distribution<int> distribution(0,(int)(intersections->size() - 1));
+    srand((unsigned)time(0));
     for (int i = 0; i < amount; i++) {
         //random row id origin
         int randRow = distribution(generator);
         int size = (int)intersections->at(randRow)->size();
-        //origin is from the far right
-        Intersection* origin = intersections->at(randRow)->at(size - 1);
+        //randomely determine the side of the map this car comes from:
+        int coin = (rand()%2)+1;
+        Intersection* origin;
+        if (coin == 1) {
+            origin = intersections->at(randRow)->at(size - 1);
+        }else {
+            origin = intersections->at(randRow)->at(0);
+        }
         //default start point is center of the intersection origin
         pair<int, int> startPoint = origin->getCenter();
         //have we already spawned a car here?
@@ -47,6 +54,10 @@ void ScenarioBuilder::spawnRandom(CarHandler* & carHandler, vector<vector<Inters
             //now choose a destination.
             int randRow = distribution(generator);
             Intersection* dest = intersections->at(randRow)->at(0);
+            if (dest == origin) {
+                int size = (int)intersections->at(randRow)->size();
+                dest = intersections->at(randRow)->at(size - 1);
+            }
             stack<Intersection*> stack = algo->findRoute(origin, dest, intersections);
             assert(carHandler->setRoute((carHandler->size() - 1), &stack));
         }
