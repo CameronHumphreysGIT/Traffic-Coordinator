@@ -49,7 +49,7 @@ class Car {
         void setBehind(bool val);
         void update(float );
         void update(float , bool );
-        void waitBehind(Car*);
+        void waitBehind(Car*&);
         bool withinTwoCarlengths();
         uint64_t timeSinceEpochMillisec();
         void updatePos(float );

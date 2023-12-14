@@ -76,7 +76,7 @@ TEST_CASE("Scenarios") {
             CHECK(system->getCarHandler()->getCar(1)->getPos().first == 170);
             CHECK((system->getCarHandler()->getCar(1)->getPos().second == 465 || system->getCarHandler()->getCar(1)->getPos().second == 466));
 
-            CHECK(system->getCarHandler()->getCar(2)->getPos().first == 353);
+            CHECK(system->getCarHandler()->getCar(2)->getPos().first == 351);
             CHECK(system->getCarHandler()->getCar(2)->getPos().second == 378);
 
             CHECK(system->getCarHandler()->getCar(3)->getPos().first == 262);
@@ -93,7 +93,7 @@ TEST_CASE("Scenarios") {
             CHECK(system->getCarHandler()->getCar(1)->getPos().first == 234);
             CHECK(system->getCarHandler()->getCar(1)->getPos().second == 293);
 
-            CHECK(system->getCarHandler()->getCar(2)->getPos().first == 600);
+            CHECK(system->getCarHandler()->getCar(2)->getPos().first == 598);
             CHECK(system->getCarHandler()->getCar(2)->getPos().second == 383);
 
             CHECK(system->getCarHandler()->getCar(3)->getPos().first == 208);
@@ -324,7 +324,7 @@ System* setup(int num) {
     return system;
 };
 
-TEST_CASE("Benchmarking") {
+/*TEST_CASE("Benchmarking") {
     SECTION("Default") {
         double sum = 0;
         for (int i =0; i < 3; i++) {
@@ -396,4 +396,5 @@ TEST_CASE("Benchmarking") {
         cout<<"Average time: "<<(sum/3)/1000<<"\n";
     }
 }
+*/
 

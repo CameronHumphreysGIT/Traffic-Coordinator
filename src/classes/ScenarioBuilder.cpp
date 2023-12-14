@@ -354,16 +354,6 @@ bool ScenarioBuilder::scenario(int scenario, Uint32 time, CarHandler* & carHandl
         stack.push(i1);
         assert(carHandler->setRoute(7, &stack));
         stack = {};
-
-        carHandler->addCar({584,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
-        i1 = infrastructure->getI(1,2);
-        i2 = infrastructure->getI(1,1);
-        i3 = infrastructure->getI(1,0);
-        stack.push(i3);
-        stack.push(i2);
-        stack.push(i1);
-        assert(carHandler->setRoute(8, &stack));
-        stack = {};
         delete algo;
         return true;
     }

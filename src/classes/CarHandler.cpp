@@ -189,7 +189,7 @@ void CarHandler::handleStop(int index) {
             Car* wait = me->getWait();
             pair<float, float> myWay = me->getWaypoint();
             pair<float, float> theirWay = closest->getWaypoint();
-            int diff = (myWay - theirWay).first + (myWay - theirWay).second;
+            int diff = (int)((myWay - theirWay).first + (myWay - theirWay).second);
             if (abs(diff) <= 2) {
                 closest->waitBehind(me);
                 me->setBehind(true);

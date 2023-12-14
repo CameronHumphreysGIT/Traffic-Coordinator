@@ -115,6 +115,7 @@ void Car::update(float time) {
                 break;
             }else {
                 updatePos(time);
+                break;
             }
         case waiting:
             if (!withinTwoCarlengths()) {
@@ -155,7 +156,7 @@ void Car::update(float time, bool isStopped) {
 }
 
 //function to wait behind a given car.
-void Car::waitBehind(Car* c) {
+void Car::waitBehind(Car* &c) {
     //make sure the car is ahead of me.
     //get my distance
     pair<float, float> currentPos = {(float)chassis->x, (float)chassis->y};
