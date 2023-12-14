@@ -33,6 +33,8 @@ class Car {
         //the last position of the car we are waiting on, we need to know if it changed
         pair<int, int> lastWaitPos;
         uint64_t start;
+        //boolean for whether or not this car has a car waiting behind it.
+        bool behind;
     public:
         Car(std::pair<int, int> , float);
         ~Car();
@@ -40,7 +42,11 @@ class Car {
         float* getRotation();
         std::pair<int,int> getPos();
         std::vector<std::vector<std::pair<float, float>>> getPaths();
+        Car* getWait();
+        pair<float, float> getWaypoint();
+        bool isBehind();
         void addPath(std::vector<std::pair<float, float>>, bool );
+        void setBehind(bool val);
         void update(float );
         void update(float , bool );
         void waitBehind(Car*);

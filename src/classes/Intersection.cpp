@@ -244,19 +244,19 @@ bool Intersection::isPassable(pair<int, int> pos, float time) {
     }
     //check if passable
     bool passable;
-    if (pos.second < topLeft.second) {
+    if (pos.second <= topLeft.second) {
         //is above
         passable = isVerticalGreen;
     }
-    if (pos.second > bottomRight.second) {
+    if (pos.second >= bottomRight.second) {
         //is below
         passable = isVerticalGreen;
     }
-    if (pos.first < topLeft.first) {
+    if (pos.first <= topLeft.first) {
         //is left
         passable = !isVerticalGreen;
     }
-    if (pos.first > bottomRight.first) {
+    if (pos.first >= bottomRight.first) {
         //is right
         passable = !isVerticalGreen;
     }

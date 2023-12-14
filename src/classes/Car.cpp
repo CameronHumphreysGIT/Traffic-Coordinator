@@ -23,6 +23,7 @@ Car::Car(pair<int, int> start, float time) {
     internals = {};
     wait = NULL;
     lastWaitPos = {-1, -1};
+    behind = false;
 }
 
 Car::~Car() {
@@ -65,7 +66,20 @@ vector<vector<pair<float, float>>> Car::getPaths() {
     return vec;
 }
 
+Car* Car::getWait() {
+    return wait;
+}
+
+pair<float, float> Car::getWaypoint() {
+    return paths->at(currentPath).at(currentWaypoint);
+}
+
+bool Car::isBehind() {
+    return behind;
+}
+
 void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
+    int size = (int)path.size();
     if (isInternal) {
         internals.push((int)paths->size());
     }
@@ -73,6 +87,10 @@ void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
     //start moving
     state = moving;
     start = timeSinceEpochMillisec();
+}
+
+void Car::setBehind(bool val) {
+    behind = val;
 }
 
 void Car::update(float time) {
@@ -104,6 +122,7 @@ void Car::update(float time) {
                 wait = NULL;
                 lastWaitPos = {-1, -1};
                 updatePos(time);
+                behind = false;
             }
             break;
     }
@@ -120,6 +139,7 @@ void Car::update(float time, bool isStopped) {
         state = moving;
         //get rid of top internal road
         internals.pop();
+        behind = false;
     }
     switch(state) {
         case rest:
@@ -136,9 +156,23 @@ void Car::update(float time, bool isStopped) {
 
 //function to wait behind a given car.
 void Car::waitBehind(Car* c) {
-    //save the car object and that way we can check their position.
-    wait = c;
-    state = movetowait;
+    //make sure the car is ahead of me.
+    //get my distance
+    pair<float, float> currentPos = {(float)chassis->x, (float)chassis->y};
+    pair<float, float> waypoint = paths->at(currentPath).at(currentWaypoint);
+    pair<float, float> dir = waypoint - currentPos;
+    Vector2 direction = {dir.first, dir.second};
+    float myDist = direction.Magnitude();
+    //now their distance
+    pair<float, float> carpos = {(float)c->getPos().first, (float)c->getPos().second};
+    dir = waypoint - carpos;
+    direction = {dir.first, dir.second};
+    float theirDist = direction.Magnitude();
+    if (myDist > theirDist) {
+        //save the car object and that way we can check their position.
+        wait = c;
+        state = movetowait;
+    }
 }
 
 bool Car::withinTwoCarlengths() {

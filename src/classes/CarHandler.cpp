@@ -152,8 +152,12 @@ void CarHandler::updateCar(int index, float time) {
                 }
             }
         }else if (cars->at(index)->isWaiting()) {
-            handleStop(index);
+            //update first
             cars->at(index)->update(time);
+            //check if we are still waiting
+            if (cars->at(index)->isWaiting()) {
+                handleStop(index);
+            }
         }else {
             //bool thing = cars->at(index)->isLeftTurning();
             cars->at(index)->update(time);
@@ -163,25 +167,36 @@ void CarHandler::updateCar(int index, float time) {
 }
 
 void CarHandler::handleStop(int index) {
-    //tell closest behind us that we are stopped.
-    vector<Car*> vec = *(prevInters->at(lastInter->at(index)));
     Car* me = cars->at(index);
-    Car* closest = NULL;
-    pair<int, int> minDiff = {1000, 1000};
-    for (auto it = vec.begin(); it != vec.end(); it++) {
-        //check to make sure we are not redundantly updating, or updating the car that we are waiting for.
-        if (*it != me && !(*it)->isMoveToWait() && !(*it)->isWaiting() && !(*it)->isRedLight()) {
-            //difference between me and the other
-            pair<int, int> diff = {abs(me->getPos().first - (*it)->getPos().first), abs(me->getPos().second - (*it)->getPos().second)};
-            if ((diff.first + diff.second) < (minDiff.first + minDiff.second)) {
-                closest = *it;
-                minDiff = diff;
+    //if we have already told a car behind to stop, our job is done.
+    if (!(me->isBehind())) {
+        //tell closest behind us that we are stopped.
+        vector<Car*> vec = *(prevInters->at(lastInter->at(index)));
+        Car* closest = NULL;
+        pair<int, int> minDiff = {1000, 1000};
+        for (auto it = vec.begin(); it != vec.end(); it++) {
+            //check to make sure we are not redundantly updating, or updating the car that we are waiting for.
+            if (*it != me && !(*it)->isMoveToWait() && !(*it)->isWaiting() && !(*it)->isRedLight()) {
+                //difference between me and the other
+                pair<int, int> diff = {abs(me->getPos().first - (*it)->getPos().first), abs(me->getPos().second - (*it)->getPos().second)};
+                if ((diff.first + diff.second) < (minDiff.first + minDiff.second)) {
+                    closest = *it;
+                    minDiff = diff;
+                }
+            }
+        }
+        if (closest != NULL && !closest->isAtEnd()) {
+            Car* wait = me->getWait();
+            pair<float, float> myWay = me->getWaypoint();
+            pair<float, float> theirWay = closest->getWaypoint();
+            int diff = (myWay - theirWay).first + (myWay - theirWay).second;
+            if (abs(diff) <= 2) {
+                closest->waitBehind(me);
+                me->setBehind(true);
             }
         }
     }
-    if (closest != NULL) {
-        closest->waitBehind(me);
-    }
+
 }
 
 void CarHandler::handleGo(int index, float time) {

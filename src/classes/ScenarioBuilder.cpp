@@ -24,8 +24,8 @@ ScenarioBuilder::~ScenarioBuilder() {
 void ScenarioBuilder::spawnRandom(CarHandler* & carHandler, vector<vector<Intersection*>*>* intersections, int amount, float startTime) {
     lastSpawn = startTime;
     AStar* algo = new AStar();
-    random_device rd;
-    mt19937 generator(rd());
+    //random_device rd;
+    default_random_engine generator;//mt19937 generator(rd());
     uniform_int_distribution<int> distribution(0,(int)(intersections->size() - 1));
     srand((unsigned)time(0));
     for (int i = 0; i < amount; i++) {
@@ -54,7 +54,7 @@ void ScenarioBuilder::spawnRandom(CarHandler* & carHandler, vector<vector<Inters
             //now choose a destination.
             int randRow = distribution(generator);
             Intersection* dest = intersections->at(randRow)->at(0);
-            if (dest == origin) {
+            if (dest->getCenter() == origin->getCenter()) {
                 int size = (int)intersections->at(randRow)->size();
                 dest = intersections->at(randRow)->at(size - 1);
             }
@@ -84,6 +84,10 @@ bool ScenarioBuilder::spawnMore(float time, CarHandler*& carHandler, vector<vect
                 //now choose a destination.
                 int randRow = distribution(generator);
                 Intersection* dest = intersections->at(randRow)->at(0);
+                if (dest == iter->first) {
+                    int size = (int)intersections->at(randRow)->size();
+                    dest = intersections->at(randRow)->at(size - 1);
+                }
                 stack<Intersection*> stack = algo->findRoute(iter->first, dest, intersections);
                 assert(carHandler->setRoute((carHandler->size() - 1), &stack));
                 spawned = true;
@@ -349,6 +353,16 @@ bool ScenarioBuilder::scenario(int scenario, Uint32 time, CarHandler* & carHandl
         stack.push(i2);
         stack.push(i1);
         assert(carHandler->setRoute(7, &stack));
+        stack = {};
+
+        carHandler->addCar({584,105}, (time * 0.001f));//orig(1,2) //dest (1,0)
+        i1 = infrastructure->getI(1,2);
+        i2 = infrastructure->getI(1,1);
+        i3 = infrastructure->getI(1,0);
+        stack.push(i3);
+        stack.push(i2);
+        stack.push(i1);
+        assert(carHandler->setRoute(8, &stack));
         stack = {};
         delete algo;
         return true;
