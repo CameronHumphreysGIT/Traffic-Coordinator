@@ -33,7 +33,7 @@ class CarHandler {
         int size();
         void updateCar(int , float );
         bool isNotDone();
-
+        bool detectCollisions();
 };
 
 

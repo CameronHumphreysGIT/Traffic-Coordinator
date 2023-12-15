@@ -172,6 +172,7 @@ void System::draw() {
     scene->drawPaths(paths);
     scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
     scene->present();
+    carHandler->detectCollisions();
 }
 
 

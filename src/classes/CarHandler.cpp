@@ -234,3 +234,30 @@ bool CarHandler::isNotDone() {
     }
     return false;
 }
+
+bool CarHandler::detectCollisions() {
+    bool collision = false;
+    //go through prevInters, and detect collisions among the cars with the same previous intersections.
+    for (auto it = prevInters->begin(); it != prevInters->end(); it++) {
+        vector<Car*> checklist = *(it->second);
+        while(!checklist.empty()) {
+            SDL_Rect* first = checklist.at(0)->getChassis();
+            //pop the front
+            checklist.erase(checklist.begin());
+            //loop through the checklist
+            for (auto iter = checklist.begin(); iter != checklist.end(); iter++) {
+                SDL_Rect* compare = (*iter)->getChassis();
+                //check each point of compare and see if any point is in first.
+                SDL_Point topLeft = {(compare->x), (compare->y)};
+                SDL_Point topRight = {(compare->x + compare->w), (compare->y)};
+                SDL_Point bottomLeft = {(compare->x), (compare->y + compare->h)};
+                SDL_Point bottomRight = {(compare->x + compare->w), (compare->y + compare->h)};
+                SDL_Point points[4] = {topLeft, topRight, bottomLeft, bottomRight};
+                for (int i = 0; i < 4; i++) {
+                    collision = SDL_PointInRect(&points[i], first);
+                }
+            }
+        }
+    }
+    return collision;
+}
