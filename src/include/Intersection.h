@@ -52,6 +52,7 @@ class Intersection {
         pair<int,int> getCenter();
         bool isWithinLeft();
         bool isPassable(pair<int, int> , float );
+        void collidesWith(pair<int, int> , float , pair<int, int> );
         void print();
 };
 

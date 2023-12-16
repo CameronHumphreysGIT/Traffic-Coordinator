@@ -20,7 +20,10 @@ std::vector<pair<float, float>> BezierPath::sample() {
             sampledPath.push_back(curves[i].CalculateCurvePoint(t));
         }
         //push in the end of the path
-        sampledPath.push_back({curves[i].p2});
+        if (sampledPath.size() > 2) {
+            sampledPath.push_back({curves[i].p2});
+        }
+
     }
     return sampledPath;
 }

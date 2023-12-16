@@ -21,9 +21,9 @@ Car::Car(pair<int, int> start, float time) {
     sums = {0.0f,0.0f};
     rotation = 0;
     internals = {};
-    wait = NULL;
+    wait = nullptr;
     lastWaitPos = {-1, -1};
-    behind = false;
+    behind = NULL;
 }
 
 Car::~Car() {
@@ -66,16 +66,21 @@ vector<vector<pair<float, float>>> Car::getPaths() {
     return vec;
 }
 
-Car* Car::getWait() {
-    return wait;
-}
 
 pair<float, float> Car::getWaypoint() {
     return paths->at(currentPath).at(currentWaypoint);
 }
 
-bool Car::isBehind() {
+Car* Car:: getBehind() {
     return behind;
+}
+
+void Car::nullWait() {
+    wait = nullptr;
+}
+
+bool Car::isBehind() {
+    return (behind != NULL);
 }
 
 void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
@@ -89,7 +94,7 @@ void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
     start = timeSinceEpochMillisec();
 }
 
-void Car::setBehind(bool val) {
+void Car::setBehind(Car* val) {
     behind = val;
 }
 
@@ -103,6 +108,14 @@ void Car::update(float time) {
             updatePos(time);
             break;
         case movetowait:
+            //check if wait got deleted
+            if (wait == nullptr) {
+                state = moving;
+                wait = NULL;
+                lastWaitPos = {-1, -1};
+                updatePos(time);
+                break;
+            }
             if (withinTwoCarlengths()) {
                 state = waiting;
                 break;
@@ -123,7 +136,7 @@ void Car::update(float time) {
                 wait = NULL;
                 lastWaitPos = {-1, -1};
                 updatePos(time);
-                behind = false;
+                behind = NULL;
             }
             break;
     }
@@ -140,7 +153,7 @@ void Car::update(float time, bool isStopped) {
         state = moving;
         //get rid of top internal road
         internals.pop();
-        behind = false;
+        behind = NULL;
     }
     switch(state) {
         case rest:
@@ -177,7 +190,7 @@ void Car::waitBehind(Car* &c) {
 }
 
 bool Car::withinTwoCarlengths() {
-    if (wait == NULL) {
+    if (wait == NULL || wait == nullptr) {
         return false;
     }
     pair<float, float> carpos = {(float)wait->getPos().first, (float)wait->getPos().second};
@@ -289,7 +302,7 @@ bool Car::isInternal() {
     }
     return (currentPath == internals.front());
 }
-//TODO consider changing these to a return value, downside: need to give enum to other classes.
+
 bool Car::isWaiting() {
     return state == waiting;
 }

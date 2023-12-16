@@ -274,6 +274,28 @@ bool Intersection::isPassable(pair<int, int> pos, float time) {
     return passable;
 }
 
+void Intersection::collidesWith(pair<int, int> pos, float time, pair<int, int> origin) {
+    pair<int, int> corners[4] = {pos, {pos.first + Variables::CAR_WIDTH, pos.second}, {pos.first, pos.second + Variables::CAR_HEIGHT}, {pos.first + Variables::CAR_WIDTH, pos.second + Variables::CAR_HEIGHT}};
+    bool within = false;
+    for (int i = 0; i < 4; i++) {
+        pair<int, int> corner = corners[i];
+        //check if corner is within the x bounds
+        if (corner.first < topRight.first && corner.first > topLeft.first) {
+            //check if within y bounds
+            if (corner.second < bottomRight.second && corner.second > topRight.second) {
+                within = true;
+                break;
+            }
+        }
+    }
+    if (within) {
+        //treat it as a left turning vehicle (none shall pass)
+        withinIntersectionLeft = true;
+        withinIntersectionOrigin = origin;
+        withinIntersectionTime = time;
+    }
+}
+
 void Intersection::print() {
     cout<<"I am an Intersection "<<"corners: "<<topLeft.first<<","<<topLeft.second<<"  "<<topRight.first<<","<<topRight.second<<"  "<<bottomLeft.first<<","<<bottomLeft.second<<"  "<<bottomRight.first<<","<<bottomRight.second<<"\n";
 }

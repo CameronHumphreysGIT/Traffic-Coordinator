@@ -26,7 +26,7 @@ class Variables {
         //default car width
         static inline int CAR_WIDTH = 4;
         //default car height
-        static inline int CAR_HEIGHT = 6;
+        static inline int CAR_HEIGHT = 4;
         //path for image for car texture
         static inline const char* CAR_PATH = "./images/Car.png";
         //tolerance for how far (pixels) from a waypoint before we go to the next one.
@@ -45,7 +45,7 @@ class Variables {
         //this is an approximate time for clearing an intersection, rounded up.
         static inline int CLEARTIME = (int)ceil(((sqrt(pow(INTERSECTION_DIMS, 2) + pow(INTERSECTION_DIMS, 2)))/DEFAULT_SPEED + 0.5));
         //The amount of time between spawning vehicles, set to a follow distance of 2 car lengths.
-        static inline float SPAWNDIFF = (CAR_HEIGHT * 2)/DEFAULT_SPEED;
+        static inline float SPAWNDIFF = (CAR_HEIGHT * 3)/DEFAULT_SPEED;
 };
 
 #endif

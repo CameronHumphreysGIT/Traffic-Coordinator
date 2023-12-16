@@ -8,7 +8,8 @@ CarHandler::CarHandler() {
     router = new Router();
     routes = new vector<stack<Intersection*>*>;
     prevInters = new map<pair<int,int>, vector<Car*>*>;
-    lastInter = new vector<pair<int,int>>;
+    lastInterId = new vector<pair<int,int>>;
+    lastInter = new vector<Intersection*>;
     destroy = true;
 }
 
@@ -23,6 +24,7 @@ CarHandler::~CarHandler() {
         delete it->second;
     }
     delete cars;
+    delete lastInterId;
     delete lastInter;
     delete router;
     delete routes;
@@ -72,7 +74,8 @@ bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
         prevInters->at(newRoute->top()->getId())->push_back(cars->at(index));
     }
     //also keep track of the intersection id:
-    lastInter->at(index) = newRoute->top()->getId();
+    lastInterId->at(index) = newRoute->top()->getId();
+    lastInter->at(index) = newRoute->top();
     //pop the first intersection, since it's the starting point.
     newRoute->pop();
     routes->at(index) = newRoute;
@@ -87,7 +90,8 @@ void CarHandler::addCar(pair<int, int> start, float time) {
     Car* car = new Car(start, time);
     cars->push_back(car);
     //send in an error value, to be changed later.
-    lastInter->push_back({-1,-1});
+    lastInterId->push_back({-1,-1});
+    lastInter->push_back(NULL);
     stack<Intersection*> empty;
     routes->push_back(&empty);
 }
@@ -99,7 +103,7 @@ int CarHandler::size() {
 void CarHandler::updateCar(int index, float time) {
     if (destroy && cars->at(index)->isAtEnd()) {
         //handle prevIntersections
-        vector<Car*>* vec = prevInters->at(lastInter->at(index));
+        vector<Car*>* vec = prevInters->at(lastInterId->at(index));
         for (auto it = vec->begin(); it != vec->end(); it++) {
             if (*it == cars->at(index)) {
                 vec->erase(it);
@@ -108,13 +112,19 @@ void CarHandler::updateCar(int index, float time) {
         }
         //keep a ref so we can delete it
         Car* reference = cars->at(index);
+        if (reference->isBehind()) {
+            Car* behind = reference->getBehind();
+            behind->nullWait();
+        }
         //handle cars:
         cars->erase(cars->begin() + index);
         //handle routes
         routes->erase(routes->begin() + index);
-        //handle lastInter
+        //handle lastInterId
+        lastInterId->erase(lastInterId->begin() + index);
         lastInter->erase(lastInter->begin() + index);
         delete reference;
+        reference = nullptr;
     }else {
         //check if the next path for this car is an internal road
         if (cars->at(index)->isInternal()) {
@@ -130,8 +140,9 @@ void CarHandler::updateCar(int index, float time) {
                 if (cars->at(index)->isLeftTurning()) {
                     //check if the car should go:
                     if ((withinIntersectionTime == -1 && withinIntersectionOrigin.first == -1 && withinIntersectionOrigin.second == -1) || 
-                        (withinIntersectionOrigin == lastInter->at(index) || (time - withinIntersectionTime) > Variables::CLEARTIME) ) {
-                        routes->at(index)->top()->setWithin(time, lastInter->at(index), true);
+                        (withinIntersectionOrigin == lastInterId->at(index) || (time - withinIntersectionTime) > Variables::CLEARTIME) ) {
+                        routes->at(index)->top()->setWithin(time, lastInterId->at(index), true);
+                        cars->at(index)->update(time, false);
                         handleGo(index, time);
                     }else {
                         //we are stopped
@@ -140,13 +151,18 @@ void CarHandler::updateCar(int index, float time) {
                     }
                 }else {
                     //check if we should wait for a left turner:
-                    if (withinIntersectionLeft && (withinIntersectionOrigin != lastInter->at(index) && (time - withinIntersectionTime) < Variables::CLEARTIME)) {
+                    if (withinIntersectionLeft && (withinIntersectionOrigin != lastInterId->at(index) && (time - withinIntersectionTime) < Variables::CLEARTIME)) {
                         //we are stopped
+                        cars->at(index)->update(time, true);
+                        handleStop(index);
+                    }else if (withinIntersectionOrigin == lastInterId->at(index) && (time - withinIntersectionTime) < (Variables::CLEARTIME/4)) {
+                        //we are waiting for a bit so they can get further into the intersection
                         cars->at(index)->update(time, true);
                         handleStop(index);
                     }else {
                         //set the withinIntersection paramaters
-                        routes->at(index)->top()->setWithin(time, lastInter->at(index), false);
+                        routes->at(index)->top()->setWithin(time, lastInterId->at(index), false);
+                        cars->at(index)->update(time, false);
                         handleGo(index, time);
                     }
                 }
@@ -157,6 +173,12 @@ void CarHandler::updateCar(int index, float time) {
             //check if we are still waiting
             if (cars->at(index)->isWaiting()) {
                 handleStop(index);
+            }
+            //check if we are within the borders of the previous intersection we visited.
+            Intersection* last = lastInter->at(index);
+            if (last != NULL) {
+                //basically set's the intersection to be impassible
+                last->collidesWith(cars->at(index)->getPos(), time, lastInterId->at(index));
             }
         }else {
             //bool thing = cars->at(index)->isLeftTurning();
@@ -171,7 +193,7 @@ void CarHandler::handleStop(int index) {
     //if we have already told a car behind to stop, our job is done.
     if (!(me->isBehind())) {
         //tell closest behind us that we are stopped.
-        vector<Car*> vec = *(prevInters->at(lastInter->at(index)));
+        vector<Car*> vec = *(prevInters->at(lastInterId->at(index)));
         Car* closest = NULL;
         pair<int, int> minDiff = {1000, 1000};
         for (auto it = vec.begin(); it != vec.end(); it++) {
@@ -186,13 +208,12 @@ void CarHandler::handleStop(int index) {
             }
         }
         if (closest != NULL && !closest->isAtEnd()) {
-            Car* wait = me->getWait();
             pair<float, float> myWay = me->getWaypoint();
             pair<float, float> theirWay = closest->getWaypoint();
             int diff = (int)((myWay - theirWay).first + (myWay - theirWay).second);
             if (abs(diff) <= 2) {
                 closest->waitBehind(me);
-                me->setBehind(true);
+                me->setBehind(closest);
             }
         }
     }
@@ -200,16 +221,15 @@ void CarHandler::handleStop(int index) {
 }
 
 void CarHandler::handleGo(int index, float time) {
-    cars->at(index)->update(time, false);
     //remove this car from the vector at the previous intersection id
-    vector<Car*>* vec = prevInters->at(lastInter->at(index));
+    vector<Car*>* vec = prevInters->at(lastInterId->at(index));
     for (auto it = vec->begin(); it != vec->end(); it++) {
         if (*it == cars->at(index)) {
             vec->erase(it);
             break;
         }
     }
-    //set the new Intersection to prevInter and lastInter
+    //set the new Intersection to prevInter and lastInterId
     //check if we have added a vector of cars with this intersection origin
     if (prevInters->find(routes->at(index)->top()->getId()) == prevInters->end()) {
         vector<Car*>* vec = new vector<Car*>();
@@ -220,7 +240,8 @@ void CarHandler::handleGo(int index, float time) {
         prevInters->at(routes->at(index)->top()->getId())->push_back(cars->at(index));
     }
     //also keep track of the intersection id:
-    lastInter->at(index) = routes->at(index)->top()->getId();
+    lastInterId->at(index) = routes->at(index)->top()->getId();
+    lastInter->at(index) = routes->at(index)->top();
     //now pop this intersection from routes
     routes->at(index)->pop();
 }
@@ -260,4 +281,12 @@ bool CarHandler::detectCollisions() {
         }
     }
     return collision;
+}
+
+bool CarHandler::isClear(Intersection* intersection, float time) {
+    //check that no car is currently inside the intersection.
+    if (time - intersection->getWithinTime() < Variables::CLEARTIME) {
+        return false;
+    }
+    return true;
 }

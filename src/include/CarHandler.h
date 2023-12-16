@@ -14,9 +14,11 @@ class CarHandler {
         //maps the id of the intersection that theses cars came from
         std::map<std::pair<int,int>, std::vector<Car*>*>* prevInters;
         //uses the same indeces as cars, and has the id of the last intersection that car visited
-        std::vector<std::pair<int,int>>* lastInter;
+        std::vector<std::pair<int,int>>* lastInterId;
         //bool for whether or not we should destroy ended cars
         bool destroy;
+        //the last intersection each car visited, as an intersection pointer.
+        std::vector<Intersection*>* lastInter;
         //helpers
         void handleStop(int );
         void handleGo(int , float);
@@ -34,6 +36,7 @@ class CarHandler {
         void updateCar(int , float );
         bool isNotDone();
         bool detectCollisions();
+        bool isClear(Intersection* , float );
 };
 
 

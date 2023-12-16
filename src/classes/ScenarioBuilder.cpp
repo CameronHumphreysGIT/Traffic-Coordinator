@@ -24,8 +24,8 @@ ScenarioBuilder::~ScenarioBuilder() {
 void ScenarioBuilder::spawnRandom(CarHandler* & carHandler, vector<vector<Intersection*>*>* intersections, int amount, float startTime) {
     lastSpawn = startTime;
     AStar* algo = new AStar();
-    //random_device rd;
-    default_random_engine generator;//mt19937 generator(rd());
+    random_device rd;
+    mt19937 generator(rd());
     uniform_int_distribution<int> distribution(0,(int)(intersections->size() - 1));
     srand((unsigned)time(0));
     for (int i = 0; i < amount; i++) {
@@ -77,7 +77,7 @@ bool ScenarioBuilder::spawnMore(float time, CarHandler*& carHandler, vector<vect
         bool spawned = false;
         //now spawn all vehicles in the queue
         for (auto iter = origins->begin(); iter != origins->end(); iter++) {
-            if (!iter->second->empty()) {
+            if (!iter->second->empty() && carHandler->isClear(iter->first, time)) {
                 pair<int, int> startPoint = iter->second->front();
                 iter->second->pop();
                 carHandler->addCar(startPoint, time);

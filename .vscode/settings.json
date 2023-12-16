@@ -71,6 +71,10 @@
         "ranges": "cpp",
         "span": "cpp",
         "xtree": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "set": "cpp",
+        "mutex": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }
