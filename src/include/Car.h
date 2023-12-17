@@ -33,8 +33,10 @@ class Car {
         //the last position of the car we are waiting on, we need to know if it changed
         pair<int, int> lastWaitPos;
         uint64_t start;
-        //Car* for the car waiting behind this car, if any.
-        Car* behind;
+        //Car* for the car previously waiting behind this car, if any.
+        Car* prevBehind;
+        //true if currently has a car behind this one.
+        bool behind;
     public:
         Car(std::pair<int, int> , float);
         ~Car();
@@ -44,13 +46,14 @@ class Car {
         std::vector<std::vector<std::pair<float, float>>> getPaths();
         pair<float, float> getWaypoint();
         Car* getBehind();
+        vector<pair<float, float>> getPath();
         void nullWait();
         bool isBehind();
         void addPath(std::vector<std::pair<float, float>>, bool );
         void setBehind(Car* val);
         void update(float );
         void update(float , bool );
-        void waitBehind(Car*&);
+        void waitBehind(Car*&, pair<float, float>);
         bool withinTwoCarlengths();
         uint64_t timeSinceEpochMillisec();
         void updatePos(float );

@@ -99,6 +99,47 @@ bool ScenarioBuilder::spawnMore(float time, CarHandler*& carHandler, vector<vect
     return false;
 }
 
+void ScenarioBuilder::addToQueue(CarHandler*& carHandler, vector<vector<Intersection*>*>* intersections) {
+    //very similar to spawnRandom
+    AStar* algo = new AStar();
+    random_device rd;
+    mt19937 generator(rd());
+    uniform_int_distribution<int> distribution(0,(int)(intersections->size() - 1));
+    srand((unsigned)time(0));
+    int sum = 0;
+    for (auto iter = origins->begin(); iter != origins->end(); iter++) {
+        sum += (int)iter->second->size();
+    }
+    //we add the amount of max cars minus anything in the queue and minus the current cars on the road.
+    int amount = Variables::MAXCARS - (carHandler->size() + sum);
+    for (int i = 0; i < amount; i++) {
+        //random row id origin
+        int randRow = distribution(generator);
+        int size = (int)intersections->at(randRow)->size();
+        //randomely determine the side of the map this car comes from:
+        int coin = (rand()%2)+1;
+        Intersection* origin;
+        if (coin == 1) {
+            origin = intersections->at(randRow)->at(size - 1);
+        }else {
+            origin = intersections->at(randRow)->at(0);
+        }
+        //default start point is center of the intersection origin
+        pair<int, int> startPoint = origin->getCenter();
+        //have we already spawned a car here?
+        auto it = origins->find(origin);
+        if (it != origins->end()) {
+            //add to it's queue
+            it->second->push(startPoint);
+        }else {
+            queue<pair<int, int>>* addQueue = new queue<pair<int, int>>();
+            origins->insert({origin, addQueue});
+            auto it = origins->find(origin);
+            it->second->push(startPoint);
+        }
+    }
+}
+
 bool ScenarioBuilder::scenario(int scenario, Uint32 time, CarHandler* & carHandler, Infrastructure* infrastructure) {
     //declare all the variables:
     Intersection* i1;
@@ -1024,7 +1065,7 @@ bool ScenarioBuilder::scenario(int scenario, Uint32 time, CarHandler* & carHandl
         return true;
     }
     if (scenario == 10) {
-        spawnRandom(carHandler, infrastructure->getIntersections(), 50, (time * 0.001f));
+        spawnRandom(carHandler, infrastructure->getIntersections(), Variables::MAXCARS, (time * 0.001f));
         delete algo;
         return true;
     }

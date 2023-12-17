@@ -46,6 +46,8 @@ class Variables {
         static inline int CLEARTIME = (int)ceil(((sqrt(pow(INTERSECTION_DIMS, 2) + pow(INTERSECTION_DIMS, 2)))/DEFAULT_SPEED + 0.5));
         //The amount of time between spawning vehicles, set to a follow distance of 2 car lengths.
         static inline float SPAWNDIFF = (CAR_HEIGHT * 3)/DEFAULT_SPEED;
+        //max amount of cars in Scenario10.
+        static inline int MAXCARS = 50;
 };
 
 #endif

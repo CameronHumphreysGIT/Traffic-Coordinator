@@ -153,6 +153,7 @@ void System::scenario(int scenario) {
 void System::draw() {
     time = SDL_GetTicks();
     //spawn more cars if necessary
+    scenBuild->addToQueue(carHandler, infrastructure->getIntersections());
     scenBuild->spawnMore((time * 0.001f), carHandler, infrastructure->getIntersections());
     for (int i = 0; i < carHandler->size(); i++) {
         time = SDL_GetTicks();
@@ -172,7 +173,7 @@ void System::draw() {
     scene->drawPaths(paths);
     scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
     scene->present();
-    carHandler->detectCollisions();
+    //carHandler->detectCollisions();
 }
 
 

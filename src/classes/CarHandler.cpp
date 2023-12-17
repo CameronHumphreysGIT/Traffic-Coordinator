@@ -112,8 +112,8 @@ void CarHandler::updateCar(int index, float time) {
         }
         //keep a ref so we can delete it
         Car* reference = cars->at(index);
-        if (reference->isBehind()) {
-            Car* behind = reference->getBehind();
+        Car* behind = reference->getBehind();
+        if (behind != NULL) {
             behind->nullWait();
         }
         //handle cars:
@@ -196,25 +196,34 @@ void CarHandler::handleStop(int index) {
         vector<Car*> vec = *(prevInters->at(lastInterId->at(index)));
         Car* closest = NULL;
         pair<int, int> minDiff = {1000, 1000};
+        vector<pair<float, float>> path = me->getPath();
+        pair<float, float> startPath = path.at(0);
+        pair<float, float> endPath = path.at(path.size() - 1);
         for (auto it = vec.begin(); it != vec.end(); it++) {
-            //check to make sure we are not redundantly updating, or updating the car that we are waiting for.
-            if (*it != me && !(*it)->isMoveToWait() && !(*it)->isWaiting() && !(*it)->isRedLight()) {
-                //difference between me and the other
-                pair<int, int> diff = {abs(me->getPos().first - (*it)->getPos().first), abs(me->getPos().second - (*it)->getPos().second)};
-                if ((diff.first + diff.second) < (minDiff.first + minDiff.second)) {
-                    closest = *it;
-                    minDiff = diff;
+            if (!(*it)->isAtEnd()) {
+                //make sure they are heading the right way.
+                vector<pair<float, float>> theirPath = (*it)->getPath();
+                pair<float, float> theirEnd = theirPath.at(theirPath.size() - 1);
+                //within a 2 pixel tolerance.
+                int diff1 = (int)((startPath - theirEnd).first + (startPath - theirEnd).second);
+                int diff2 = (int)((endPath - theirEnd).first + (endPath - theirEnd).second);
+                if (abs(diff1) <= 2 || abs(diff2) <= 2) {
+                    //check to make sure we are not redundantly updating, or updating the car that we are waiting for.
+                    if (*it != me && !(*it)->isMoveToWait() && !(*it)->isWaiting() && !(*it)->isRedLight()) {
+                        //difference between me and the other
+                        pair<int, int> diff = {abs(me->getPos().first - (*it)->getPos().first), abs(me->getPos().second - (*it)->getPos().second)};
+                        if ((diff.first + diff.second) < (minDiff.first + minDiff.second)) {
+                            closest = *it;
+                            minDiff = diff;
+                        }
+                    }
                 }
             }
         }
-        if (closest != NULL && !closest->isAtEnd()) {
+        if (closest != NULL) {
             pair<float, float> myWay = me->getWaypoint();
-            pair<float, float> theirWay = closest->getWaypoint();
-            int diff = (int)((myWay - theirWay).first + (myWay - theirWay).second);
-            if (abs(diff) <= 2) {
-                closest->waitBehind(me);
-                me->setBehind(closest);
-            }
+            closest->waitBehind(me, myWay);
+            me->setBehind(closest);   
         }
     }
 
@@ -287,6 +296,15 @@ bool CarHandler::isClear(Intersection* intersection, float time) {
     //check that no car is currently inside the intersection.
     if (time - intersection->getWithinTime() < Variables::CLEARTIME) {
         return false;
+    }
+    //check that no car is stopped at this intersection.
+    for (int i = 0; i < routes->size(); i++) {
+        if (routes->at(i)->top() == intersection) {
+            if (cars->at(i)->isRedLight()) {
+                //there's a red light 
+                return false;
+            }
+        }
     }
     return true;
 }

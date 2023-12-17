@@ -23,7 +23,8 @@ Car::Car(pair<int, int> start, float time) {
     internals = {};
     wait = nullptr;
     lastWaitPos = {-1, -1};
-    behind = NULL;
+    prevBehind = NULL;
+    behind = false;
 }
 
 Car::~Car() {
@@ -72,7 +73,15 @@ pair<float, float> Car::getWaypoint() {
 }
 
 Car* Car:: getBehind() {
-    return behind;
+    return prevBehind;
+}
+
+vector<pair<float, float>> Car::getPath() {
+    //if we are at a stoplight, we actually want the previous path.
+    if (state == redlight) {
+        return paths->at(currentPath - 1);
+    }
+    return paths->at(currentPath);
 }
 
 void Car::nullWait() {
@@ -80,7 +89,7 @@ void Car::nullWait() {
 }
 
 bool Car::isBehind() {
-    return (behind != NULL);
+    return behind;
 }
 
 void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
@@ -95,7 +104,8 @@ void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
 }
 
 void Car::setBehind(Car* val) {
-    behind = val;
+    prevBehind = val;
+    behind = true;
 }
 
 void Car::update(float time) {
@@ -136,7 +146,7 @@ void Car::update(float time) {
                 wait = NULL;
                 lastWaitPos = {-1, -1};
                 updatePos(time);
-                behind = NULL;
+                behind = false;
             }
             break;
     }
@@ -153,7 +163,7 @@ void Car::update(float time, bool isStopped) {
         state = moving;
         //get rid of top internal road
         internals.pop();
-        behind = NULL;
+        behind = false;
     }
     switch(state) {
         case rest:
@@ -169,11 +179,11 @@ void Car::update(float time, bool isStopped) {
 }
 
 //function to wait behind a given car.
-void Car::waitBehind(Car* &c) {
+void Car::waitBehind(Car* &c, pair<float, float> waypoint) {
     //make sure the car is ahead of me.
     //get my distance
     pair<float, float> currentPos = {(float)chassis->x, (float)chassis->y};
-    pair<float, float> waypoint = paths->at(currentPath).at(currentWaypoint);
+    //pair<float, float> waypoint = paths->at(currentPath).at(currentWaypoint);
     pair<float, float> dir = waypoint - currentPos;
     Vector2 direction = {dir.first, dir.second};
     float myDist = direction.Magnitude();
