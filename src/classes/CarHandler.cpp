@@ -1,5 +1,6 @@
 #include <iostream>
 #include <CarHandler.h>
+#include <random>
 
 using namespace std;
 
@@ -31,16 +32,18 @@ CarHandler::~CarHandler() {
 }
 
 //This function returns a pair with a vector of SDL_Rect's and a vector of floats for the rotation of each, in degrees
-pair<vector<SDL_Rect*>, vector<float*>>CarHandler::getData() {
+pair<vector<bool>, pair<vector<SDL_Rect*>, vector<float*>>> CarHandler::getData() {
     vector<SDL_Rect*> rects;
     vector<float*> rotations;
+    vector<bool> accidents;
     for (int i = 0; i < cars->size(); i++) {
         if (!cars->at(i)->isAtEnd()) {
             rects.push_back(cars->at(i)->getChassis());
             rotations.push_back(cars->at(i)->getRotation());
+            accidents.push_back(cars->at(i)->isAccident());
         }
     }
-    return {rects, rotations};
+    return {accidents, {rects, rotations}};
 }
 
 //function used in Testing
@@ -126,8 +129,10 @@ void CarHandler::updateCar(int index, float time) {
         delete reference;
         reference = nullptr;
     }else {
-        //check if the next path for this car is an internal road
-        if (cars->at(index)->isInternal()) {
+        if (cars->at(index)->isAccident()) {
+            cars->at(index)->update(time);
+        } else if (cars->at(index)->isInternal()) {
+            //check if the next path for this car is an internal road
             bool passable = routes->at(index)->top()->isPassable(cars->at(index)->getPos(), time);
             if (!passable) {
                 cars->at(index)->update(time, true);
@@ -181,11 +186,9 @@ void CarHandler::updateCar(int index, float time) {
                 last->collidesWith(cars->at(index)->getPos(), time, lastInterId->at(index));
             }
         }else {
-            //bool thing = cars->at(index)->isLeftTurning();
             cars->at(index)->update(time);
         }
     }
-
 }
 
 void CarHandler::handleStop(int index) {
@@ -307,4 +310,19 @@ bool CarHandler::isClear(Intersection* intersection, float time) {
         }
     }
     return true;
+}
+
+void CarHandler::handleAccident() {
+    //first, pick a random car:
+    random_device rd;
+    mt19937 generator(rd());
+    uniform_int_distribution<int> distribution(0,(int)(cars->size() - 1));
+    Car* car = cars->at(distribution(generator));
+    //only choose cars that are not on internal paths
+    while (car->isAtEnd() || car->isAccident()) {
+        //pick a different car
+        car = cars->at(distribution(generator));
+    }
+    //set into an accident.
+    car->haveAccident();
 }

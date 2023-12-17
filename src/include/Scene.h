@@ -15,7 +15,7 @@ class Scene {
         void clear();
         void drawBackground(SDL_Texture *);
         void drawRoads(std::vector<std::vector<std::vector<std::pair<float, float>>>> );
-        void drawCars(std::vector<SDL_Rect*> , SDL_Texture* , std::vector<float*> );
+        void drawCars(std::vector<SDL_Rect*> , SDL_Texture* , std::vector<float*> , std::vector<bool> );
         void drawLights(std::vector<std::vector<std::vector<std::vector<std::pair<float, float>>>>> );
         void drawButton(SDL_Rect* , std::vector<int> , const char *);
         void drawPaths(std::vector<std::vector<std::vector<std::pair<float, float>>>> );

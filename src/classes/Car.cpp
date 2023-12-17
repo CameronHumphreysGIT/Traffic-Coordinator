@@ -114,6 +114,8 @@ void Car::update(float time) {
             break;
         case redlight:
             break;
+        case accident:
+            break;
         case moving:
             updatePos(time);
             break;
@@ -169,6 +171,8 @@ void Car::update(float time, bool isStopped) {
         case rest:
             break;
         case redlight:
+            break;
+        case accident:
             break;
         case moving:
             updatePos(time);
@@ -296,6 +300,14 @@ void Car::rotate(Vector2 direction) {
             rotation -= 360.0f * mul;
         }
     }
+}
+
+void Car::haveAccident() {
+    state = accident;
+}
+
+bool Car::isAccident() {
+    return (state == accident);
 }
 
 bool Car::isNotRest() {

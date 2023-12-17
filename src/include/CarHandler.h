@@ -25,7 +25,7 @@ class CarHandler {
     public:
         CarHandler();
         ~CarHandler();
-        std::pair<std::vector<SDL_Rect*>,std::vector<float*>> getData();
+        std::pair<std::vector<bool>, std::pair<std::vector<SDL_Rect*>,std::vector<float*>>> getData();
         Car* getCar(int );
         std::vector<std::vector<std::vector<std::pair<float, float>>>> getPaths();
         stack<Intersection*> getRoute(int );
@@ -37,6 +37,7 @@ class CarHandler {
         bool isNotDone();
         bool detectCollisions();
         bool isClear(Intersection* , float );
+        void handleAccident();
 };
 
 

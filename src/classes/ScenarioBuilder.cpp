@@ -53,10 +53,24 @@ void ScenarioBuilder::spawnRandom(CarHandler* & carHandler, vector<vector<Inters
             carHandler->addCar(startPoint, startTime);
             //now choose a destination.
             int randRow = distribution(generator);
-            Intersection* dest = intersections->at(randRow)->at(0);
-            if (dest->getCenter() == origin->getCenter()) {
-                int size = (int)intersections->at(randRow)->size();
+            size = (int)intersections->at(randRow)->size();
+            Intersection* dest;
+            int coin = (rand()%2)+1;
+            bool start;
+            if (coin == 1) {
+                start = false;
                 dest = intersections->at(randRow)->at(size - 1);
+            }else {
+                start = true;
+                dest = intersections->at(randRow)->at(0);
+            }
+            if (dest == origin) {
+                //make it the opposite
+                if (start) {
+                    dest = intersections->at(randRow)->at(size - 1);
+                }else {
+                    dest = intersections->at(randRow)->at(0);
+                } 
             }
             stack<Intersection*> stack = algo->findRoute(origin, dest, intersections);
             assert(carHandler->setRoute((carHandler->size() - 1), &stack));
@@ -67,8 +81,8 @@ void ScenarioBuilder::spawnRandom(CarHandler* & carHandler, vector<vector<Inters
 /// @param time the time that spawning occurs, in seconds
 /// @param carHandler the carHandler from system, passed as a reference so new cars can be created and routes can be set.
 /// @param intersections the intersections 2d list, used to find the intersection destination.
-/// @return whether or not anything was spawned when this function was called.
-bool ScenarioBuilder::spawnMore(float time, CarHandler*& carHandler, vector<vector<Intersection*>*>* intersections) {
+/// @return how many cars spawned when this function was called.
+int ScenarioBuilder::spawnMore(float time, CarHandler*& carHandler, vector<vector<Intersection*>*>* intersections) {
     AStar* algo = new AStar();
     random_device rd;
     mt19937 generator(rd());
@@ -83,10 +97,23 @@ bool ScenarioBuilder::spawnMore(float time, CarHandler*& carHandler, vector<vect
                 carHandler->addCar(startPoint, time);
                 //now choose a destination.
                 int randRow = distribution(generator);
-                Intersection* dest = intersections->at(randRow)->at(0);
-                if (dest == iter->first) {
-                    int size = (int)intersections->at(randRow)->size();
+                int size = (int)intersections->at(randRow)->size();
+                Intersection* dest;
+                bool start;
+                int coin = (rand()%2)+1;
+                if (coin == 1) {
+                    start = false;
                     dest = intersections->at(randRow)->at(size - 1);
+                }else {
+                    start = true;
+                    dest = intersections->at(randRow)->at(0);
+                }
+                if (dest == iter->first) {
+                    if (start) {
+                        dest = intersections->at(randRow)->at(size - 1);
+                    }else {
+                        dest = intersections->at(randRow)->at(0);
+                    }
                 }
                 stack<Intersection*> stack = algo->findRoute(iter->first, dest, intersections);
                 assert(carHandler->setRoute((carHandler->size() - 1), &stack));

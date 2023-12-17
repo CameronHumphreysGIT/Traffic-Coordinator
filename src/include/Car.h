@@ -16,7 +16,7 @@ class Car {
         //each curved path is made up of waypoints, this is the current waypoint.
         int currentWaypoint;
         SDL_Rect* chassis;
-        enum STATE { rest, redlight, moving, movetowait, waiting, end};
+        enum STATE { rest, redlight, moving, movetowait, waiting, end, accident};
         STATE state;
         //time of last Update in seconds
         float lastUpdate;
@@ -50,7 +50,7 @@ class Car {
         void nullWait();
         bool isBehind();
         void addPath(std::vector<std::pair<float, float>>, bool );
-        void setBehind(Car* val);
+        void setBehind(Car* );
         void update(float );
         void update(float , bool );
         void waitBehind(Car*&, pair<float, float>);
@@ -59,6 +59,8 @@ class Car {
         void updatePos(float );
         void translate(std::pair<float, float> , Vector2 , float );
         void rotate(Vector2 );
+        void haveAccident();
+        bool isAccident();
         bool isNotRest();
         bool isInternal();
         bool isWaiting();

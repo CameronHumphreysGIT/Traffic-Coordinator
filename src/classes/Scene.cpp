@@ -54,14 +54,17 @@ void Scene::drawRoads(vector<vector<vector<pair<float, float>>>> intersections) 
     }
 }
 
-void Scene::drawCars(vector<SDL_Rect*> rectangles, SDL_Texture* carTexture, vector<float*> rotations) {
+void Scene::drawCars(vector<SDL_Rect*> rectangles, SDL_Texture* carTexture, vector<float*> rotations, vector<bool> accidents) {
     //Now draw Cars:
     for (int i = 0; i < rectangles.size(); i++) {
-        //SDL_RenderCopy(renderer, carTexture, NULL, rectangles.at(i));
         //need to use renderCopyEx to rotate the car.
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         SDL_RenderCopyEx(renderer, carTexture, NULL, rectangles.at(i), (*rotations.at(i)), NULL, flip);
-        SDL_SetRenderDrawColor(renderer, 255,255,255, SDL_ALPHA_OPAQUE);
+        if (accidents.at(i)) {
+            SDL_SetRenderDrawColor(renderer, 255,0,0, SDL_ALPHA_OPAQUE);
+        }else {
+            SDL_SetRenderDrawColor(renderer, 255,255,255, SDL_ALPHA_OPAQUE);
+        }
         SDL_RenderDrawRect(renderer, rectangles.at(i));
     }
 }

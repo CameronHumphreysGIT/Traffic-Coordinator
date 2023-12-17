@@ -161,21 +161,27 @@ void System::draw() {
     //spawn more cars if necessary
     scenBuild->addToQueue(carHandler, infrastructure->getIntersections());
     scenBuild->spawnMore((time * 0.001f), carHandler, infrastructure->getIntersections());
+    
     for (int i = 0; i < carHandler->size(); i++) {
-        time = SDL_GetTicks();
         //update the cars
-        carHandler->updateCar(i, (time * 0.001f));  
+        int size = (int)carHandler->size();
+        carHandler->updateCar(i, (time * 0.001f)); 
+        if (size == (carHandler->size() - 1)) {
+            //we deleted on the last step, decrement i
+            i--;
+        }
     }
     vector<vector<vector<pair<float, float>>>> paths = (carHandler->getPaths());
-    vector<SDL_Rect*> rects = carHandler->getData().first;
-    vector<float*> rotations = carHandler->getData().second;
+    pair<vector<bool>, pair<vector<SDL_Rect*>, vector<float*>>> data = carHandler->getData();
+    vector<SDL_Rect*> rects = data.second.first;
+    vector<float*> rotations = data.second.second;
     vector<vector<vector<pair<float, float>>>> sampled = infrastructure->getSampled();
     scene->clear();
     scene->drawBackground(backgroundTexture);
     scene->drawRoads(sampled);
     vector<vector<vector<vector<pair<float, float>>>>> lights = infrastructure->getLights();
     scene->drawLights(lights);
-    scene->drawCars(rects, carTexture, rotations);
+    scene->drawCars(rects, carTexture, rotations, data.first);
     scene->drawPaths(paths);
     scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
     scene->drawButton(crashCar->getBorders(), crashCar->getColour(), crashCar->getText());
@@ -198,7 +204,7 @@ void System::run() {
                     swapBackground();
                 };
                 if(crashCar->isClicked(e)) {
-                    //swapBackground();
+                    carHandler->handleAccident();
                 };
             }    
         }
