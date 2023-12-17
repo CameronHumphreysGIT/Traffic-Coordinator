@@ -7,9 +7,11 @@ class Button {
     private:
         SDL_Rect* borders;
         std::vector<int> colour;
+        const char* onText;
+        const char* offText;
         const char* text;
     public:
-        Button(int , int , int , int );
+        Button(int , int , int , int , const char* , const char* );
         ~Button();
         bool isClicked(SDL_Event &e);
         bool isWithin(int , int );

@@ -25,7 +25,12 @@ System::System() {
     carTexture = NULL;
     infrastructure = new Infrastructure();
     carHandler = new CarHandler();
-    toggleBackground = new Button(970, 50, 100, 50);
+    const char* off = "Satellite Off";
+    const char* on = "Satellite On";
+    toggleBackground = new Button(970, 50, 100, 50, off, on);
+    off = "Crash Car";
+    on = "Crash Car";
+    crashCar = new Button(970, 110, 100, 50, off, on);
     scenBuild = new ScenarioBuilder();
 }
 System::~System() {
@@ -33,6 +38,7 @@ System::~System() {
     delete scene;
     delete carHandler;
     delete toggleBackground;
+    delete crashCar;
     delete scenBuild;
 }
 
@@ -172,6 +178,7 @@ void System::draw() {
     scene->drawCars(rects, carTexture, rotations);
     scene->drawPaths(paths);
     scene->drawButton(toggleBackground->getBorders(), toggleBackground->getColour(), toggleBackground->getText());
+    scene->drawButton(crashCar->getBorders(), crashCar->getColour(), crashCar->getText());
     scene->present();
     //carHandler->detectCollisions();
 }
@@ -189,6 +196,9 @@ void System::run() {
             }else {
                 if(toggleBackground->isClicked(e)) {
                     swapBackground();
+                };
+                if(crashCar->isClicked(e)) {
+                    //swapBackground();
                 };
             }    
         }
@@ -216,6 +226,9 @@ void System::run(int timeout) {
             }else {
                 if(toggleBackground->isClicked(e)) {
                     swapBackground();
+                };
+                if(crashCar->isClicked(e)) {
+                    //swapBackground();
                 };
             }
         }

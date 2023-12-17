@@ -25,6 +25,7 @@ class System {
         //time elapsed since SDL library initialized
         Uint32 time;
         Button* toggleBackground;
+        Button* crashCar;
         TTF_Font* font;
     public:
         System();

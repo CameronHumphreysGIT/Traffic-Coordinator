@@ -4,14 +4,16 @@
 
 using namespace std;
 
-Button::Button(int x, int y, int w, int h) {
+Button::Button(int x, int y, int w, int h, const char* offtxt, const char* ontxt) {
     borders = new SDL_Rect();
     borders->x = x;
     borders->y = y;
     borders->w = w;
     borders->h = h;
     colour = Variables::BUTTONCOLOUR;
-    text = "Satallite Off";
+    offText = offtxt;
+    onText = ontxt;
+    text = offText;
 }
 
 Button::~Button() {  
@@ -33,10 +35,10 @@ bool Button::isClicked(SDL_Event &e) {
         case SDL_MOUSEBUTTONDOWN:
             //mouse clicked
             if (isWithin(x,y)) {
-                if (strcmp(text,"Satallite Off") == 0) {
-                    text = "Satallite On";
+                if (strcmp(text,offText) == 0) {
+                    text = onText;
                 }else {
-                    text = "Satallite Off";
+                    text = offText;
                 }
                 return true;
             }
