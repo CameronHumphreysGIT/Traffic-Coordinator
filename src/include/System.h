@@ -27,6 +27,8 @@ class System {
         Button* toggleBackground;
         Button* crashCar;
         TTF_Font* font;
+        //if we want to spawn more cars
+        bool spawnCars;
     public:
         System();
         ~System();

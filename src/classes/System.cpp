@@ -32,6 +32,7 @@ System::System() {
     on = "Crash Car";
     crashCar = new Button(970, 110, 100, 50, off, on);
     scenBuild = new ScenarioBuilder();
+    spawnCars = false;
 }
 System::~System() {
     delete infrastructure;
@@ -125,10 +126,10 @@ bool System::loadMedia(bool svgFlag)  {
 }
 
 void System::swapBackground() {
-    if (backgroundTexture == intersectionsBackground) {
+    if (backgroundTexture == intersectionsBackground || backgroundTexture == NULL) {
         backgroundTexture = satalliteBackground;
     }else if (backgroundTexture == satalliteBackground) {
-        backgroundTexture = intersectionsBackground;
+        backgroundTexture = NULL;
     }
 }
 
@@ -154,14 +155,18 @@ void System::scenario(int scenario) {
     time = SDL_GetTicks();
     //build the scenario
     scenBuild->scenario(scenario, time, carHandler, infrastructure);
+    if (scenario == 10) {
+        spawnCars = true;
+    }
 }
 
 void System::draw() {
     time = SDL_GetTicks();
-    //spawn more cars if necessary
-    scenBuild->addToQueue(carHandler, infrastructure->getIntersections());
-    scenBuild->spawnMore((time * 0.001f), carHandler, infrastructure->getIntersections());
-    
+    if (spawnCars) {
+        //spawn more cars if necessary
+        scenBuild->addToQueue(carHandler, infrastructure->getIntersections());
+        scenBuild->spawnMore((time * 0.001f), carHandler, infrastructure->getIntersections());
+    }    
     for (int i = 0; i < carHandler->size(); i++) {
         //update the cars
         int size = (int)carHandler->size();
@@ -234,7 +239,7 @@ void System::run(int timeout) {
                     swapBackground();
                 };
                 if(crashCar->isClicked(e)) {
-                    //swapBackground();
+                    carHandler->handleAccident();
                 };
             }
         }

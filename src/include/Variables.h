@@ -26,7 +26,7 @@ class Variables {
         //default car width
         static inline int CAR_WIDTH = 4;
         //default car height
-        static inline int CAR_HEIGHT = 4;
+        static inline int CAR_HEIGHT = 6;
         //path for image for car texture
         static inline const char* CAR_PATH = "./images/Car.png";
         //tolerance for how far (pixels) from a waypoint before we go to the next one.
