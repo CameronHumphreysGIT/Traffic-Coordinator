@@ -130,6 +130,8 @@ void CarHandler::updateCar(int index, float time) {
         reference = nullptr;
     }else {
         if (cars->at(index)->isAccident()) {
+            //tell people behind to handle the Stop.
+            handleStop(index);
             cars->at(index)->update(time);
         } else if (cars->at(index)->isInternal()) {
             //check if the next path for this car is an internal road
@@ -184,6 +186,34 @@ void CarHandler::updateCar(int index, float time) {
             if (last != NULL) {
                 //basically set's the intersection to be impassible
                 last->collidesWith(cars->at(index)->getPos(), time, lastInterId->at(index));
+            }
+            cars->at(index)->accidentWait();
+        }else if (cars->at(index)->isBehindAccident()) {
+            //this car is waiting behind a car accident.
+            //find opposing traffic, which will be coming from the next intersection that i'm going to.
+            Intersection* target = routes->at(index)->top();
+            vector<Car*> vec = *(prevInters->at(target->getId()));
+            float minDiff = 1000.0f;
+            Car* opposing = NULL;
+            for (auto it = vec.begin(); it != vec.end(); it++) {
+                vector<pair<float, float>> theirPath = (*it)->getPath();
+                pair<float, float> theirEnd = theirPath.at(theirPath.size() - 1);
+                pair<float, float> diff = {(theirEnd.first - target->getCenter().first), (theirEnd.second - target->getCenter().second)};
+                Vector2 distance = {diff.first, diff.second};
+                if (distance.Magnitude() < minDiff) {
+                    opposing = *it;
+                    minDiff = distance.Magnitude();
+                }
+            }
+            if (opposing != NULL && minDiff <= 8) {
+                //found a suitable opposition.
+                cars->at(index)->waitBehind(opposing, {-1.0f,-1.0f});
+                cars->at(index)->update(time);
+            }else {
+                opposing = NULL;
+                //setwaitbehind to an error value.
+                cars->at(index)->waitBehind(opposing, {-1.0f,-1.0f});
+                cars->at(index)->update(time);
             }
         }else {
             cars->at(index)->update(time);
@@ -318,7 +348,7 @@ void CarHandler::handleAccident() {
     mt19937 generator(rd());
     uniform_int_distribution<int> distribution(0,(int)(cars->size() - 1));
     Car* car = cars->at(distribution(generator));
-    //only choose cars that are not on internal paths
+    //only choose cars that are valid
     while (car->isAtEnd() || car->isAccident()) {
         //pick a different car
         car = cars->at(distribution(generator));
