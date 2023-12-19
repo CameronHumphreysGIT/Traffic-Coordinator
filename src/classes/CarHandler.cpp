@@ -1,6 +1,7 @@
 #include <iostream>
 #include <CarHandler.h>
 #include <random>
+#include <AStar.h>
 
 using namespace std;
 
@@ -67,6 +68,10 @@ stack<Intersection*> CarHandler::getRoute(int index) {
 
 bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     stack<Intersection*>* newRoute = new stack<Intersection*>(*route);
+    bool reroute = false;
+    if (!(routes->at(index) == nullptr)) {
+        reroute = true;
+    }
     //check if we have added a vector of cars with this intersection origin
     if (prevInters->find(newRoute->top()->getId()) == prevInters->end()) {
         vector<Car*>* vec = new vector<Car*>();
@@ -82,7 +87,11 @@ bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     //pop the first intersection, since it's the starting point.
     newRoute->pop();
     routes->at(index) = newRoute;
-    return router->setRoute((cars->at(index)), route);
+    if (reroute) {
+        return router->reRoute((cars->at(index)), route);
+    }else {
+        return router->setRoute((cars->at(index)), route);
+    }
 }
 
 void CarHandler::setDestroy(bool des) {
@@ -95,15 +104,15 @@ void CarHandler::addCar(pair<int, int> start, float time) {
     //send in an error value, to be changed later.
     lastInterId->push_back({-1,-1});
     lastInter->push_back(NULL);
-    stack<Intersection*> empty;
-    routes->push_back(&empty);
+    stack<Intersection*>* empty = nullptr;
+    routes->push_back(empty);
 }
 
 int CarHandler::size() {
     return (int)cars->size();
 }
 
-void CarHandler::updateCar(int index, float time) {
+pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) {
     if (destroy && cars->at(index)->isAtEnd()) {
         //handle prevIntersections
         vector<Car*>* vec = prevInters->at(lastInterId->at(index));
@@ -119,6 +128,10 @@ void CarHandler::updateCar(int index, float time) {
         if (behind != NULL) {
             behind->nullWait();
         }
+        Car* wait = reference->getWait();
+        if (wait != NULL) {
+            wait->nullBehind(reference);
+        }
         //handle cars:
         cars->erase(cars->begin() + index);
         //handle routes
@@ -133,6 +146,8 @@ void CarHandler::updateCar(int index, float time) {
             //tell people behind to handle the Stop.
             handleStop(index);
             cars->at(index)->update(time);
+            //tell the intersection.
+            lastInter->at(index)->accident(cars->at(index)->getPos());
         } else if (cars->at(index)->isInternal()) {
             //check if the next path for this car is an internal road
             bool passable = routes->at(index)->top()->isPassable(cars->at(index)->getPos(), time);
@@ -192,33 +207,74 @@ void CarHandler::updateCar(int index, float time) {
             //this car is waiting behind a car accident.
             //find opposing traffic, which will be coming from the next intersection that i'm going to.
             Intersection* target = routes->at(index)->top();
-            vector<Car*> vec = *(prevInters->at(target->getId()));
-            float minDiff = 1000.0f;
-            Car* opposing = NULL;
-            for (auto it = vec.begin(); it != vec.end(); it++) {
-                vector<pair<float, float>> theirPath = (*it)->getPath();
-                pair<float, float> theirEnd = theirPath.at(theirPath.size() - 1);
-                pair<float, float> diff = {(theirEnd.first - target->getCenter().first), (theirEnd.second - target->getCenter().second)};
-                Vector2 distance = {diff.first, diff.second};
-                if (distance.Magnitude() < minDiff) {
-                    opposing = *it;
-                    minDiff = distance.Magnitude();
+            auto iter = prevInters->find(target->getId());
+            if (iter != prevInters->end()) {
+                vector<Car*> vec = *(iter->second);
+                float minDiff = 1000.0f;
+                Car* opposing = NULL;
+                vector<pair<float, float>> myPath = cars->at(index)->getPath();
+                pair<float, float> myStart = myPath.at(0);
+                for (auto it = vec.begin(); it != vec.end(); it++) {
+                    vector<pair<float, float>> theirPath = (*it)->getPath();
+                    pair<float, float> theirEnd = theirPath.at(theirPath.size() - 1);
+                    pair<float, float> diff = {(theirEnd.first - myStart.first), (theirEnd.second - myStart.second)};
+                    Vector2 distance = {diff.first, diff.second};
+                    if (distance.Magnitude() < minDiff) {
+                        opposing = *it;
+                        minDiff = distance.Magnitude();
+                    }
                 }
-            }
-            if (opposing != NULL && minDiff <= 8) {
-                //found a suitable opposition.
-                cars->at(index)->waitBehind(opposing, {-1.0f,-1.0f});
-                cars->at(index)->update(time);
+                if (opposing != NULL && minDiff <= 8) {
+                    //found a suitable opposition.
+                    cars->at(index)->waitBehind(opposing, {-1.0f,-1.0f});
+                    cars->at(index)->update(time);
+                }else {
+                    opposing = NULL;
+                    //setwaitbehind to an error value.
+                    cars->at(index)->waitBehind(opposing, {-1.0f,-1.0f});
+                    cars->at(index)->update(time);
+                }
             }else {
-                opposing = NULL;
+                //no opposing traffic
+                Car* opposing = NULL;
                 //setwaitbehind to an error value.
                 cars->at(index)->waitBehind(opposing, {-1.0f,-1.0f});
                 cars->at(index)->update(time);
+            }
+            //check if we are within the borders of the previous intersection we visited.
+            Intersection* last = lastInter->at(index);
+            if (last != NULL) {
+                //basically set's the intersection to be impassible
+                last->collidesWith(cars->at(index)->getPos(), time, lastInterId->at(index));
+            }
+            //check if the car is now moving...
+            if (cars->at(index)->isMoving()) {
+                //we need to reroute this car...
+                //find the end of their current route
+                stack<Intersection*> route = *(routes->at(index));
+                //we want to backtrack...
+                Intersection* start = lastInter->at(index);
+                while (!(route.size() == 1)) {
+                    route.pop();
+                }
+                Intersection* end = route.top();
+                //remove self from prevInters
+                vector<Car*>* vec = prevInters->at(lastInterId->at(index));
+                for (auto it = vec->begin(); it != vec->end(); it++) {
+                    if (*it == cars->at(index)) {
+                        vec->erase(it);
+                        break;
+                    }
+                }
+                return {start, end};
+            }else {
+                return {NULL, NULL};
             }
         }else {
             cars->at(index)->update(time);
         }
     }
+    return {NULL, NULL};
 }
 
 void CarHandler::handleStop(int index) {
@@ -253,10 +309,22 @@ void CarHandler::handleStop(int index) {
                 }
             }
         }
-        if (closest != NULL) {
-            pair<float, float> myWay = me->getWaypoint();
-            closest->waitBehind(me, myWay);
-            me->setBehind(closest);   
+        if (closest != NULL && closest != me->getWait()) {
+            if (me->isAccident()) {
+                if (closest != me->getBehind()) {
+                    pair<float, float> myWay = me->getWaypoint();
+                    closest->waitBehind(me, myWay);
+                    if (closest->getWait() == me) {
+                        me->setBehind(closest);
+                    } 
+                }
+            }else {
+                pair<float, float> myWay = me->getWaypoint();
+                closest->waitBehind(me, myWay);
+                if (closest->getWait() == me) {
+                    me->setBehind(closest);
+                }
+            }
         }
     }
 

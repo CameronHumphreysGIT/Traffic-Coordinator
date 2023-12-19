@@ -47,7 +47,9 @@ class Car {
         pair<float, float> getWaypoint();
         Car* getBehind();
         vector<pair<float, float>> getPath();
+        Car* getWait();
         void nullWait();
+        void nullBehind(Car* );
         bool isBehind();
         void addPath(std::vector<std::pair<float, float>>, bool );
         void setBehind(Car* );
@@ -60,8 +62,10 @@ class Car {
         void translate(std::pair<float, float> , Vector2 , float );
         void rotate(Vector2 );
         bool pathClear();
+        void reset();
         void accidentWait();
         void haveAccident();
+        bool isMoving();
         bool isBehindAccident();
         bool isAccident();
         bool isNotRest();

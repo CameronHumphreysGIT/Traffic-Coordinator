@@ -33,7 +33,7 @@ class CarHandler {
         void setDestroy(bool );
         void addCar(std::pair<int, int> , float );
         int size();
-        void updateCar(int , float );
+        pair<Intersection*, Intersection*> updateCar(int , float );
         bool isNotDone();
         bool detectCollisions();
         bool isClear(Intersection* , float );

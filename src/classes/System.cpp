@@ -160,19 +160,38 @@ void System::scenario(int scenario) {
     }
 }
 
+void System::reRoute(int index, Intersection* start, Intersection* end) {
+    AStar astar;
+    stack<Intersection*> route = astar.findRoute(start, end, infrastructure->getIntersections());
+    assert(carHandler->setRoute(index, &route));
+}
+
 void System::draw() {
     time = SDL_GetTicks();
     if (spawnCars) {
         //spawn more cars if necessary
         scenBuild->addToQueue(carHandler, infrastructure->getIntersections());
         scenBuild->spawnMore((time * 0.001f), carHandler, infrastructure->getIntersections());
-    }    
+    }   
+    Intersection* lastPath = nullptr;
     for (int i = 0; i < carHandler->size(); i++) {
         //update the cars
         int size = (int)carHandler->size();
-        carHandler->updateCar(i, (time * 0.001f)); 
+        pair<Intersection*, Intersection*> path = carHandler->updateCar(i, (time * 0.001f)); 
         if (size == (carHandler->size() - 1)) {
             //we deleted on the last step, decrement i
+            i--;
+        }
+        if (lastPath != nullptr) {
+            auto path = carHandler->getCar(i)->getPath();
+            //cout<<"where we started: "<<lastPath->getCenter().first<<" "<<lastPath->getCenter().second<<"where we go: "<<path.at(0).first<<" "<<path.at(0).second<<"\n";
+            lastPath = nullptr;
+        }
+        if (path.first != NULL || path.second != NULL) {
+            //got a return, need to reroute this car...
+            reRoute(i, path.first, path.second);
+            lastPath = path.first;
+            //then we go back and update the car again so it can get moving.
             i--;
         }
     }

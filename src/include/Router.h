@@ -9,6 +9,7 @@ class Router {
         Router();
         ~Router();
         bool setRoute(Car* &, std::stack<Intersection*>* );
+        bool reRoute(Car* & car, stack<Intersection*>* route);
 };
 
 #endif

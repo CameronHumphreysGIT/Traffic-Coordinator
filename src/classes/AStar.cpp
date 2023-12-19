@@ -56,7 +56,6 @@ stack<Intersection*> AStar::findRoute(Intersection* start, Intersection* end, ve
             endFlag = true;
         }
     }
-
     return makeStack(path);
 }
 

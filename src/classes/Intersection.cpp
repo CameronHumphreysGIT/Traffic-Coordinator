@@ -157,7 +157,11 @@ pair<int,int> Intersection::getId() {
 }
 
 pair<int,int> Intersection::getNeighbor(Variables::Side side) {
-    return neighbors[side];
+    if (disabled[side]) {
+        return {-1,-1};
+    }else {
+        return neighbors[side];
+    }
 }
 
 vector<vector<pair<float, float>>> Intersection::getSampled() {
@@ -290,9 +294,29 @@ void Intersection::collidesWith(pair<int, int> pos, float time, pair<int, int> o
     }
     if (within) {
         //treat it as a left turning vehicle (none shall pass)
-        withinIntersectionLeft = true;
+        //withinIntersectionLeft = true;
         withinIntersectionOrigin = origin;
         withinIntersectionTime = time;
+    }
+}
+
+void Intersection::accident(pair<int, int> pos) {
+    //there's an accident at pos. disable the road that the accident is on.
+    if (pos.second <= topLeft.second) {
+        //is above
+        disabled[Variables::TOP] = true;
+    }
+    if (pos.second >= bottomRight.second) {
+        //is below
+        disabled[Variables::BOTTOM] = true;
+    }
+    if (pos.first <= topLeft.first) {
+        //is left
+        disabled[Variables::LEFT] = true;
+    }
+    if (pos.first >= bottomRight.first) {
+        //is right
+        disabled[Variables::RIGHT] = true;
     }
 }
 

@@ -50,3 +50,11 @@ bool Router::setRoute(Car* &car, stack<Intersection*>* route) {
     }
     return true;
 }
+
+bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
+    //tell the car it has been reset.
+    car->reset();
+    //set the route.
+    bool success = setRoute(car, route);
+    return success;
+}

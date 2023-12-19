@@ -29,6 +29,8 @@ class Intersection {
         pair<int,int> withinIntersectionOrigin;
         //boolean to indicate if the car within the Intersection is turning left
         bool withinIntersectionLeft;
+        //whether or not the side is disabled
+        bool disabled[4] = {false, false, false, false};
     public:
         Intersection();
         ~Intersection();
@@ -53,6 +55,7 @@ class Intersection {
         bool isWithinLeft();
         bool isPassable(pair<int, int> , float );
         void collidesWith(pair<int, int> , float , pair<int, int> );
+        void accident(pair<int, int> );
         void print();
 };
 

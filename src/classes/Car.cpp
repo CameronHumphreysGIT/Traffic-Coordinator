@@ -72,8 +72,12 @@ pair<float, float> Car::getWaypoint() {
     return paths->at(currentPath).at(currentWaypoint);
 }
 
-Car* Car:: getBehind() {
+Car* Car::getBehind() {
     return prevBehind;
+}
+
+Car* Car::getWait() {
+    return wait;
 }
 
 vector<pair<float, float>> Car::getPath() {
@@ -88,7 +92,21 @@ void Car::nullWait() {
     wait = nullptr;
 }
 
+void Car::nullBehind(Car* car) {
+    //the car should be my behind
+    if (prevBehind == car) {
+        behind = false;
+        prevBehind = NULL;
+    }
+}
+
 bool Car::isBehind() {
+    if (state == accident) {
+        if (prevBehind == NULL || !prevBehind->isBehindAccident()) {
+            //the car behind this accident has moved on, start scanning for more behinds.
+            behind = false;
+        }
+    }
     return behind;
 }
 
@@ -100,7 +118,6 @@ void Car::addPath(vector<pair<float, float>> path, bool isInternal) {
     paths->push_back(path);
     //start moving
     state = moving;
-    start = timeSinceEpochMillisec();
 }
 
 void Car::setBehind(Car* val) {
@@ -155,7 +172,6 @@ void Car::update(float time) {
             if (pathClear()) {
                 state = moving;
                 wait = NULL;
-                updatePos(time);
                 behind = false;
             }
             break;
@@ -192,26 +208,28 @@ void Car::update(float time, bool isStopped) {
 
 //function to wait behind a given car.
 void Car::waitBehind(Car* &c, pair<float, float> waypoint) {
-    if (state == behindAccident) {
-        //don't worry about where they are, just save the values:
-        wait = c;
-    }else {
-        //make sure the car is ahead of me.
-        //get my distance
-        pair<float, float> currentPos = {(float)chassis->x, (float)chassis->y};
-        //pair<float, float> waypoint = paths->at(currentPath).at(currentWaypoint);
-        pair<float, float> dir = waypoint - currentPos;
-        Vector2 direction = {dir.first, dir.second};
-        float myDist = direction.Magnitude();
-        //now their distance
-        pair<float, float> carpos = {(float)c->getPos().first, (float)c->getPos().second};
-        dir = waypoint - carpos;
-        direction = {dir.first, dir.second};
-        float theirDist = direction.Magnitude();
-        if (myDist > theirDist) {
-            //save the car object and that way we can check their position.
+    if (state != accident) {
+        if (state == behindAccident) {
+            //don't worry about where they are, just save the values:
             wait = c;
-            state = movetowait;
+        }else {
+            //make sure the car is ahead of me.
+            //get my distance
+            pair<float, float> currentPos = {(float)chassis->x, (float)chassis->y};
+            //pair<float, float> waypoint = paths->at(currentPath).at(currentWaypoint);
+            pair<float, float> dir = waypoint - currentPos;
+            Vector2 direction = {dir.first, dir.second};
+            float myDist = direction.Magnitude();
+            //now their distance
+            pair<float, float> carpos = {(float)c->getPos().first, (float)c->getPos().second};
+            dir = waypoint - carpos;
+            direction = {dir.first, dir.second};
+            float theirDist = direction.Magnitude();
+            if (myDist > theirDist) {
+                //save the car object and that way we can check their position.
+                wait = c;
+                state = movetowait;
+            }
         }
     }
 }
@@ -316,25 +334,64 @@ void Car::rotate(Vector2 direction) {
 }
 
 bool Car::pathClear() {
-    //start by getting where the opposing car is:
-    vector<pair<float, float>> theirPath = wait->getPath();
-    pair<float, float> theirEnd = theirPath.at(theirPath.size() - 1);
-    pair<float, float> currentPos = {chassis->x, chassis->y};
-    pair<float, float> dir = theirEnd - currentPos;
-    Vector2 direction = {dir.first, dir.second};
-    float myDist = direction.Magnitude();
-    //now their distance
-    pair<float, float> carpos = {(float)wait->getPos().first, (float)wait->getPos().second};
-    dir = theirEnd - carpos;
-    direction = {dir.first, dir.second};
-    float theirDist = direction.Magnitude();
-    float diff = myDist - theirDist;
-    //basically if they are passed me or if they are more then three car lengths away.
-    if (diff >= 0 || (diff < 0 && (abs(diff) >= (Variables::CAR_HEIGHT * 3)))) {
-        return true;
+    if (wait != NULL) {
+        //start by getting where the opposing car is:
+        vector<pair<float, float>> theirPath = wait->getPath();
+        pair<float, float> theirEnd = theirPath.at(theirPath.size() - 1);
+        //where am I
+        pair<float, float> myPos = {(float)chassis->x, (float)chassis->y};
+        //where are they?
+        pair<float, float> theirPos = {(float)wait->getPos().first, (float)wait->getPos().second};
+
+        pair<float, float> dir = theirEnd - theirPos;
+        Vector2 direction = {dir.first, dir.second};
+        float theirDist = direction.Magnitude();
+        //now their distance to me
+        dir = myPos - theirPos;
+        direction = {dir.first, dir.second};
+        float dist2Me = direction.Magnitude();
+        if (theirDist <= dist2Me) {
+            //this means either they have passed me on the way to their target, or I am on the other side of their path end.
+            vector<pair<float, float>> myPath = getPath();
+            pair<float, float> myEnd = myPath.at(myPath.size() - 1);
+            dir = theirEnd - myEnd;
+            direction = {dir.first, dir.second};
+            float endDists = direction.Magnitude();
+            if (endDists <= Variables::INTERSECTION_DIMS) {
+                //Im within an intersection on the other side of theirEnd, if they are far enough, i can go.
+                if (dist2Me > (Variables::CAR_HEIGHT * 3)) {
+                    return true;
+                }else {
+                    return false;
+                }
+            }else {
+                //They have passed me on the way to their end, means i can just go.
+                return true;
+            }
+        }else {
+            //check if they are far enough
+            if (dist2Me > (Variables::CAR_HEIGHT * 3)) {
+                return true;
+            }else {
+                return false;
+            }
+        }
     }else {
-        return false;
+        return true;
     }
+}
+
+void Car::reset() {
+    currentPath = 0;
+    currentWaypoint = 0;
+    internals = {};
+    wait = nullptr;
+    lastWaitPos = {-1, -1};
+    prevBehind = NULL;
+    behind = false;
+    //reset paths
+    delete paths;
+    paths = new vector<vector<pair<float, float>>>();
 }
 
 void Car::accidentWait() {
@@ -346,6 +403,10 @@ void Car::accidentWait() {
 
 void Car::haveAccident() {
     state = accident;
+}
+
+bool Car::isMoving() {
+    return (state == moving);
 }
 
 bool Car::isBehindAccident() {

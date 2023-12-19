@@ -39,6 +39,7 @@ class System {
         std::vector<std::vector<Intersection*>*>* getIntersections();
         CarHandler* getCarHandler();
         void scenario(int );
+        void reRoute(int , Intersection* , Intersection* );
         void draw();
         void run();
         void run(int );
