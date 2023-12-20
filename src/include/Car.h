@@ -37,6 +37,8 @@ class Car {
         Car* prevBehind;
         //true if currently has a car behind this one.
         bool behind;
+        //
+        int lastInternal;
     public:
         Car(std::pair<int, int> , float);
         ~Car();
@@ -75,6 +77,7 @@ class Car {
         bool isRedLight();
         bool isLeftTurning();
         bool isAtEnd();
+        bool isWithin();
 };
 
 #endif

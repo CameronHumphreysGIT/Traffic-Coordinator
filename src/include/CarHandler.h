@@ -19,9 +19,12 @@ class CarHandler {
         bool destroy;
         //the last intersection each car visited, as an intersection pointer.
         std::vector<Intersection*>* lastInter;
+        //map of all of the intersection ID's to a boolean indicating if the accident is still active (not cleared)
+        std::map<std::pair<int, int>, bool>* accidents;
         //helpers
         void handleStop(int );
         void handleGo(int , float);
+        pair<Intersection*, Intersection*> getStartEnd(int );
     public:
         CarHandler();
         ~CarHandler();

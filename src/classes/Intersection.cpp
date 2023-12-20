@@ -300,24 +300,41 @@ void Intersection::collidesWith(pair<int, int> pos, float time, pair<int, int> o
     }
 }
 
-void Intersection::accident(pair<int, int> pos) {
+bool Intersection::accident(pair<int, int> pos) {
     //there's an accident at pos. disable the road that the accident is on.
+    bool isOutside = false;
     if (pos.second <= topLeft.second) {
         //is above
         disabled[Variables::TOP] = true;
+        isOutside = true;
     }
     if (pos.second >= bottomRight.second) {
         //is below
         disabled[Variables::BOTTOM] = true;
+        isOutside = true;
     }
     if (pos.first <= topLeft.first) {
         //is left
         disabled[Variables::LEFT] = true;
+        isOutside = true;
     }
     if (pos.first >= bottomRight.first) {
         //is right
         disabled[Variables::RIGHT] = true;
+        isOutside = true;
     }
+    return isOutside;
+}
+
+Variables::Side Intersection::getNeighbor(pair<int, int> id) {
+    //find the naeighbor and return the side.
+    for (int side = Variables::TOP; side != Variables::END; side++) {
+        //find the side that neighbors the origin.
+        if (neighbors[side].first == id.first && neighbors[side].second == id.second) {
+            return (Variables::Side)side;
+        }
+    }
+    return Variables::END;
 }
 
 void Intersection::print() {

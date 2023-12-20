@@ -55,7 +55,8 @@ class Intersection {
         bool isWithinLeft();
         bool isPassable(pair<int, int> , float );
         void collidesWith(pair<int, int> , float , pair<int, int> );
-        void accident(pair<int, int> );
+        bool accident(pair<int, int> );
+        Variables::Side getNeighbor(pair<int, int> );
         void print();
 };
 

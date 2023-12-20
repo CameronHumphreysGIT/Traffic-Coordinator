@@ -100,6 +100,15 @@ struct Vector2 {
 
         return Vector2(x / mag, y / mag);
     }
+
+    //-------------------------------------------
+    //Calculates the dot product of this vector and the input vector.   
+    //-------------------------------------------
+    float DotProduct(Vector2 rhs) {
+        float first = x * rhs.x;
+        float second = y * rhs.y;
+        return (first + second);
+    }
 };
 
 //Vector overrides:

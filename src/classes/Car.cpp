@@ -25,6 +25,7 @@ Car::Car(pair<int, int> start, float time) {
     lastWaitPos = {-1, -1};
     prevBehind = NULL;
     behind = false;
+    lastInternal = 1000;
 }
 
 Car::~Car() {
@@ -188,6 +189,7 @@ void Car::update(float time, bool isStopped) {
         //this means we are going to start moving
         state = moving;
         //get rid of top internal road
+        lastInternal = internals.front();
         internals.pop();
         behind = false;
     }
@@ -385,6 +387,7 @@ void Car::reset() {
     currentPath = 0;
     currentWaypoint = 0;
     internals = {};
+    lastInternal = 1000;
     wait = nullptr;
     lastWaitPos = {-1, -1};
     prevBehind = NULL;
@@ -457,4 +460,8 @@ bool Car::isLeftTurning() {
 
 bool Car::isAtEnd() {
     return (state == end);
+}
+
+bool Car::isWithin() {
+    return (currentPath == lastInternal);
 }

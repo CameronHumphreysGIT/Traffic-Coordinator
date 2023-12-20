@@ -187,12 +187,23 @@ void System::draw() {
             //cout<<"where we started: "<<lastPath->getCenter().first<<" "<<lastPath->getCenter().second<<"where we go: "<<path.at(0).first<<" "<<path.at(0).second<<"\n";
             lastPath = nullptr;
         }
-        if (path.first != NULL || path.second != NULL) {
+        if (path.first != NULL && path.second != NULL) {
             //got a return, need to reroute this car...
             reRoute(i, path.first, path.second);
             lastPath = path.first;
             //then we go back and update the car again so it can get moving.
             i--;
+        }
+        if (path.first != NULL && path.second == NULL) {
+            //special case, Intersection wants us to block off routes.
+            Intersection* center = path.first;
+            for (int side = 0; side != Variables::END; side++) {
+                pair<int, int> id = center->getNeighbor((Variables::Side)side);
+                if (id.first != -1) {
+                    //now just tell them there was an accident
+                    infrastructure->getIntersections()->at(id.first)->at(id.second)->accident(center->getCenter());
+                }
+            }
         }
     }
     vector<vector<vector<pair<float, float>>>> paths = (carHandler->getPaths());

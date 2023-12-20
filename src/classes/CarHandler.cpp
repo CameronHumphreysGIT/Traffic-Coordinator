@@ -13,6 +13,7 @@ CarHandler::CarHandler() {
     lastInterId = new vector<pair<int,int>>;
     lastInter = new vector<Intersection*>;
     destroy = true;
+    accidents = new map<pair<int, int>, bool>;
 }
 
 CarHandler::~CarHandler() {
@@ -68,9 +69,15 @@ stack<Intersection*> CarHandler::getRoute(int index) {
 
 bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     stack<Intersection*>* newRoute = new stack<Intersection*>(*route);
+    int size1 = newRoute->size();
+    int size2 = route->size();
     bool reroute = false;
+    Intersection* top;
     if (!(routes->at(index) == nullptr)) {
         reroute = true;
+        //keep where they are going.
+        top = routes->at(index)->top();
+        newRoute->push(top);
     }
     //check if we have added a vector of cars with this intersection origin
     if (prevInters->find(newRoute->top()->getId()) == prevInters->end()) {
@@ -84,12 +91,19 @@ bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     //also keep track of the intersection id:
     lastInterId->at(index) = newRoute->top()->getId();
     lastInter->at(index) = newRoute->top();
-    //pop the first intersection, since it's the starting point.
-    newRoute->pop();
-    routes->at(index) = newRoute;
+
     if (reroute) {
+        newRoute->pop();
+        routes->at(index) = newRoute;
+        //they need the intersection destination that this car is going to:
+        route->push(top);
         return router->reRoute((cars->at(index)), route);
     }else {
+        //pop the first intersection, since it's the starting point.
+        int size1 = newRoute->size();
+        int size2 = route->size();
+        newRoute->pop();
+        routes->at(index) = newRoute;
         return router->setRoute((cars->at(index)), route);
     }
 }
@@ -146,8 +160,18 @@ pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) 
             //tell people behind to handle the Stop.
             handleStop(index);
             cars->at(index)->update(time);
-            //tell the intersection.
-            lastInter->at(index)->accident(cars->at(index)->getPos());
+            //tell the intersection, check if we are within using our waypoint.
+            pair<float, float> posFloat = {(float)cars->at(index)->getPos().first, (float)cars->at(index)->getPos().second};
+            pair<float, float> dir = (cars->at(index)->getWaypoint() - posFloat) * 0.5;//go halfway to the waypoint
+            dir = posFloat + dir;
+            pair<int, int> roundedWaypoint = {(int)ceil(dir.first), (int)ceil(dir.second)};
+            bool isOutside = lastInter->at(index)->accident(roundedWaypoint);
+            if (!isOutside) {
+                //add to the map of accidents.
+                accidents->insert({lastInter->at(index)->getId(), true});
+                //special return value allows System to handle this.
+                return {lastInter->at(index), NULL};
+            }
         } else if (cars->at(index)->isInternal()) {
             //check if the next path for this car is an internal road
             bool passable = routes->at(index)->top()->isPassable(cars->at(index)->getPos(), time);
@@ -155,6 +179,12 @@ pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) 
                 cars->at(index)->update(time, true);
                 handleStop(index);
             }else {
+                //see if we are going into an intersection with an accident
+                if (accidents->find(routes->at(index)->top()->getId()) != accidents->end()) {
+                    //we are, we should reroute this car immediately.
+                    int i =0;
+                    return getStartEnd(index);
+                }
                 float withinIntersectionTime = routes->at(index)->top()->getWithinTime();
                 pair<int, int> withinIntersectionOrigin = routes->at(index)->top()->getWithinOrigin();
                 bool withinIntersectionLeft = routes->at(index)->top()->isWithinLeft();
@@ -249,24 +279,7 @@ pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) 
             }
             //check if the car is now moving...
             if (cars->at(index)->isMoving()) {
-                //we need to reroute this car...
-                //find the end of their current route
-                stack<Intersection*> route = *(routes->at(index));
-                //we want to backtrack...
-                Intersection* start = lastInter->at(index);
-                while (!(route.size() == 1)) {
-                    route.pop();
-                }
-                Intersection* end = route.top();
-                //remove self from prevInters
-                vector<Car*>* vec = prevInters->at(lastInterId->at(index));
-                for (auto it = vec->begin(); it != vec->end(); it++) {
-                    if (*it == cars->at(index)) {
-                        vec->erase(it);
-                        break;
-                    }
-                }
-                return {start, end};
+                return getStartEnd(index);
             }else {
                 return {NULL, NULL};
             }
@@ -423,4 +436,28 @@ void CarHandler::handleAccident() {
     }
     //set into an accident.
     car->haveAccident();
+}
+
+/// @brief helper function for accident handling. finds the start and end points that the car needs to be rerouted with.
+/// @param index index of the car getting rerouted
+/// @return the start, end of the route that is to be generated.
+pair<Intersection*, Intersection*> CarHandler::getStartEnd(int index) {
+    //we need to reroute this car...
+    //find the end of their current route
+    stack<Intersection*> route = *(routes->at(index));
+    //we want to backtrack...
+    Intersection* start = lastInter->at(index);
+    while (!(route.size() == 1)) {
+        route.pop();
+    }
+    Intersection* end = route.top();
+    //remove self from prevInters
+    vector<Car*>* vec = prevInters->at(lastInterId->at(index));
+    for (auto it = vec->begin(); it != vec->end(); it++) {
+        if (*it == cars->at(index)) {
+            vec->erase(it);
+            break;
+        }
+    }
+    return {start, end};
 }

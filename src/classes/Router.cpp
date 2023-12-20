@@ -52,8 +52,95 @@ bool Router::setRoute(Car* &car, stack<Intersection*>* route) {
 }
 
 bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
-    //tell the car it has been reset.
-    car->reset();
+    Intersection* orig = route->top();
+    route->pop();
+    Intersection* dest = route->top();
+    route->pop();
+    //check here if the car is inside an intersection...
+    if (car->isWithin()) {
+        //car is within an intersection.
+        //tell the car it has been reset.
+        car->reset();
+        for (int side2 = Variables::TOP; side2 != Variables::END; side2++) {
+            if (dest->getNeighbor((Variables::Side)side2).first == route->top()->getId().first && dest->getNeighbor((Variables::Side)side2).second == route->top()->getId().second) {
+                ///this side is the side that we want to go to, but which side did we come from??
+                pair<float, float> origin = car->getPath().at(0);
+                //SAHHHHHHHHHHHHHHHHHHH SEARCH THROUHG
+                SEARCH THROUGH THE SAMPLED INTERNALS THAT END IN OUR TARGET SIDE. IF THE FIRST PART OF THE PATH IN SAMPLED INTERNALS STARTS AT THE SAME POINT THAT WE START AT, USE THOSE INTERNALS...
+                break;
+            }
+        }      //the current direction of travel will tell us from which side we are coming.
+       //for (int side = Variables::TOP; side != Variables::END; side++) {
+       //    //find the side that neighbors the origin.
+       //    if (orig->getNeighbor((Variables::Side)side).first == dest->getId().first && orig->getNeighbor((Variables::Side)side).second == dest->getId().second) {
+       //        //good, now we can find the agacent side, which is where we came from:
+       //        Variables::Side prevSide;
+       //        if (side == Variables::Side::LEFT) {
+       //            prevSide = Variables::Side::RIGHT;
+       //        }else if (side == Variables::Side::BOTTOM) {
+       //            prevSide = Variables::Side::TOP;
+       //        }else {
+       //            prevSide = (Variables::Side)(side + 2);
+       //        }
+       //        //now find the side that goes to the next intersection.
+       //        for (int side2 = Variables::TOP; side2 != Variables::END; side2++) {
+       //            if (dest->getNeighbor((Variables::Side)side2).first == route->top()->getId().first && dest->getNeighbor((Variables::Side)side2).second == route->top()->getId().second) {
+       //                //found the spot. now we can add in the proper path:
+       //                car->addPath(dest->getSampledInternals(prevSide).at(side2), true);
+       //                break;
+       //            }
+       //        }
+       //        break;
+       //    }
+       //}
+    }else {
+        //tell the car it has been reset.
+        car->reset();
+        //this method ignores the disabled array, and returns the side id's as originally designed.
+        Variables::Side side = orig->getNeighbor(dest->getId());
+        //The goal of this starting part is to get the closest point on the road to the current car position. this point, along with the end point of the road will make up the first path for the car.
+        //make a direction vector along the path
+        vector<pair<float, float>> path = orig->getSampled().at(side);
+        //path has two points
+        pair<float, float> dir = path.at(1) - path.at(0);
+        Vector2 road = {dir.first, dir.second};
+        //find closest point from pos to vector.
+        pair<float, float> pos = {(float)car->getPos().first, (float)car->getPos().second};
+        dir = pos - path.at(0);
+        Vector2 road2Car = {dir.first, dir.second};
+        road = road.Normalized();
+        //projection of car pos onto the road
+        float projRoad = road.DotProduct(road2Car);
+        //vector from road start to pos projection
+        Vector2 proj = (road*(projRoad));
+        //above, but as a pair
+        pair<float, float> projPair = {proj.x, proj.y};
+        //finally, the start pos for the car.
+        pair<float, float> start = path.at(0) + projPair;
+        pair<float, float> end = path.at(1);
+        vector<pair<float, float>> addPath = {start, end};
+        car->addPath(addPath, false);
+        //now add the internal road start with the side that is at the entrance of the intersection
+        Variables::Side prevSide;
+        //nextside is adjacent to previous side
+        if (side == Variables::Side::LEFT) {
+            prevSide = Variables::Side::RIGHT;
+        }else if (side == Variables::Side::BOTTOM) {
+            prevSide = Variables::Side::TOP;
+        }else {
+            prevSide = (Variables::Side)(side + 2);
+        }
+        //now find the side that goes to the next intersection.
+        for (int side2 = Variables::TOP; side2 != Variables::END; side2++) {
+            if (dest->getNeighbor((Variables::Side)side2).first == route->top()->getId().first && dest->getNeighbor((Variables::Side)side2).second == route->top()->getId().second) {
+                //found the spot. now we can add in the proper path:
+                car->addPath(dest->getSampledInternals(prevSide).at(side2), true);
+                break;
+            }
+        }
+    }
+    //put dest back onto the stack.
+    route->push(dest);
     //set the route.
     bool success = setRoute(car, route);
     return success;
