@@ -72,12 +72,14 @@ bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     int size1 = newRoute->size();
     int size2 = route->size();
     bool reroute = false;
-    Intersection* top;
+    Intersection* top = NULL;
     if (!(routes->at(index) == nullptr)) {
         reroute = true;
-        //keep where they are going.
-        top = routes->at(index)->top();
-        newRoute->push(top);
+        if (!cars->at(index)->isWithin()) {
+            //keep where they are going.
+            top = routes->at(index)->top();
+            newRoute->push(top);
+        }
     }
     //check if we have added a vector of cars with this intersection origin
     if (prevInters->find(newRoute->top()->getId()) == prevInters->end()) {
@@ -95,8 +97,10 @@ bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     if (reroute) {
         newRoute->pop();
         routes->at(index) = newRoute;
-        //they need the intersection destination that this car is going to:
-        route->push(top);
+        if (top != NULL) {
+            //they need the intersection destination that this car is going to:
+            route->push(top);
+        }
         return router->reRoute((cars->at(index)), route);
     }else {
         //pop the first intersection, since it's the starting point.
@@ -168,7 +172,7 @@ pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) 
             bool isOutside = lastInter->at(index)->accident(roundedWaypoint);
             if (!isOutside) {
                 //add to the map of accidents.
-                accidents->insert({lastInter->at(index)->getId(), true});
+                accidents->insert({lastInterId->at(index), true});
                 //special return value allows System to handle this.
                 return {lastInter->at(index), NULL};
             }
@@ -182,7 +186,6 @@ pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) 
                 //see if we are going into an intersection with an accident
                 if (accidents->find(routes->at(index)->top()->getId()) != accidents->end()) {
                     //we are, we should reroute this car immediately.
-                    int i =0;
                     return getStartEnd(index);
                 }
                 float withinIntersectionTime = routes->at(index)->top()->getWithinTime();

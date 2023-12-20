@@ -59,40 +59,28 @@ bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
     //check here if the car is inside an intersection...
     if (car->isWithin()) {
         //car is within an intersection.
-        //tell the car it has been reset.
-        car->reset();
-        for (int side2 = Variables::TOP; side2 != Variables::END; side2++) {
-            if (dest->getNeighbor((Variables::Side)side2).first == route->top()->getId().first && dest->getNeighbor((Variables::Side)side2).second == route->top()->getId().second) {
+        for (int side = Variables::TOP; side != Variables::END; side++) {
+            if (orig->getNeighbor((Variables::Side)side).first == dest->getId().first && orig->getNeighbor((Variables::Side)side).second == dest->getId().second) {
                 ///this side is the side that we want to go to, but which side did we come from??
                 pair<float, float> origin = car->getPath().at(0);
-                //SAHHHHHHHHHHHHHHHHHHH SEARCH THROUHG
-                SEARCH THROUGH THE SAMPLED INTERNALS THAT END IN OUR TARGET SIDE. IF THE FIRST PART OF THE PATH IN SAMPLED INTERNALS STARTS AT THE SAME POINT THAT WE START AT, USE THOSE INTERNALS...
+                //search through each side.
+                for(int side2 = Variables::TOP; side2 != Variables::END; side2++) {
+                    vector<pair<float, float>> path = orig->getSampledInternals((Variables::Side)side2).at(side);
+                    if (path.size() > 0 && path.at(0) == origin) {
+                        //tell the car it has been reset.
+                        car->reset();
+                        //add the path
+                        car->addPath(path, true);
+                        break;
+                    }
+                }
+                //put dest back onto the stack.
+                route->push(dest);
+                //put orig back onto the stack.
+                route->push(orig);
                 break;
             }
-        }      //the current direction of travel will tell us from which side we are coming.
-       //for (int side = Variables::TOP; side != Variables::END; side++) {
-       //    //find the side that neighbors the origin.
-       //    if (orig->getNeighbor((Variables::Side)side).first == dest->getId().first && orig->getNeighbor((Variables::Side)side).second == dest->getId().second) {
-       //        //good, now we can find the agacent side, which is where we came from:
-       //        Variables::Side prevSide;
-       //        if (side == Variables::Side::LEFT) {
-       //            prevSide = Variables::Side::RIGHT;
-       //        }else if (side == Variables::Side::BOTTOM) {
-       //            prevSide = Variables::Side::TOP;
-       //        }else {
-       //            prevSide = (Variables::Side)(side + 2);
-       //        }
-       //        //now find the side that goes to the next intersection.
-       //        for (int side2 = Variables::TOP; side2 != Variables::END; side2++) {
-       //            if (dest->getNeighbor((Variables::Side)side2).first == route->top()->getId().first && dest->getNeighbor((Variables::Side)side2).second == route->top()->getId().second) {
-       //                //found the spot. now we can add in the proper path:
-       //                car->addPath(dest->getSampledInternals(prevSide).at(side2), true);
-       //                break;
-       //            }
-       //        }
-       //        break;
-       //    }
-       //}
+        }
     }else {
         //tell the car it has been reset.
         car->reset();
@@ -138,9 +126,10 @@ bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
                 break;
             }
         }
+        //put dest back onto the stack.
+        route->push(dest);
     }
-    //put dest back onto the stack.
-    route->push(dest);
+
     //set the route.
     bool success = setRoute(car, route);
     return success;

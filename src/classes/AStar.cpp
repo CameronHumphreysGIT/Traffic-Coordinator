@@ -2,6 +2,7 @@
 #include <queue>
 #include <Variables.h>
 #include <MathHelper.h>
+#include <iostream>
 
 using namespace std;
 
@@ -51,9 +52,25 @@ stack<Intersection*> AStar::findRoute(Intersection* start, Intersection* end, ve
                 }
             }
         }
+       //cout<<"Top node: "<<topNode->getIntersection()->getId().first<<", "<<topNode->getIntersection()->getId().second;
+       //for (auto node = nodes.begin(); node != nodes.end(); node++) {
+       //    cout<<"score: "<<node->first<<" id "<<node->second->getIntersection()->getId().first<<", "<<node->second->getIntersection()->getId().second;
+       //}
+       //cout<<"==========================/n";
         path.push_back(topNode);
         if (top == end) {
             endFlag = true;
+        }
+    }
+    if (path.size() >= 3) {
+        //
+        Intersection* top = path.at(0)->getIntersection();
+        if (top != start) {
+            int i =0;
+        }
+        if (path.at(2)->getIntersection() == top) {
+            //op[gredhjio
+            bool flag = true;
         }
     }
     return makeStack(path);
