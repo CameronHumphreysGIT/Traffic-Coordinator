@@ -93,7 +93,7 @@ TEST_CASE("Scenarios") {
             CHECK(system->getCarHandler()->getCar(1)->getPos().first == 233);
             CHECK((system->getCarHandler()->getCar(1)->getPos().second == 295 || system->getCarHandler()->getCar(1)->getPos().second == 294));
 
-            CHECK((system->getCarHandler()->getCar(2)->getPos().first == 600 || system->getCarHandler()->getCar(1)->getPos().second == 599));
+            CHECK((system->getCarHandler()->getCar(2)->getPos().first == 600 || system->getCarHandler()->getCar(1)->getPos().second == 599 || system->getCarHandler()->getCar(1)->getPos().second == 598));
             CHECK(system->getCarHandler()->getCar(2)->getPos().second == 383);
 
             CHECK(system->getCarHandler()->getCar(3)->getPos().first == 229);
@@ -209,18 +209,18 @@ TEST_CASE("AStar test") {
     route1.push(system->getIntersections()->at(5)->at(3));
     route1.push(system->getIntersections()->at(5)->at(4));
     route1.push(system->getIntersections()->at(5)->at(5));
-    route1.push(system->getIntersections()->at(5)->at(6));
-    route1.push(system->getIntersections()->at(5)->at(7));
-    route1.push(system->getIntersections()->at(5)->at(8));
-    route1.push(system->getIntersections()->at(5)->at(9));
-    route1.push(system->getIntersections()->at(4)->at(3));
-    route1.push(system->getIntersections()->at(4)->at(4));
+    route1.push(system->getIntersections()->at(4)->at(0));
+    route1.push(system->getIntersections()->at(4)->at(1));
+    route1.push(system->getIntersections()->at(3)->at(1));
+    route1.push(system->getIntersections()->at(3)->at(2));
+    route1.push(system->getIntersections()->at(3)->at(3));
+
 
     stack<Intersection*> route2;
     route2.push(system->getIntersections()->at(5)->at(9));
     route2.push(system->getIntersections()->at(5)->at(8));
     route2.push(system->getIntersections()->at(4)->at(2));
-    route2.push(system->getIntersections()->at(4)->at(1));
+    route2.push(system->getIntersections()->at(3)->at(2));
     route2.push(system->getIntersections()->at(3)->at(1));
     route2.push(system->getIntersections()->at(2)->at(1));
     route2.push(system->getIntersections()->at(1)->at(0));

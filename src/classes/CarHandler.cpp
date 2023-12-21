@@ -69,8 +69,6 @@ stack<Intersection*> CarHandler::getRoute(int index) {
 
 bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     stack<Intersection*>* newRoute = new stack<Intersection*>(*route);
-    int size1 = newRoute->size();
-    int size2 = route->size();
     bool reroute = false;
     Intersection* top = NULL;
     if (!(routes->at(index) == nullptr)) {
@@ -104,8 +102,6 @@ bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
         return router->reRoute((cars->at(index)), route);
     }else {
         //pop the first intersection, since it's the starting point.
-        int size1 = newRoute->size();
-        int size2 = route->size();
         newRoute->pop();
         routes->at(index) = newRoute;
         return router->setRoute((cars->at(index)), route);
