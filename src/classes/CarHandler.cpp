@@ -370,6 +370,10 @@ void CarHandler::handleGo(int index, float time) {
     lastInter->at(index) = routes->at(index)->top();
     //now pop this intersection from routes
     routes->at(index)->pop();
+    bool flag = false;
+    if (routes->at(index)->size() == 0) {
+        flag = true;
+    }
 }
 
 //function for checking if the cars have all come to rest
@@ -463,4 +467,13 @@ pair<Intersection*, Intersection*> CarHandler::getStartEnd(int index) {
         }
     }
     return {start, end};
+}
+
+/// @brief Way to check if a destination is reachable ie: if there are no accidents in that intersection
+/// @param dest Destination candidate to be checked, as an Intersection pointer
+/// @return Whether or not destination is reachable.
+bool CarHandler::isValidDest(Intersection* dest) {
+    //accidents is a map, which makes this easy:
+    auto iter = accidents->find(dest->getId());
+    return (iter == accidents->end());
 }

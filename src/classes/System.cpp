@@ -198,7 +198,7 @@ void System::draw() {
             //special case, Intersection wants us to block off routes.
             Intersection* center = path.first;
             for (int side = 0; side != Variables::END; side++) {
-                pair<int, int> id = center->getNeighbor((Variables::Side)side);
+                pair<int, int> id = center->getRealNeighbor((Variables::Side)side);
                 if (id.first != -1) {
                     //now just tell them there was an accident
                     infrastructure->getIntersections()->at(id.first)->at(id.second)->accident(center->getCenter());

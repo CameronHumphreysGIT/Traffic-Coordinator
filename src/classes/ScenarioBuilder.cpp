@@ -95,24 +95,31 @@ int ScenarioBuilder::spawnMore(float time, CarHandler*& carHandler, vector<vecto
                 pair<int, int> startPoint = iter->second->front();
                 iter->second->pop();
                 carHandler->addCar(startPoint, time);
+                Intersection* dest = NULL;
                 //now choose a destination.
-                int randRow = distribution(generator);
-                int size = (int)intersections->at(randRow)->size();
-                Intersection* dest;
-                bool start;
-                int coin = (rand()%2)+1;
-                if (coin == 1) {
-                    start = false;
-                    dest = intersections->at(randRow)->at(size - 1);
-                }else {
-                    start = true;
-                    dest = intersections->at(randRow)->at(0);
-                }
-                if (dest == iter->first) {
-                    if (start) {
+                while(dest == NULL) {
+                    int randRow = distribution(generator);
+                    int size = (int)intersections->at(randRow)->size();
+                    
+                    bool start;
+                    int coin = (rand()%2)+1;
+                    if (coin == 1) {
+                        start = false;
                         dest = intersections->at(randRow)->at(size - 1);
                     }else {
+                        start = true;
                         dest = intersections->at(randRow)->at(0);
+                    }
+                    if (dest == iter->first) {
+                        if (start) {
+                            dest = intersections->at(randRow)->at(size - 1);
+                        }else {
+                            dest = intersections->at(randRow)->at(0);
+                        }
+                    }
+                    //now we have to ensure there is no car crash in that dest.
+                    if (!carHandler->isValidDest(dest)) {
+                        dest = NULL;
                     }
                 }
                 stack<Intersection*> stack = algo->findRoute(iter->first, dest, intersections);

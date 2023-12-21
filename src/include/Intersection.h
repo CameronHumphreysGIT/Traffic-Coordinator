@@ -57,6 +57,7 @@ class Intersection {
         void collidesWith(pair<int, int> , float , pair<int, int> );
         bool accident(pair<int, int> );
         Variables::Side getNeighbor(pair<int, int> );
+        pair<int,int> getRealNeighbor(Variables::Side );
         void print();
 };
 

@@ -10,6 +10,8 @@ class AStar {
         //helpers
         std::map<float, Node*>::iterator findNode(Intersection* , std::map<float, Node*>&);
         std::stack<Intersection*> makeStack(std::vector<Node*> );
+        void resetPath(std::vector<Node *>& path, std::map<float, Node *> nodes, Node* minNeighbor);
+        bool isClosed(Intersection* i, vector<Node*> closed);
     public:
         AStar();
         ~AStar();

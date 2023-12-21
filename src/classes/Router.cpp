@@ -52,6 +52,7 @@ bool Router::setRoute(Car* &car, stack<Intersection*>* route) {
 }
 
 bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
+    pair<float, float> waypoint1 = car->getWaypoint();
     Intersection* orig = route->top();
     route->pop();
     Intersection* dest = route->top();
@@ -64,6 +65,7 @@ bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
                 ///this side is the side that we want to go to, but which side did we come from??
                 pair<float, float> origin = car->getPath().at(0);
                 //search through each side.
+                bool flag = false;
                 for(int side2 = Variables::TOP; side2 != Variables::END; side2++) {
                     vector<pair<float, float>> path = orig->getSampledInternals((Variables::Side)side2).at(side);
                     if (path.size() > 0 && path.at(0) == origin) {
@@ -71,6 +73,7 @@ bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
                         car->reset();
                         //add the path
                         car->addPath(path, true);
+                        flag = true;
                         break;
                     }
                 }
@@ -129,6 +132,7 @@ bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
         //put dest back onto the stack.
         route->push(dest);
     }
+    pair<float, float> waypoint2 = car->getWaypoint();
 
     //set the route.
     bool success = setRoute(car, route);

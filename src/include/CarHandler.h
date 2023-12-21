@@ -41,6 +41,7 @@ class CarHandler {
         bool detectCollisions();
         bool isClear(Intersection* , float );
         void handleAccident();
+        bool isValidDest(Intersection* );
 };
 
 

@@ -327,7 +327,7 @@ bool Intersection::accident(pair<int, int> pos) {
 }
 
 Variables::Side Intersection::getNeighbor(pair<int, int> id) {
-    //find the naeighbor and return the side.
+    //find the neighbor and return the side.
     for (int side = Variables::TOP; side != Variables::END; side++) {
         //find the side that neighbors the origin.
         if (neighbors[side].first == id.first && neighbors[side].second == id.second) {
@@ -335,6 +335,10 @@ Variables::Side Intersection::getNeighbor(pair<int, int> id) {
         }
     }
     return Variables::END;
+}
+
+pair<int,int> Intersection::getRealNeighbor(Variables::Side side) {
+    return neighbors[side];
 }
 
 void Intersection::print() {
