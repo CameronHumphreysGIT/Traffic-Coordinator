@@ -495,6 +495,7 @@ void CarHandler::handleAccident() {
     }
     //set into an accident.
     car->haveAccident();
+    carCount--;
 }
 
 /// @brief helper function for accident handling. finds the start and end points that the car needs to be rerouted with.
