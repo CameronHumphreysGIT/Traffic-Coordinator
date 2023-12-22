@@ -25,7 +25,7 @@ stack<Intersection*> AStar::findRoute(Intersection* start, Intersection* end, ve
     Vector2 direction2 = {(float)dir.first, (float)dir.second};
     nodes.insert({0.0f, new Node(start, NULL, 0.0f, direction2.Magnitude())});
     bool endFlag = false;
-    while (!endFlag) {
+    while (!endFlag && !nodes.empty()) {
         Node* topNode = nodes.begin()->second;
         Intersection* top = nodes.begin()->second->getIntersection();
         //add to closed
@@ -136,6 +136,9 @@ stack<Intersection*> AStar::makeStack(vector<Node*> path) {
 }
 
 void AStar::resetPath(vector<Node *>& path, map<float, Node *> nodes, Node* minNeighbor) {
+    if (nodes.empty()) {
+        return;
+    }
     Node* next = nodes.begin()->second;
     //basically check if the next node is a neighbor of the topnode... if not, we need to reset the path.
     if (next != minNeighbor) {

@@ -324,7 +324,7 @@ System* setup(int num) {
     return system;
 };
 
-/*TEST_CASE("Benchmarking") {
+TEST_CASE("Benchmarking") {
     SECTION("Default") {
         double sum = 0;
         for (int i =0; i < 3; i++) {
@@ -396,5 +396,5 @@ System* setup(int num) {
         cout<<"Average time: "<<(sum/3)/1000<<"\n";
     }
 }
-*/
+
 

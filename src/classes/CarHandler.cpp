@@ -14,6 +14,7 @@ CarHandler::CarHandler() {
     lastInter = new vector<Intersection*>;
     destroy = true;
     accidents = new map<pair<int, int>, bool>;
+    accidentTypes = new vector<pair<int, float>>;
 }
 
 CarHandler::~CarHandler() {
@@ -69,6 +70,10 @@ stack<Intersection*> CarHandler::getRoute(int index) {
 
 bool CarHandler::setRoute(int index, stack<Intersection*>* route) {
     stack<Intersection*>* newRoute = new stack<Intersection*>(*route);
+    if (accidentTypes->at(index).first != -1) {
+        float selection = route->size() * accidentTypes->at(index).second;
+        accidentTypes->at(index) = {accidentTypes->at(index).first, selection};
+    }
     bool reroute = false;
     Intersection* top = NULL;
     if (!(routes->at(index) == nullptr)) {
@@ -117,6 +122,22 @@ void CarHandler::addCar(pair<int, int> start, float time) {
     cars->push_back(car);
     //send in an error value, to be changed later.
     lastInterId->push_back({-1,-1});
+    accidentTypes->push_back({-1, -1.0f});
+    lastInter->push_back(NULL);
+    stack<Intersection*>* empty = nullptr;
+    routes->push_back(empty);
+}
+
+void CarHandler::addCar(pair<int, int> start, float time, int accidentType) {
+    Car* car = new Car(start, time);
+    cars->push_back(car);
+    //first, pick a random car:
+    random_device rd;
+    mt19937 generator(rd());
+    uniform_real_distribution<float> distribution(0.01f,1.0f);
+    accidentTypes->push_back({accidentType, distribution(generator)});
+    //send in an error value, to be changed later.
+    lastInterId->push_back({-1,-1});
     lastInter->push_back(NULL);
     stack<Intersection*>* empty = nullptr;
     routes->push_back(empty);
@@ -127,6 +148,16 @@ int CarHandler::size() {
 }
 
 pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) {
+    //random accident, happens no matter the location.
+    if (accidentTypes->at(index).first == 0 && routes->at(index)->size() == (int)ceil(accidentTypes->at(index).second)) {
+        //have an accident
+        cars->at(index)->haveAccident();
+    }
+    //accident only happens outside of an intersection
+    if (accidentTypes->at(index).first == 1 && !cars->at(index)->isWithin() && routes->at(index)->size() == (int)ceil(accidentTypes->at(index).second)) {
+        //have an accident
+        cars->at(index)->haveAccident();
+    }
     if (destroy && cars->at(index)->isAtEnd()) {
         //handle prevIntersections
         vector<Car*>* vec = prevInters->at(lastInterId->at(index));
@@ -161,16 +192,26 @@ pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) 
             handleStop(index);
             cars->at(index)->update(time);
             //tell the intersection, check if we are within using our waypoint.
-            pair<float, float> posFloat = {(float)cars->at(index)->getPos().first, (float)cars->at(index)->getPos().second};
-            pair<float, float> dir = (cars->at(index)->getWaypoint() - posFloat) * 0.5;//go halfway to the waypoint
-            dir = posFloat + dir;
-            pair<int, int> roundedWaypoint = {(int)ceil(dir.first), (int)ceil(dir.second)};
-            bool isOutside = lastInter->at(index)->accident(roundedWaypoint);
-            if (!isOutside) {
+            //pair<float, float> posFloat = {(float)cars->at(index)->getPos().first, (float)cars->at(index)->getPos().second};
+            //pair<float, float> dir = (cars->at(index)->getWaypoint() - posFloat) * 0.5;//go halfway to the waypoint
+            //dir = posFloat + dir;
+            //pair<int, int> roundedWaypoint = {(int)ceil(dir.first), (int)ceil(dir.second)};
+            
+            if (cars->at(index)->isWithin()) {
+                //guarantee the wanted behaviour.
+                lastInter->at(index)->accident(lastInter->at(index)->getCenter());
                 //add to the map of accidents.
                 accidents->insert({lastInterId->at(index), true});
                 //special return value allows System to handle this.
                 return {lastInter->at(index), NULL};
+            }else {
+                bool isOutside = lastInter->at(index)->accident(cars->at(index)->getPos());
+                if (!isOutside) {
+                    //add to the accidents and use the return value.
+                    accidents->insert({lastInterId->at(index), true});
+                    //special return value allows System to handle this.
+                    return {lastInter->at(index), NULL};
+                }
             }
         } else if (cars->at(index)->isInternal()) {
             //check if the next path for this car is an internal road
@@ -181,7 +222,7 @@ pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) 
             }else {
                 //see if we are going into an intersection with an accident
                 if (accidents->find(routes->at(index)->top()->getId()) != accidents->end()) {
-                    //we are, we should reroute this car immediately.
+                    //we should reroute this car immediately.
                     return getStartEnd(index);
                 }
                 float withinIntersectionTime = routes->at(index)->top()->getWithinTime();
@@ -325,7 +366,12 @@ void CarHandler::handleStop(int index) {
             if (me->isAccident()) {
                 if (closest != me->getBehind()) {
                     pair<float, float> myWay = me->getWaypoint();
+                   //if (me->isWithin()) {
+                   //    //the distance doesn't matter, they must wait.
+                   //    closest->waitBehind(me, me->getPos());
+                   //}else {
                     closest->waitBehind(me, myWay);
+                   // }
                     if (closest->getWait() == me) {
                         me->setBehind(closest);
                     } 
@@ -370,12 +416,17 @@ void CarHandler::handleGo(int index, float time) {
     if (routes->at(index)->size() == 0) {
         flag = true;
     }
+    //here we can check if we should be a car accident:
+    if (accidentTypes->at(index).first == 2 && routes->at(index)->size() == (int)ceil(accidentTypes->at(index).second)) {
+        //have an accident
+        cars->at(index)->haveAccident();
+    }
 }
 
 //function for checking if the cars have all come to rest
 bool CarHandler::isNotDone() {
     for (int i = 0; i < cars->size(); i++) {
-        if (!cars->at(i)->isAtEnd()) {
+        if (!cars->at(i)->isAtEnd() && !cars->at(i)->isAccident()) {
             return true;
         }
     }
@@ -461,6 +512,15 @@ pair<Intersection*, Intersection*> CarHandler::getStartEnd(int index) {
             vec->erase(it);
             break;
         }
+    }
+    random_device rd;
+    mt19937 generator(rd());
+    uniform_int_distribution<int> distribution(0,(int)(routes->size() - 1));
+    while (!isValidDest(end) || start == end) {
+        //select a new dest.
+
+        int randRow = distribution(generator);
+        end = routes->at(randRow)->top();
     }
     return {start, end};
 }

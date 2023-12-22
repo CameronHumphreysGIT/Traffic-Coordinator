@@ -125,6 +125,8 @@ bool Router::reRoute(Car* & car, stack<Intersection*>* route) {
         for (int side2 = Variables::TOP; side2 != Variables::END; side2++) {
             if (dest->getNeighbor((Variables::Side)side2).first == route->top()->getId().first && dest->getNeighbor((Variables::Side)side2).second == route->top()->getId().second) {
                 //found the spot. now we can add in the proper path:
+                //make sure there is a path:
+                
                 car->addPath(dest->getSampledInternals(prevSide).at(side2), true);
                 break;
             }

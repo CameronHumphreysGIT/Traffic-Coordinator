@@ -16,6 +16,7 @@ class ScenarioBuilder {
         void spawnRandom(CarHandler* & , vector<vector<Intersection*>*>* , int , float );
         int spawnMore(float , CarHandler*& , vector<vector<Intersection*>*>* );
         void addToQueue(CarHandler*& , vector<vector<Intersection*>*>* );
+        void spawnARandom(CarHandler* & , vector<vector<Intersection*>*>* , int , float );
 };
 
 #endif

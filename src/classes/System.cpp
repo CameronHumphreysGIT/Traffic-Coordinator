@@ -27,10 +27,10 @@ System::System() {
     carHandler = new CarHandler();
     const char* off = "Satellite Off";
     const char* on = "Satellite On";
-    toggleBackground = new Button(970, 50, 100, 50, off, on);
+    toggleBackground = new Button(970, 50, 150, 50, off, on);
     off = "Crash Car";
     on = "Crash Car";
-    crashCar = new Button(970, 110, 100, 50, off, on);
+    crashCar = new Button(970, 110, 150, 50, off, on);
     scenBuild = new ScenarioBuilder();
     spawnCars = false;
 }
@@ -171,8 +171,9 @@ void System::draw() {
     if (spawnCars) {
         //spawn more cars if necessary
         scenBuild->addToQueue(carHandler, infrastructure->getIntersections());
-        scenBuild->spawnMore((time * 0.001f), carHandler, infrastructure->getIntersections());
+        
     }   
+    scenBuild->spawnMore((time * 0.001f), carHandler, infrastructure->getIntersections());//move dis
     Intersection* lastPath = nullptr;
     for (int i = 0; i < carHandler->size(); i++) {
         //update the cars
@@ -247,6 +248,9 @@ void System::run() {
         if ((time - startTime) >= ((1.0f/Variables::FRAME_RATE) * 1000)) {
             draw();
             startTime = time;
+        }
+        if (!carHandler->isNotDone()) {
+            quit = true;
         }
     }
 }

@@ -25,6 +25,7 @@ class CarHandler {
         void handleStop(int );
         void handleGo(int , float);
         pair<Intersection*, Intersection*> getStartEnd(int );
+        std::vector<std::pair<int, float>>* accidentTypes;
     public:
         CarHandler();
         ~CarHandler();
@@ -35,6 +36,7 @@ class CarHandler {
         bool setRoute(int ,std::stack<Intersection*>* );
         void setDestroy(bool );
         void addCar(std::pair<int, int> , float );
+        void addCar(pair<int, int> , float , int );
         int size();
         pair<Intersection*, Intersection*> updateCar(int , float );
         bool isNotDone();
