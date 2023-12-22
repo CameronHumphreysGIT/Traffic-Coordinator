@@ -26,6 +26,8 @@ Car::Car(pair<int, int> start, float time) {
     prevBehind = NULL;
     behind = false;
     lastInternal = 1000;
+    startTime = timeSinceEpochMillisec();
+    duration = 0;
 }
 
 Car::~Car() {
@@ -286,6 +288,7 @@ void Car::updatePos(float time) {
         currentWaypoint = 0;
         if (currentPath == paths->size()) {
             state = end;
+            duration = timeSinceEpochMillisec() - startTime;
         }
     }
 }
@@ -464,4 +467,8 @@ bool Car::isAtEnd() {
 
 bool Car::isWithin() {
     return (currentPath == lastInternal);
+}
+
+uint64_t Car::getDuration() {
+    return duration;
 }

@@ -232,19 +232,19 @@ void ScenarioBuilder::spawnARandom(CarHandler* & carHandler, vector<vector<Inter
     }
     
    
-    //while (!carHandler->isClear(origin, time)) {
-    //    //pick a new origin
-    //    //random row id origin
-    //    randRow = distribution(generator);
-    //    size = (int)intersections->at(randRow)->size();
-    //    //randomely determine the side of the map this car comes from:
-    //    coin = (rand()%2)+1;
-    //    if (coin == 1) {
-    //        origin = intersections->at(randRow)->at(size - 1);
-    //    }else {
-    //        origin = intersections->at(randRow)->at(0);
-    //    }
-    //}
+    while (!carHandler->isClear(origin, time)) {
+        //pick a new origin
+        //random row id origin
+        randRow = distribution(generator);
+        size = (int)intersections->at(randRow)->size();
+        //randomely determine the side of the map this car comes from:
+        coin = (rand()%2)+1;
+        if (coin == 1) {
+            origin = intersections->at(randRow)->at(size - 1);
+        }else {
+            origin = intersections->at(randRow)->at(0);
+        }
+    }
     //default start point is center of the intersection origin
     pair<int, int> startPoint = origin->getCenter();
     carHandler->addCar(startPoint, time, accidentType);
@@ -1247,7 +1247,7 @@ bool ScenarioBuilder::scenario(int scenario, Uint32 time, CarHandler* & carHandl
         delete algo;
         return true;
     }
-    if (scenario == 13) {
+    if (scenario == 14) {
         //add cars, with accident timers.
         spawnARandom(carHandler, infrastructure->getIntersections(), 2, (time * 0.001f));
         spawnARandom(carHandler, infrastructure->getIntersections(), 2, (time * 0.001f));

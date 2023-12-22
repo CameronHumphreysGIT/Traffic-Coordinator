@@ -15,6 +15,8 @@ CarHandler::CarHandler() {
     destroy = true;
     accidents = new map<pair<int, int>, bool>;
     accidentTypes = new vector<pair<int, float>>;
+    timeSum = 0;
+    carCount = 0;
 }
 
 CarHandler::~CarHandler() {
@@ -126,6 +128,7 @@ void CarHandler::addCar(pair<int, int> start, float time) {
     lastInter->push_back(NULL);
     stack<Intersection*>* empty = nullptr;
     routes->push_back(empty);
+    carCount++;
 }
 
 void CarHandler::addCar(pair<int, int> start, float time, int accidentType) {
@@ -134,13 +137,14 @@ void CarHandler::addCar(pair<int, int> start, float time, int accidentType) {
     //first, pick a random car:
     random_device rd;
     mt19937 generator(rd());
-    uniform_real_distribution<float> distribution(0.01f,1.0f);
+    uniform_real_distribution<float> distribution(0.0f,1.0f);
     accidentTypes->push_back({accidentType, distribution(generator)});
     //send in an error value, to be changed later.
     lastInterId->push_back({-1,-1});
     lastInter->push_back(NULL);
     stack<Intersection*>* empty = nullptr;
     routes->push_back(empty);
+    carCount++;
 }
 
 int CarHandler::size() {
@@ -159,6 +163,7 @@ pair<Intersection*, Intersection*> CarHandler::updateCar(int index, float time) 
         cars->at(index)->haveAccident();
     }
     if (destroy && cars->at(index)->isAtEnd()) {
+        timeSum += cars->at(index)->getDuration();
         //handle prevIntersections
         vector<Car*>* vec = prevInters->at(lastInterId->at(index));
         for (auto it = vec->begin(); it != vec->end(); it++) {
@@ -532,4 +537,8 @@ bool CarHandler::isValidDest(Intersection* dest) {
     //accidents is a map, which makes this easy:
     auto iter = accidents->find(dest->getId());
     return (iter == accidents->end());
+}
+
+void CarHandler::dataReport() {
+    cout<<"DATAREPORT=============================Cars: "<<carCount<<" Total Time (seconds): "<<(timeSum * 0.001f)<<" Average Time (seconds): "<<(timeSum/carCount)*0.001f<<" ==================================\n";
 }

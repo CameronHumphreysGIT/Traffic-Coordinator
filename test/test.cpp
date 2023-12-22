@@ -331,7 +331,7 @@ TEST_CASE("Benchmarking") {
             System* system = setup(2);
             uint64_t start, end;
             start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
-            system->run(INT_MAX);
+            system->run();
             end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
             takedown(system);
             sum += (end - start);
@@ -397,4 +397,47 @@ TEST_CASE("Benchmarking") {
     }
 }
 
-
+TEST_CASE("AccidentsBenchmarks") {
+    SECTION("Default") {
+        double sum = 0;
+        for (int i =0; i < 5; i++) {
+            System* system = setup(11);
+            uint64_t start, end;
+            start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            system->run();
+            end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+            takedown(system);
+            sum += (end - start);
+            cout<<(end - start)<<"====================================================ENDRUN\n";
+        }
+        cout<<"Average time: "<<(sum/5)/1000<<"\n";
+    }
+   //SECTION("Default") {
+   //    double sum = 0;
+   //    for (int i =0; i < 5; i++) {
+   //        System* system = setup(12);
+   //        uint64_t start, end;
+   //        start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+   //        system->run();
+   //        end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+   //        takedown(system);
+   //        sum += (end - start);
+   //        cout<<(end - start)<<"====================================================ENDRUN\n";
+   //    }
+   //    cout<<"Average time: "<<(sum/5)/1000<<"\n";
+   //}
+   //SECTION("Default") {
+   //    double sum = 0;
+   //    for (int i =0; i < 5; i++) {
+   //        System* system = setup(13);
+   //        uint64_t start, end;
+   //        start = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+   //        system->run();
+   //        end = system->getCarHandler()->getCar(0)->timeSinceEpochMillisec();
+   //        takedown(system);
+   //        sum += (end - start);
+   //        cout<<(end - start)<<"====================================================ENDRUN\n";
+   //    }
+   //    cout<<"Average time: "<<(sum/5)/1000<<"\n";
+   //}
+}

@@ -251,6 +251,7 @@ void System::run() {
         }
         if (!carHandler->isNotDone()) {
             quit = true;
+            carHandler->dataReport();
         }
     }
 }
@@ -285,6 +286,7 @@ void System::run(int timeout) {
         //once we have drawn the system, check that all cars haven't reached the end.
         if (!carHandler->isNotDone()) {
             quit = true;
+            carHandler->dataReport();
         }
     }
 }

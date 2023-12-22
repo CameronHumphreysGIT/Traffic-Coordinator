@@ -26,6 +26,8 @@ class CarHandler {
         void handleGo(int , float);
         pair<Intersection*, Intersection*> getStartEnd(int );
         std::vector<std::pair<int, float>>* accidentTypes;
+        uint64_t timeSum;
+        int carCount;
     public:
         CarHandler();
         ~CarHandler();
@@ -44,6 +46,7 @@ class CarHandler {
         bool isClear(Intersection* , float );
         void handleAccident();
         bool isValidDest(Intersection* );
+        void dataReport();
 };
 
 

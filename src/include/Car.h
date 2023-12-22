@@ -39,6 +39,9 @@ class Car {
         bool behind;
         //
         int lastInternal;
+        uint64_t startTime;
+        uint64_t duration;
+        bool rerouted;
     public:
         Car(std::pair<int, int> , float);
         ~Car();
@@ -78,6 +81,7 @@ class Car {
         bool isLeftTurning();
         bool isAtEnd();
         bool isWithin();
+        uint64_t getDuration();
 };
 
 #endif
