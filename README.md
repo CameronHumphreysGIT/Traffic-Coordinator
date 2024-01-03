@@ -9,6 +9,4 @@ The roads and paths within each intersection are expressed as Bezier Curves, whi
 The project is built using CMake, and the testing is done using Catch2. The properties of the program can be tweaked in Variables.h.
 
 
-![Alt text](\libs\images\legacy\Traffic Coordination Cover.png?raw=true "Title")
-
-
+![demo](./libs/images/legacy/Traffic%20Coordination%20Cover.PNG)
